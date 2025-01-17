@@ -1,18 +1,18 @@
-version: '3.8'
+version: '3.9'
+
 services:
-  backend:
-    build:
-      context: ./backend  # Node.js アプリケーションのフォルダパス
-      dockerfile: Dockerfile  # backend ディレクトリ内の Dockerfile を指定
-    ports:
-      - "5000:5000"  # ホストとコンテナのポートマッピング
+  postgres:
+    image: postgres:17
+    container_name: postgres_container
+    restart: always
     environment:
-      - NODE_ENV=development  # 環境モードを開発用に設定
-      - DB_HOST=db  # データベースサービス名 (db)
-      - DB_USER=postgres  # PostgreSQL ユーザー名
-      - DB_PASSWORD=postgres  # PostgreSQL パスワード
-      - DB_NAME=mydatabase  # PostgreSQL データベース名
-      - DB_PORT=5432  # PostgreSQL ポート番号
-    depends_on:
-      - db  # このサービスはデータベースに依存
-      
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 3106
+      POSTGRES_DB: workout_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
