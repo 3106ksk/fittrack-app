@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // ダミーデータの挿入
-    await queryInterface.bulkInsert('Workouts', [
+    await queryInterface.bulkInsert('workouts', [
       {
         date: '2025-01-01',
         exercise: 'Push Ups',
@@ -49,6 +49,6 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     // ダミーデータの削除
-    await queryInterface.bulkDelete('Workouts', null, {});
+    await queryInterface.bulkDelete('workouts', null, {});
   },
 };
