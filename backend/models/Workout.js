@@ -1,38 +1,48 @@
 'use strict';
+
 module.exports = (sequelize, DataTypes) => {
-  const Workout = sequelize.define(
-    'Workout', // モデル名（この名前がテーブル名とマッピングされる）
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      date: {
-        type: DataTypes.DATEONLY,
-        allowNull: false,
-      },
-      exercise: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      sets: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      reps: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      useId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
+  const Workout = sequelize.define('Workout', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-      tableName: 'workouts', // PostgreSQL側のテーブル名を指定
-      timestamps: false, // createdAt, updatedAtカラムを使用しない場合
-    }
-  );
+    userID: { // Note: Capitalized userID matches your migration
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+    },
+    date: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+    exercise: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    sets: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    reps: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    // createdAt and updatedAt are handled automatically by Sequelize if timestamps: true is set
+  }, {
+    tableName: 'workouts', // Matches your migration's table name
+    timestamps: true,      // Enables automatic createdAt and updatedAt
+    // underscored: true,  // If you want Sequelize to automatically convert camelCase to snake_case
+  });
+
+  Workout.associate = (models) => {
+    Workout.belongsTo(models.User, { foreignKey: 'userID' }); // Correct foreign key
+  };
+
   return Workout;
 };
