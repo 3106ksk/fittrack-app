@@ -6,10 +6,10 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { Workout, User } = require('./models');
-const userRouter = require("./routes/userRoutes");
+const authRouter = require("./routes/authRoutes");
 
 app.use(express.json());
-app.use("/userrouter", userRouter);
+app.use("/authrouter", authRouter);
 
 app.use(cors({
   origin: 'http://localhost:5173'
