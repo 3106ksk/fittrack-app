@@ -47,7 +47,6 @@ router.post("/login", async (req, res) => {
     }
 
     const token = await JWT.sign({ email }, "SECRET_KEY", { expiresIn: "24h", });
-
     return res.json({ token });
 
   } catch (error) {

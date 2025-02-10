@@ -7,22 +7,21 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { Workout, User } = require('./models');
 const authRouter = require("./routes/authRoutes");
+const crypto = require('crypto');
+const workouts = require('./routes/workouts');
+
 
 app.use(express.json());
 app.use("/authrouter", authRouter);
+app.use("/workouts", workouts);
+
+
+const secretKey = crypto.randomBytes(32).toString('hex');
+console.log('Generated Secret Key:', secretKey);
 
 app.use(cors({
   origin: 'http://localhost:5173'
 }));
-
-app.get('/workouts', async (req, res) => {
-  try {
-    const workouts = await Workout.findAll();
-    res.json(workouts);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
 app.get('/users', async (req, res) => {
   try {
