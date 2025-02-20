@@ -1,3 +1,4 @@
+require('dotenv').config();
 const router = require("express").Router();
 const { body, query, validationResult } = require('express-validator');
 const { User } = require('../models');
@@ -24,7 +25,7 @@ router.post("/register",
 
       let hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await User.create({ username, email, password: hashedPassword });
-      return res.status(201).json({ newUser });
+      return res.status(201).json(newUser);
 
     } catch (error) {
       console.error("Error finding user:", error);
@@ -34,7 +35,6 @@ router.post("/register",
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const existingUser = await User.findOne({ where: { email } });
 
@@ -46,7 +46,15 @@ router.post("/login", async (req, res) => {
       return res.status(400).json([{ message: "Incorrect password" }]);
     }
 
-    const token = await JWT.sign({ email }, "SECRET_KEY", { expiresIn: "24h", });
+
+    const token = await JWT.sign(
+      { id: existingUser.id },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "24h" }
+    );
+
+    const secretKey = process.env.JWT_SECRET_KEY;
+    console.log('トークン生成で使用している:', secretKey);
     return res.json({ token });
 
   } catch (error) {
@@ -54,6 +62,7 @@ router.post("/login", async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 
 module.exports = router;
