@@ -11,18 +11,17 @@ const crypto = require('crypto');
 const workouts = require('./routes/workouts');
 require('dotenv').config();
 
+app.use(cors({
+  origin: 'http://localhost:5173'
+}));
+
 app.use(express.json());
 app.use("/authrouter", authRouter);
 app.use("/workouts", workouts);
 
 
-const secretKey = process.env.JWT_SECRET_KEY;
 
 
-
-app.use(cors({
-  origin: 'http://localhost:5173'
-}));
 
 app.get('/users', async (req, res) => {
   try {

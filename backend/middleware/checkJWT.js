@@ -7,8 +7,5 @@ const authMiddleware = jwt({
   requestProperty: 'user'
 });
 
-const usingtken = process.env.JWT_SECRET_KEY;
-console.log("ミドルウェア:", usingtken);
-
 
 module.exports = authMiddleware;
