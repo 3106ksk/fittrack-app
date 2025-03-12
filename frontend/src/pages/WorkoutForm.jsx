@@ -1,6 +1,6 @@
 import WorkoutForm from "../components/WorkoutForm"
 
-const Home = () => {
+const WorkoutFormPage = () => {
   return (
     <div>
       <WorkoutForm />
@@ -9,4 +9,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default WorkoutFormPage;

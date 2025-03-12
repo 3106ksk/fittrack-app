@@ -52,14 +52,41 @@ router.post("/login", async (req, res) => {
       process.env.JWT_SECRET_KEY,
       { expiresIn: "24h" }
     );
-
-    const secretKey = process.env.JWT_SECRET_KEY;
-    console.log('トークン生成で使用している:', secretKey);
-    return res.json({ token });
+    return res.json({
+      token,
+      user: {
+        id: existingUser.id,
+        username: existingUser.username,
+        email: existingUser.email
+      }
+    });
 
   } catch (error) {
     console.error("Error finding user:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("me", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const decoded = JWT.verify(token, process.env.JWT_SECRET_KEY)
+    const userId = decoded.id;
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "no found user" });
+    }
+    return res.json(user);
+
+
+  } catch (error) {
+    console.error("Error finding user:", error);
+    return res.status(403).json({ message: "Forbidden" });
   }
 });
 
