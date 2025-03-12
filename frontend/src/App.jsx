@@ -1,26 +1,37 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import Progress from './pages/Progress';
 import Register from './pages/Register';
 import Login from './components/Login';
+import Logout from './components/Logout';
 import DashboadPage from './pages/Dashboad';
-import Logout from './pages/Logout';
-
+import { AuthContextProvider } from './components/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
+import PublicRoute from './components/PublicRoute';
+import WorkoutFormPage from './pages/WorkoutForm';
 function App() {
   return (
-
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path='/dashboard' element={<DashboadPage />}></Route >
-        <Route path='/' element={<Home />}>Home</Route>
-        <Route path='/progress' element={<Progress />}></Route>
-        <Route path='/signup' element={<Register />}></Route >
-        <Route path='/login' element={<Login />}></Route >
-        <Route path='/logout' element={<Logout />}></Route >
-      </Routes>
+      <AuthContextProvider>
+        <Navbar />
+        <Routes>
+          {/* 公開ルート - 誰でもアクセス可能 */}
+
+          {/* 保護されたルート - ログインユーザーのみアクセス可能 */}
+          <Route path='/dashboard' element={<PrivateRoute element={<DashboadPage />} />} />
+          <Route path='/progress' element={<PrivateRoute element={<Progress />} />} />
+          <Route path='/' element={<PrivateRoute element={<WorkoutFormPage />} />} />
+
+
+          {/* 制限付き公開ルート - 未ログインユーザーのみアクセス可能（ログイン済みならダッシュボードへリダイレクト） */}
+          <Route path='/signup' element={<PublicRoute element={<Register />} restricted={true} />} />
+          <Route path='/login' element={<PublicRoute element={<Login />} restricted={true} />} />
+
+          {/* ログアウトルート - 誰でもアクセス可能 */}
+          <Route path='/logout' element={<Logout />} />
+        </Routes>
+      </AuthContextProvider>
     </Router>
   );
 }

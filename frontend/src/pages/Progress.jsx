@@ -9,7 +9,6 @@ const Progress = () => {
       .then((response) => {
         const users = response.data;
         setWorkoutData(users);
-        console.log(users)
       })
       .catch((error) => {
         console.error("fething data error::", error);

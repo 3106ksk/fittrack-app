@@ -1,10 +1,11 @@
 
 import { useForm } from 'react-hook-form'
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from './Hook';
 
 const Login = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -16,8 +17,7 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('http://localhost:8000/authrouter/login', data);
-      console.log('ログイン成功', response.data);
+      await login(data);
       navigate('/dashboard');
     } catch (error) {
       if (error.response) {

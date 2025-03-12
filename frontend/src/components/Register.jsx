@@ -1,4 +1,3 @@
-
 import { useForm } from 'react-hook-form'
 import axios from 'axios';
 import { useState } from 'react';
@@ -17,12 +16,11 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('http://localhost:8000/authrouter/register', {
+      await axios.post('http://localhost:8000/authrouter/register', {
         username: data.username,
         email: data.email,
         password: data.password,
       });
-      console.log('ユーザー登録成功', response.data);
       navigate('/dashboard');
     } catch (error) {
       if (error.response) {

@@ -11,8 +11,7 @@ const WorkoutForm = () => {
 
   const onSubmit = (data) => {
     axios.post("http://localhost:8000/workouts", data)
-      .then(response => {
-        console.log(response)
+      .then(() => {
       })
       .catch(error => {
         console.error('There was an error!', error);
