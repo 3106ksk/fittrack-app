@@ -1,5 +1,15 @@
-import { useForm } from 'react-hook-form'
+import { Controller, useForm, useFieldArray } from 'react-hook-form'
+import { useEffect } from 'react';
+
+
 import axios from 'axios';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import {
+  TextField,
+  MenuItem
+} from '@mui/material';
+import '../styles/WorkoutForm.css';
 
 const WORKOUT_TYPES = {
   CARDIO: 'cardio',
@@ -38,6 +48,12 @@ const workoutExercises = [
     beginner: true
   },
   {
+    name: '懸垂（チンニング）',
+    type: WORKOUT_TYPES.STRENGTH,
+    description: '上半身トレーニング。広背筋、僧帽筋、上腕二頭筋を中心に鍛える複合運動。自重を使った引く動作のトレーニングで、初心者は補助器具から始めるのがおすすめ。メリット：背中の筋肉の発達、腕力の向上、姿勢改善、グリップ力の強化、体幹の安定性向上',
+    beginner: false
+  },
+  {
     name: 'デッドリフト',
     type: WORKOUT_TYPES.STRENGTH,
     description: '全身トレーニング。背中、お尻、ハムストリングスなど多くの筋群を同時に鍛える複合運動。フォームを重視し、軽い重量から始める。メリット：全身の筋力バランス向上、背筋強化による姿勢改善、基礎代謝の大幅アップ、日常生活での腰痛リスク軽減',
@@ -57,19 +73,69 @@ const workoutExercises = [
   }
 ];
 
-const REPS_OPTIONS = [5, 10, 15, 20, 25, 30, 40, 50];
 const SETS_OPTIONS = [1, 2, 3, 4, 5];
-const DISTANCE_OPTIONS = Array.from({ lenght: 10 }, (_, i) => i * 0.5);
+const REPS_OPTIONS = [5, 10, 15, 20, 25, 30, 40, 50];
+const DISTANCE_OPTIONS = Array.from({ length: 10 }, (_, i) => i * 0.5);
 const DURATION_OPTIONS = Array.from({ length: 13 }, (_, i) => i * 5);
 
-console.log(workoutExercises);
+const schema = yup.object().shape({
+  exercise: yup.string().required('種目を入力してください'),
+  duration: yup.number().required('時間を選択してください'),
+  intensity: yup.string().required('強度を選択してください')
+});
 
 const WorkoutForm = () => {
   const {
-    register,
+    control,
     handleSubmit,
-    formState: { errors }
-  } = useForm();
+    formState: { errors },
+    watch,
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      exercise: '',
+      setNumber: 3,
+      repsNumber: [
+        { id: '1', reps: '' },
+        { id: '2', reps: '' },
+        { id: '3', reps: '' }
+      ],
+      duration: '',
+      intensity: ''
+    }
+  });
+
+  const getExerciseType = (exerciseName) => {
+    const selectedExercise = workoutExercises.find(exercise =>
+      exercise.name === exerciseName
+    );
+    return selectedExercise ? selectedExercise.type : 'null';
+  };
+  const selectedExerciseName = watch('exercise');
+
+  const exerciseType = getExerciseType(selectedExerciseName);
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'repsNumber'
+  });
+  const setNumber = watch('setNumber');
+
+  useEffect(() => {
+    if (exerciseType === WORKOUT_TYPES.STRENGTH && setNumber) {
+      const currentLength = fields.length;
+
+      if (currentLength < setNumber) {
+        for (let i = currentLength; i < setNumber; i++) {
+          append({ id: String(i + 1), reps: '' });
+        }
+      } else if (currentLength > setNumber) {
+        for (let i = currentLength - 1; i >= setNumber; i--) {
+          remove(i);
+        }
+      }
+    }
+  }, [exerciseType, setNumber, watch, fields, append, remove]);
 
   const onSubmit = (data) => {
     axios.post("http://localhost:8000/workouts", data)
@@ -83,41 +149,167 @@ const WorkoutForm = () => {
 
   return (
     <form className='formContainer' onSubmit={handleSubmit(onSubmit)}>
-      <div className='fitName'>
-        <input
-          id='fitname'
-          type='text'
-          placeholder='トレーニング名を入力'
-          {...register("fitname", { required: "トレーニング名を入力してください" })}
+
+      <div className='exercise'>
+        <Controller
+          name='exercise'
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label='トレーニング名'
+              required
+              select
+              fullWidth
+              error={!!errors.exercise}
+              helperText={errors.exercise?.message}
+            >
+              {workoutExercises.map(exercise => (
+                <MenuItem key={exercise.name} value={exercise.name}>
+                  {exercise.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
         />
-        {errors.fitname && <p>{errors.fitname.message}</p>}
       </div>
 
-      <div className='setNumber'>
-        <input
-          id='setNumber'
-          type='number'
-          placeholder='セット数を入力'
-          {...register("setNumber", { min: 1, max: 99, required: "セット数を入力してください" })}
+      {exerciseType === WORKOUT_TYPES.STRENGTH && (
+        <>
+          <div className='setNumber'>
+            <Controller
+              name='setNumber'
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label='セット数'
+                  required
+                  select
+                  fullWidth
+                  error={!!errors.setNumber}
+                  helperText={errors.setNumber?.message}
+                >
+                  {SETS_OPTIONS.map(set => (
+                    <MenuItem key={set} value={set}>
+                      {set}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
+          </div>
+
+          {fields.map((field, index) => (
+            <div key={field.id} className='repsNumber'>
+              <Controller
+                name={`repsNumber.${index}.reps`}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label={`セット${index + 1}の回数`}
+                    required
+                    select
+                    fullWidth
+                    error={!!errors.repsNumber}
+                    helperText={errors.repsNumber?.message}
+                  >
+                    {REPS_OPTIONS.map(rep => (
+                      <MenuItem key={rep} value={rep}>
+                        {rep}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            </div>
+          ))}
+
+        </>
+      )}
+
+      {exerciseType === WORKOUT_TYPES.CARDIO && (
+        <>
+          <div className='distance'>
+            <Controller
+              name='distance'
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label='距離'
+                  required
+                  select
+                  fullWidth
+                  error={!!errors.distance}
+                  helperText={errors.distance?.message}
+                >
+                  {DISTANCE_OPTIONS.map(distance => (
+                    <MenuItem key={distance} value={distance}>
+                      {distance}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
+
+          </div>
+          <div className='duration'>
+            <Controller
+              name='duration'
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label='時間'
+                  required
+                  select
+                  fullWidth
+                >
+                  {DURATION_OPTIONS.map(duration => (
+                    <MenuItem key={duration} value={duration}>
+                      {duration}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
+          </div>
+
+        </>
+      )}
+
+      <div className='intensity'>
+        <Controller
+          name='intensity'
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label='強度'
+              required
+              select
+              fullWidth
+            >
+              <MenuItem value="低">楽に感じる（軽い息切れ程度）</MenuItem>
+              <MenuItem value="中">少しきつい（会話しながらできる程度）</MenuItem>
+              <MenuItem value="高">かなりきつい（会話が難しい程度）</MenuItem>
+            </TextField>
+
+          )}
+          error={!!errors.intensity}
+          helperText={errors.intensity?.message}
         />
-        <span>set</span>
-        {errors.setNumber && <p>{errors.setNumber.message}</p>}
       </div>
 
-      <div className='repsNumber'>
-        <input
-          id='repsNumber'
-          type='number'
-          placeholder='回数を入力'
-          {...register("repsNumber", { required: "回数を入力してください" })}
-        />
-        <span>回</span>
-      </div>
       <div>
         <button type='submit'>送信</button>
       </div>
+
     </form>
   )
 }
+
 
 export default WorkoutForm

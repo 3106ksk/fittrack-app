@@ -1,0 +1,72 @@
+/* WorkoutForm.css */
+
+.formContainer {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.exercise,
+.setNumber,
+.repsNumber,
+.distance,
+.duration,
+.intensity {
+  margin-bottom: 15px;
+}
+
+/* すべての入力フィールドのサイズを統一 */
+.exercise .MuiTextField-root,
+.setNumber .MuiTextField-root,
+.repsNumber .MuiTextField-root,
+.distance .MuiTextField-root,
+.duration .MuiTextField-root,
+.intensity .MuiTextField-root {
+  width: 100%;
+  min-height: 56px;
+}
+
+/* 入力フィールドのテキストサイズと内部の余白を調整 */
+.MuiInputBase-input {
+  font-size: 16px !important;
+  padding: 12px 14px !important;
+}
+
+/* ラベルのサイズを調整 */
+.MuiInputLabel-root {
+  font-size: 16px !important;
+}
+
+.repsNumber {
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  border-left: 3px solid #4a90e2;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+button[type="submit"]:hover {
+  background-color: #3a7bc8;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .formContainer {
+    width: 90%;
+    padding: 15px;
+  }
+}
