@@ -27,13 +27,33 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      exerciseType: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       sets: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       reps: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
+      },
+      repsDetail: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
+      distance: {
+        type: Sequelize.FLOAT,
+        allowNull: true,
+      },
+      duration: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      intensity: {
+        type: Sequelize.STRING,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
