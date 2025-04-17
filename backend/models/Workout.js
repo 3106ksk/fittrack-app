@@ -25,13 +25,33 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    exerciseType: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     sets: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true, // カーディオの場合は不要
     },
     reps: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true, // カーディオの場合は不要
+    },
+    repsDetail: {
+      type: DataTypes.JSON,
+      allowNull: true, // 詳細なセットごとの回数情報
+    },
+    distance: {
+      type: DataTypes.FLOAT,
+      allowNull: true, // 筋トレの場合は不要
+    },
+    duration: {
+      type: DataTypes.INTEGER,
+      allowNull: true, // 筋トレの場合は不要
+    },
+    intensity: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     // createdAt and updatedAt are handled automatically by Sequelize if timestamps: true is set
   }, {
