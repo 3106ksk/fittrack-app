@@ -25,7 +25,6 @@ router.post("/register",
 
       let hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await User.create({ username, email, password: hashedPassword });
-      console.log(newUser.toJSON());
       return res.status(201).json(newUser);
 
     } catch (error) {
@@ -47,7 +46,6 @@ router.post("/login", async (req, res) => {
       return res.status(400).json([{ message: "Incorrect password" }]);
     }
 
-
     const token = await JWT.sign(
       { id: existingUser.id },
       process.env.JWT_SECRET_KEY,
@@ -68,7 +66,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("me", async (req, res) => {
+router.get("/me", async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
@@ -91,6 +89,32 @@ router.get("me", async (req, res) => {
   }
 });
 
+router.post("/refresh-token", async (req, res) => {
+  try {
+    const oldToken = req.headers.authorization?.split(" ")[1];
+    if (!oldToken) {
+      return res.status(401).json({ message: "トークンがありません" });
+    }
 
+    const decoded = JWT.verify(oldToken, process.env.JWT_SECRET_KEY);
+    const userId = decoded.id;
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "ユーザーが見つかりません" });
+    }
+
+    const token = await JWT.sign(
+      { id: user.id },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "24h" }
+    );
+
+    return res.json({ token });
+  } catch (error) {
+    console.error("トークン更新エラー:", error);
+    return res.status(403).json({ message: "無効なトークンです" });
+  }
+});
 
 module.exports = router;

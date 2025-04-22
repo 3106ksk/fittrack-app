@@ -158,7 +158,7 @@ router.post('/', authMiddleware, async (req, res) => {
     });
 
   } catch (error) {
-    console.error("ワークアウト作成中にエラーが発生:", error);
+    // console.error("ワークアウト作成中にエラーが発生:", error);
     if (error.name === 'SequelizeValidationError') {
       return res.status(400).json({
         error: "入力データが無効です",
@@ -196,7 +196,7 @@ router.get('/userworkout', authMiddleware, async (req, res) => {
     const workouts = await user.getWorkouts();
     res.json(workouts);
   } catch (error) {
-    console.error("ユーザーワークアウト取得中にエラーが発生:", error);
+    // console.error("ユーザーワークアウト取得中にエラーが発生:", error);
     res.status(500).json({ error: "データ取得中にエラーが発生しました" });
   }
 });
