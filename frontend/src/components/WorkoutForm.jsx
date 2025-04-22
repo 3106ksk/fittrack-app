@@ -1,5 +1,5 @@
 import { Controller, useForm, useFieldArray } from 'react-hook-form'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 
 import axios from 'axios';
@@ -85,9 +85,16 @@ const schema = yup.object().shape({
 });
 
 const WorkoutForm = () => {
+  const [feedback, setFeedback] = useState({
+    message: '',
+    type: '',
+    visible: false
+  });
+
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
     watch,
   } = useForm({
@@ -105,12 +112,25 @@ const WorkoutForm = () => {
     }
   });
 
+  const showFeedback = (message, type) => {
+    setFeedback({
+      message,
+      type,
+      visible: true
+    });
+  };
+
+  setTimeout(() => {
+    setFeedback(prev => ({ ...prev, visible: false }));
+  }, 3000);
+
   const getExerciseType = (exerciseName) => {
     const selectedExercise = workoutExercises.find(exercise =>
       exercise.name === exerciseName
     );
     return selectedExercise ? selectedExercise.type : 'null';
   };
+
   const selectedExerciseName = watch('exercise');
 
   const exerciseType = getExerciseType(selectedExerciseName);
@@ -138,11 +158,39 @@ const WorkoutForm = () => {
   }, [exerciseType, setNumber, watch, fields, append, remove]);
 
   const onSubmit = (data) => {
-    axios.post("http://localhost:8000/workouts", data)
-      .then(() => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+    const exerciseType = getExerciseType(data.exercise);
+
+    const submitData = {
+      ...data,
+      exerciseType,
+      ...(exerciseType === 'strength' && {
+        setNumber: parseInt(data.setNumber, 10),
+        repsNumber: data.repsNumber.map(rep => ({
+          ...rep,
+          reps: parseInt(rep.reps, 10)
+        }))
+      }),
+      ...(exerciseType === 'cardio' && {
+        distance: parseInt(data.distance, 10),
+        duration: parseInt(data.duration, 10)
+      })
+    };
+
+    axios.post("http://localhost:8000/workouts", submitData, config)
+      .then((response) => {
+        showFeedback(response.data.message || 'ワークアウトが保存されました', 'success');
+        reset();
       })
       .catch(error => {
-        console.error('There was an error!', error);
+        console.error('エラー発生:', error.response?.data || error.message);
+        const errorMessage = error.response?.data?.error || 'エラーが発生しました';
+        showFeedback(errorMessage, 'error');
       });
   };
 
@@ -306,6 +354,11 @@ const WorkoutForm = () => {
       <div>
         <button type='submit'>送信</button>
       </div>
+      {feedback.visible && (
+        <div className={`feedback ${feedback.type}`}>
+          {feedback.message}
+        </div>
+      )}
 
     </form>
   )
