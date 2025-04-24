@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { User, Workout } = require("../models");
 const authMiddleware = require("../middleware/checkJWT");
+const { Op } = require("sequelize");
 
 const VALID_INTENSITIES = ["低", "中", "高"];
 
@@ -158,7 +159,6 @@ router.post('/', authMiddleware, async (req, res) => {
     });
 
   } catch (error) {
-    // console.error("ワークアウト作成中にエラーが発生:", error);
     if (error.name === 'SequelizeValidationError') {
       return res.status(400).json({
         error: "入力データが無効です",
@@ -181,7 +181,93 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-router.get('/userworkout', authMiddleware, async (req, res) => {
+router.get('/monthly', authMiddleware, async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: "認証エラー - リクエストにユーザー情報がありません" });
+  }
+  const userId = req.user.id;
+  let { year, month } = req.query;
+  year = parseInt(year, 10) || new Date().getFullYear();
+  month = parseInt(month, 10) || new Date().getMonth() + 1;
+
+  if (month < 1 || month > 12) {
+    return res.status(400).json({ error: "月は1から12の範囲で指定してください" });
+  }
+  const startDate = new Date(year, month - 1, 1)
+    .toISOString().split('T')[0];
+
+  const endDate = new Date(year, month, 0)
+    .toISOString().split('T')[0];
+
+  try {
+    const workouts = await Workout.findAll({
+      where: {
+        userID: userId,
+        date: {
+          [Op.between]: [startDate, endDate]
+        }
+      },
+      order: [['date', 'DESC']]
+    });
+
+    res.json(workouts);
+  } catch (error) {
+    res.status(500).json({ error: "データ取得中にエラーが発生しました" });
+  }
+});
+
+router.get('/:workoutId', authMiddleware, async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: "認証エラー - リクエストにユーザー情報がありません" });
+  }
+  const userId = req.user.id;
+  const { workoutId } = req.params;
+
+  try {
+    const workout = await Workout.findOne({
+      where: {
+        id: workoutId,
+        userID: userId
+      }
+    });
+
+    if (!workout) {
+      return res.status(404).json({ error: "ワークアウトが見つかりません" });
+    }
+    res.json(workout);
+  } catch (error) {
+    res.status(500).json({ error: "データ取得中にエラーが発生しました" });
+  }
+});
+
+const formatWorkoutData = (workout) => {
+  const baseData = {
+    id: workout.id,
+    date: workout.date,
+    exercise: workout.exercise,
+    exerciseType: workout.exerciseType,
+    intensity: workout.intensity
+  };
+  if (workout.exerciseType === 'strength') {
+    return {
+      ...baseData,
+      sets: workout.sets,
+      reps: workout.reps,
+      repsDetail: workout.repsDetail || [],
+      isCardio: false
+    };
+  } else {
+    return {
+      ...baseData,
+      distance: workout.distance,
+      duration: workout.duration,
+      isCardio: true
+    }
+  }
+
+}
+
+router.get('/', authMiddleware, async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ error: "認証エラー - リクエストにユーザー情報がありません" });
   }
@@ -192,11 +278,10 @@ router.get('/userworkout', authMiddleware, async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "ユーザーが見つかりません" });
     }
-
     const workouts = await user.getWorkouts();
-    res.json(workouts);
+    const formattedWorkouts = workouts.map(workout => formatWorkoutData(workout));
+    res.json(formattedWorkouts);
   } catch (error) {
-    // console.error("ユーザーワークアウト取得中にエラーが発生:", error);
     res.status(500).json({ error: "データ取得中にエラーが発生しました" });
   }
 });
