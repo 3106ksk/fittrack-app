@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    userID: { // Note: Capitalized userID matches your migration
+    userID: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -31,37 +31,36 @@ module.exports = (sequelize, DataTypes) => {
     },
     sets: {
       type: DataTypes.INTEGER,
-      allowNull: true, // カーディオの場合は不要
+      allowNull: true,
     },
     reps: {
       type: DataTypes.INTEGER,
-      allowNull: true, // カーディオの場合は不要
+      allowNull: true,
     },
     repsDetail: {
       type: DataTypes.JSON,
-      allowNull: true, // 詳細なセットごとの回数情報
+      allowNull: true,
     },
     distance: {
       type: DataTypes.FLOAT,
-      allowNull: true, // 筋トレの場合は不要
+      allowNull: true,
     },
     duration: {
       type: DataTypes.INTEGER,
-      allowNull: true, // 筋トレの場合は不要
+      allowNull: true,
     },
     intensity: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    // createdAt and updatedAt are handled automatically by Sequelize if timestamps: true is set
+
   }, {
-    tableName: 'workouts', // Matches your migration's table name
-    timestamps: true,      // Enables automatic createdAt and updatedAt
-    // underscored: true,  // If you want Sequelize to automatically convert camelCase to snake_case
+    tableName: 'workouts',
+    timestamps: true,
   });
 
   Workout.associate = (models) => {
-    Workout.belongsTo(models.User, { foreignKey: 'userID' }); // Correct foreign key
+    Workout.belongsTo(models.User, { foreignKey: 'userID' });
   };
 
   return Workout;

@@ -11,15 +11,16 @@ const Navbar = () => {
         <>
           {user ? (
             <>
-              <Link to='/dashboard'> Dashboard</Link>
-              <Link to='/progress'> Progress</Link>
-              <Link to='/'> Workout Form </Link>
-              <Link to='/logout'> Logout</Link>
+              <Link to='/dashboard'>ダッシュボード</Link>
+              <Link to='/progress'>進捗</Link>
+              <Link to='/'>ワークアウトフォーム</Link>
+              <Link to='/workout-history'>ワークアウト履歴</Link>
+              <Link to='/logout'>ログアウト</Link>
             </>
           ) : (
             <>
-              <Link to='/login'> Login</Link>
-              <Link to='/signup'> Signup</Link>            </>
+              <Link to='/login'>ログイン</Link>
+              <Link to='/signup'>サインアップ</Link>            </>
           )}
         </>
       )}

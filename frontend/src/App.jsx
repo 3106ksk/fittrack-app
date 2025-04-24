@@ -10,21 +10,20 @@ import { AuthContextProvider } from './components/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
 import WorkoutFormPage from './pages/WorkoutForm';
+import WorkoutHistory from './pages/WorkoutHistory';
+
 function App() {
   return (
     <Router>
       <AuthContextProvider>
         <Navbar />
         <Routes>
-          {/* 公開ルート - 誰でもアクセス可能 */}
-
-          {/* 保護されたルート - ログインユーザーのみアクセス可能 */}
           <Route path='/dashboard' element={<PrivateRoute element={<DashboadPage />} />} />
           <Route path='/progress' element={<PrivateRoute element={<Progress />} />} />
           <Route path='/' element={<PrivateRoute element={<WorkoutFormPage />} />} />
+          <Route path='/workout-history' element={<PrivateRoute element={<WorkoutHistory />} />} />
 
 
-          {/* 制限付き公開ルート - 未ログインユーザーのみアクセス可能（ログイン済みならダッシュボードへリダイレクト） */}
           <Route path='/signup' element={<PublicRoute element={<Register />} restricted={true} />} />
           <Route path='/login' element={<PublicRoute element={<Login />} restricted={true} />} />
 
