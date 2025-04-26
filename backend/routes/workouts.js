@@ -45,7 +45,6 @@ router.post('/', authMiddleware, async (req, res) => {
     return res.status(400).json({ error: "エクササイズタイプは必須です" });
   }
 
-  // intensityのバリデーション追加
   if (!intensity) {
     return res.status(400).json({ error: "強度は必須です" });
   }
