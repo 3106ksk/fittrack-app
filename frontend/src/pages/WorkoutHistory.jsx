@@ -1,9 +1,18 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  Container, Typography, TableContainer, Table, TableHead,
+  TableRow, TableCell, TableBody, Paper, Button,
+  CircularProgress, Alert,
+  Collapse
+} from '@mui/material'
+import React from 'react';
+
 const WorkoutHistory = () => {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openId, setOpenId] = useState(false);
 
   useEffect(() => {
     axios.get('http://localhost:8000/workouts')
@@ -12,31 +21,76 @@ const WorkoutHistory = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  return (
-    <div>
-      <h1>トレーニング履歴</h1>
-      {loading && <p>ローディング中...</p>}
-      {error && <p>エラーが発生しました: {error.message}</p>}
-      {!loading && !error && (
-        <ul className='workout-list'>
-          {workouts.map(workout => (
-            <li key={workout.id}>
-              <h2>{workout.date}</h2>
-              <p>{workout.exercise}</p>
-              <p>{workout.exerciseType}</p>
-              <p>{workout.intensity}</p>
-              {workout.isCardio && (
-                <>
-                  <p>距離: {workout.distance}km</p>
-                  <p>時間: {workout.duration}分</p>
-                </>
-              )}
+  const toggle = (id) => {
+    setOpenId(openId === id ? null : id);
+  };
 
-            </li>
-          ))}
-        </ul>
+  return (
+    <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        トレーニング履歴
+      </Typography>
+      {loading && <CircularProgress />}
+      {error && <Alert severity="error">{error.message}</Alert>}
+
+      {!loading && !error && (
+        <TableContainer component={Paper}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell>日付</TableCell>
+                <TableCell>種目</TableCell>
+                <TableCell>セット／距離</TableCell>
+                <TableCell>時間</TableCell>
+                <TableCell>強度</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {workouts.map(workout => (
+                <React.Fragment key={workout.id}>
+                  <TableRow>
+                    <TableCell>{workout.date}</TableCell>
+                    <TableCell>{workout.exercise}</TableCell>
+                    <TableCell>
+                      {workout.isCardio
+                        ? `${workout.distance} km`
+                        : (
+                          <Button size="small" onClick={() => toggle(workout.id)}>
+                            {workout.sets} セット
+                          </Button>
+                        )
+                      }
+                    </TableCell>
+                    <TableCell>
+                      {workout.isCardio ? `${workout.duration} 分` : '-'}
+                    </TableCell>
+                    <TableCell>{workout.intensity}</TableCell>
+                  </TableRow>
+
+                  {!workout.isCardio && openId === workout.id && (
+                    <TableRow key={`${workout.id}-detail`}>
+                      <TableCell colSpan={5} sx={{ py: 0, border: 0 }}>
+                        <Collapse in>
+                          <ul style={{ margin: 8, paddingLeft: 16 }}>
+                            {workout.repsDetail.map(reps =>
+                              <li key={reps.setNumber}>
+                                {reps.setNumber}セット目
+                                {reps.reps}回
+                              </li>
+                            )}
+                          </ul>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-    </div>
+    </Container>
+
   )
 }
 
