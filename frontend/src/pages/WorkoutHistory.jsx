@@ -15,10 +15,26 @@ const WorkoutHistory = () => {
   const [openId, setOpenId] = useState(false);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/workouts')
-      .then(res => setWorkouts(res.data))
-      .catch(err => setError(err))
-      .finally(() => setLoading(false));
+    const controller = new AbortController();
+    const fetchWorkouts = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:8000/workouts', {
+          signal: controller.signal
+        });
+        setWorkouts(response.data);
+        setLoading(false);
+      } catch (error) {
+        if (axios.isCancel(error)) {
+          console.log('ワークアウト履歴の取得がキャンセルされました');
+          return;
+        }
+        setError(error);
+        setLoading(false);
+      }
+    };
+    fetchWorkouts();
+    return () => controller.abort();
   }, []);
 
   const toggle = (id) => {
@@ -33,7 +49,7 @@ const WorkoutHistory = () => {
       {loading && <CircularProgress />}
       {error && <Alert severity="error">{error.message}</Alert>}
 
-      {!loading && !error && (
+      {workouts.length > 0 && (
         <TableContainer component={Paper}>
           <Table stickyHeader>
             <TableHead>
@@ -88,6 +104,11 @@ const WorkoutHistory = () => {
             </TableBody>
           </Table>
         </TableContainer>
+      )}
+      {!loading && !error && workouts.length === 0 && (
+        <Alert severity="info">
+          トレーニング履歴がありません
+        </Alert>
       )}
     </Container>
 

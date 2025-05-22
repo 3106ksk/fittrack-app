@@ -12,7 +12,6 @@ const Navbar = () => {
           {user ? (
             <>
               <Link to='/dashboard'>ダッシュボード</Link>
-              <Link to='/progress'>進捗</Link>
               <Link to='/'>ワークアウトフォーム</Link>
               <Link to='/workout-history'>ワークアウト履歴</Link>
               <Link to='/logout'>ログアウト</Link>

@@ -80,9 +80,35 @@ const DURATION_OPTIONS = Array.from({ length: 13 }, (_, i) => i * 5);
 
 const schema = yup.object().shape({
   exercise: yup.string().required('種目を入力してください'),
-  duration: yup.number().required('時間を選択してください'),
-  intensity: yup.string().required('強度を選択してください')
+  intensity: yup.string().required('強度を選択してください'),
+  setNumber: yup.number().when('exercise', {
+    is: (exercise) => getExerciseType(exercise) === WORKOUT_TYPES.STRENGTH,
+    then: yup.number().required('セット数を選択してください')
+  }),
+  repsNumber: yup.array().when('exercise', {
+    is: (exercise) => getExerciseType(exercise) === WORKOUT_TYPES.STRENGTH,
+    then: yup.array().of(
+      yup.object().shape({
+        reps: yup.number().required('回数を選択してください')
+      })
+    )
+  }),
+  duration: yup.number().when('exercise', {
+    is: (exercise) => getExerciseType(exercise) === WORKOUT_TYPES.CARDIO,
+    then: yup.number().required('時間を選択してください')
+  }),
+  distance: yup.number().when('exercise', {
+    is: (exercise) => getExerciseType(exercise) === WORKOUT_TYPES.CARDIO,
+    then: yup.number().required('距離を選択してください')
+  })
 });
+
+const getExerciseType = (exerciseName) => {
+  const selectedExercise = workoutExercises.find(exercise =>
+    exercise.name === exerciseName
+  );
+  return selectedExercise ? selectedExercise.type : 'null';
+};
 
 const WorkoutForm = () => {
   const [feedback, setFeedback] = useState({
@@ -124,12 +150,8 @@ const WorkoutForm = () => {
     setFeedback(prev => ({ ...prev, visible: false }));
   }, 3000);
 
-  const getExerciseType = (exerciseName) => {
-    const selectedExercise = workoutExercises.find(exercise =>
-      exercise.name === exerciseName
-    );
-    return selectedExercise ? selectedExercise.type : 'null';
-  };
+
+
 
   const selectedExerciseName = watch('exercise');
 
@@ -181,6 +203,7 @@ const WorkoutForm = () => {
         duration: parseInt(data.duration, 10)
       })
     };
+
 
     axios.post("http://localhost:8000/workouts", submitData, config)
       .then((response) => {
