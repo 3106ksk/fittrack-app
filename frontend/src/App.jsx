@@ -1,7 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import Navbar from './components/Navbar';
-import Progress from './pages/Progress';
 import Register from './pages/Register';
 import Login from './components/Login';
 import Logout from './components/Logout';
@@ -19,7 +18,6 @@ function App() {
         <Navbar />
         <Routes>
           <Route path='/dashboard' element={<PrivateRoute element={<DashboadPage />} />} />
-          <Route path='/progress' element={<PrivateRoute element={<Progress />} />} />
           <Route path='/' element={<PrivateRoute element={<WorkoutFormPage />} />} />
           <Route path='/workout-history' element={<PrivateRoute element={<WorkoutHistory />} />} />
 
