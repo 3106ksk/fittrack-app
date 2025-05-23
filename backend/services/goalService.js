@@ -1,18 +1,23 @@
 const { Goal } = require('../models');
+// 一時的にバリデーターをコメントアウト
+// const { validateGoalCreation } = require('../validators/goalValidator');
 
 const createSetGoal = async (setGoalData) => {
   try {
-    const existingGoal = await Goal.findone({
+    // 一時的にバリデーションを無効化
+    // await validateGoalCreation(setGoalData);
+
+    const existingGoal = await Goal.findOne({
       where: {
-        userID: goalData.userID,
-        exercise: goalData.exercise,
+        userID: setGoalData.userID,
+        exercise: setGoalData.exercise,
         status: 'in_progress'
       }
     });
 
     if (existingGoal) {
       const error = new Error('このトレーニング目標はすでに設定されています。');
-      error.name = "重複エラー";
+      error.name = "GoalAlreadyExistsError";
       error.existingGoal = existingGoal;
       throw error;
     }

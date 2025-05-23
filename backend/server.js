@@ -9,6 +9,7 @@ const { Workout, User } = require('./models');
 const authRouter = require("./routes/authRoutes");
 const crypto = require('crypto');
 const workouts = require('./routes/workouts');
+const goalRouter = require('./routes/goalRoutes');
 require('dotenv').config();
 
 app.use(cors({
@@ -18,6 +19,7 @@ app.use(cors({
 app.use(express.json());
 app.use("/authrouter", authRouter);
 app.use("/workouts", workouts);
+app.use("/goals", goalRouter);
 
 
 
