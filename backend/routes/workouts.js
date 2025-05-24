@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { User, Workout } = require("../models");
 const authMiddleware = require("../middleware/checkJWT");
 const { Op } = require("sequelize");
+const goalService = require("../services/goalService");
 
 const VALID_INTENSITIES = ["低", "中", "高"];
 
@@ -152,9 +153,25 @@ router.post('/', authMiddleware, async (req, res) => {
       intensity
     });
 
+    let goalProgressUpdate = null;
+    try {
+      const workoutAmount = exerciseType === 'strength' ? totalReps :
+        exerciseType === 'cardio' ? distance : 0;
+
+      goalProgressUpdate = await goalService.updateGoalProgress(
+        userId,
+        exercise,
+        exerciseType,
+        workoutAmount
+      );
+    } catch (goalError) {
+      console.error('目標進捗更新エラー:', goalError);
+    }
+
     res.status(201).json({
       message: "ワークアウトが正常に作成されました",
-      workout: workoutData
+      workout: workoutData,
+      goalUpdate: goalProgressUpdate
     });
 
   } catch (error) {

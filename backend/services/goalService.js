@@ -42,6 +42,22 @@ const createSetGoal = async (setGoalData) => {
   }
 };
 
+const getGoalsByUserId = async (userID) => {
+  const goals = await Goal.findAll({
+    where: { userID: userID },
+    order: [['status', 'ASC'], ['createdAt', 'DESC']]
+  });
+
+  const formattedGoals = goals.map(goal => ({
+    ...goal.toJSON(),
+    progressPercentage: Math.round((goal.progressAmount / goal.targetAmount) * 100),
+  }));
+
+  return formattedGoals;
+};
+
+
 module.exports = {
-  createSetGoal
+  createSetGoal,
+  getGoalsByUserId
 };

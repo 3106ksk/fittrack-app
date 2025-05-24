@@ -1,5 +1,6 @@
 const goalService = require('../services/goalService');
 
+
 const createSetGoal = async (req, res) => {
   try {
     // 一時的にテスト用のuserIDを使用（認証なしでテスト可能にするため）
@@ -22,6 +23,21 @@ const createSetGoal = async (req, res) => {
   } catch (error) {
     handleError(res, error);
   }
+};
+
+const getGoals = async (req, res) => {
+  try {
+    const userId = req.user?.id || 14;
+    const userGoals = await goalService.getGoalsByUserId(userId);
+    res.json({
+      message: '目標一覧を取得しました',
+      count: userGoals.length,                           // 追加情報
+      goals: userGoals                                   // メインデータ
+    });
+  } catch (error) {
+    handleError(res, error);
+  }
+
 };
 
 // エラーハンドリング関数を追加
@@ -56,5 +72,6 @@ const handleError = (res, error) => {
 };
 
 module.exports = {
-  createSetGoal
+  createSetGoal,
+  getGoals
 };

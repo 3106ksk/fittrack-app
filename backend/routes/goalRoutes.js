@@ -9,5 +9,6 @@ const router = require('express').Router();
 const goalController = require('../controllers/goalController');
 
 router.post('/', goalController.createSetGoal);
+router.get('/', goalController.getGoals);
 
 module.exports = router;
