@@ -1,4 +1,4 @@
-import GoalsettingForm from "../components/GoalsettingForm"
+import GoalsettingForm from "../components/forms/GoalsettingForm"
 
 const GoalsettingPage = () => {
   return (

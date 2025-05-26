@@ -1,31 +1,17 @@
 import { Controller, useForm } from 'react-hook-form';
-import { TextField, MenuItem, Alert } from '@mui/material';
+import { TextField, MenuItem, Alert, Button } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import axios from 'axios';
 import { useState } from 'react';
 
+import { goalFormSchema, defaultGoalFormValues } from '../../schemas/goalSchema';
+import { goalApi } from '../../services/goalApi';
+import { exerciseService } from '../../services/exerciseService';
+import { EXERCISE_OPTIONS, METRIC_UNITS } from '../../config/exercise';
 
 const GoalsettingForm = () => {
-  const workoutExercises = [
-    { name: 'ウォーキング', type: 'cardio' },
-    { name: 'ジョギング', type: 'cardio' },
-    { name: 'スクワット', type: 'strength' },
-    { name: 'プッシュアップ', type: 'strength' },
-    { name: 'ベンチプレス', type: 'strength' },
-    { name: '懸垂（チンニング）', type: 'strength' },
-    { name: 'デッドリフト', type: 'strength' },
-    { name: 'クランチ', type: 'strength' },
-    { name: 'レッグレイズ', type: 'strength' }
-  ];
 
-  const schema = yup.object().shape({
-    exercise: yup.string().required('トレーニング種目を選択してください'),
-    targetAmount: yup.number()
-      .required('目標回数を入力してください')
-      .min(1, '1回以上入力してください'),
-    metricUnit: yup.string().required('単位を選択してください'),
-  });
+  const workoutExercises = EXERCISE_OPTIONS;
+  const metricUnits = METRIC_UNITS;
 
   const [feedback, setFeedback] = useState({
     message: '',
@@ -40,44 +26,28 @@ const GoalsettingForm = () => {
     }, 3000);
   };
 
-
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors }
   } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      exercise: '',
-      targetAmount: '',
-      metricUnit: '',
-    }
-  })
+    resolver: yupResolver(goalFormSchema),
+    defaultValues: defaultGoalFormValues,
+  });
+
+
 
   const onSubmit = async (data) => {
     try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      const selectedExercise = workoutExercises.find(exercise =>
-        exercise.name === data.exercise
-      );
-
       const submitData = {
         exercise: data.exercise,
-        exerciseType: selectedExercise?.type || 'strength',
+        exerciseType: exerciseService.getExerciseType(data.exercise),
         targetAmount: parseInt(data.targetAmount, 10),
         metricUnit: data.metricUnit,
       };
 
-      const response = await axios.post("http://localhost:8000/goals", submitData, config);
-      console.log(response.data);
-
+      await goalApi.createGoal(submitData);
       showFeedback('目標設定が完了しました', 'success');
       reset();
     } catch (error) {
@@ -148,17 +118,18 @@ const GoalsettingForm = () => {
                 error={!!errors.metricUnit}
                 helperText={errors.metricUnit?.message}
               >
-                <MenuItem value="reps">回</MenuItem>
-                <MenuItem value="distance">km</MenuItem>
-                <MenuItem value="duration">分</MenuItem>
+                {metricUnits.map((unit) => (
+                  <MenuItem key={unit.value} value={unit.value}>
+                    {unit.label}
+                  </MenuItem>
+                ))}
               </TextField>
             )}
           />
         </div>
-
-        <div>
-          <button type='submit'>送信</button>
-        </div>
+        <Button type='submit' variant='contained' color='primary'>
+          目標設定
+        </Button>
 
       </form>
     </>
