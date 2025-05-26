@@ -10,6 +10,7 @@ import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
 import WorkoutFormPage from './pages/WorkoutForm';
 import WorkoutHistory from './pages/WorkoutHistory';
+import GoalsettingPage from './pages/GoalsettingPage';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
           <Route path='/dashboard' element={<PrivateRoute element={<DashboadPage />} />} />
           <Route path='/' element={<PrivateRoute element={<WorkoutFormPage />} />} />
           <Route path='/workout-history' element={<PrivateRoute element={<WorkoutHistory />} />} />
-
+          <Route path='/goalsetting' element={<PrivateRoute element={<GoalsettingPage />} />} />
 
           <Route path='/signup' element={<PublicRoute element={<Register />} restricted={true} />} />
           <Route path='/login' element={<PublicRoute element={<Login />} restricted={true} />} />
