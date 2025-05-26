@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
     metricUnit: {
       type: DataTypes.STRING,
       allowNull: false,
-      comment: '測定単位（reps:回数, distance:距離, duration:時間）'
+      comment: '測定単位（reps:回数）'
     },
     status: {
       type: DataTypes.ENUM('in_progress', 'completed', 'paused'),
