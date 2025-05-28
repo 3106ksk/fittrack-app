@@ -1,30 +1,28 @@
 import axios from 'axios';
+import handleApiError from './errorHandler';
 
-class GoalApiService {
-  constructor() {
-    this.apiUrl = 'http://localhost:8000/goals';
-  }
+const BASE_URL = 'http://localhost:8000/goals';
 
-  getAuthHeaders() {
-    const token = localStorage.getItem('token');
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  };
+};
+
+const createGoal = async (goalData) => {
+  try {
+    const response = await axios.post(BASE_URL, goalData, getAuthHeaders());
     return {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      goal: response.data.goal,
+      message: response.data.message || '目標が正常に作成されました'
     };
+  } catch (error) {
+    handleApiError(error);
   }
+};
 
-  async createGoal(goalData) {
-    try {
-      const response = await axios.post(this.apiUrl, goalData, this.getAuthHeaders());
-      return response.data;
-    } catch (error) {
-      // エラーメッセージを統一
-      const errorMessage = error.response?.data?.error || 'エラーが発生しました';
-      throw new Error(errorMessage);
-    }
-  }
-}
-
-export const goalApi = new GoalApiService();
+export { createGoal };
