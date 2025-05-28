@@ -1,61 +1,23 @@
-import { Controller, useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { TextField, MenuItem, Alert, Button } from '@mui/material';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
 
-import { goalFormSchema, defaultGoalFormValues } from '../../schemas/goalSchema';
-import { goalApi } from '../../services/goalApi';
-import { exerciseService } from '../../services/exerciseService';
-import { EXERCISE_OPTIONS, METRIC_UNITS } from '../../config/exercise';
+import { EXERCISE_OPTIONS } from '../../config/exercise';
+import useGoalForm from '../../hooks/useGoalForm';
 
 const GoalsettingForm = () => {
-
   const workoutExercises = EXERCISE_OPTIONS;
-  const metricUnits = METRIC_UNITS;
-
-  const [feedback, setFeedback] = useState({
-    message: '',
-    type: '',
-    visible: false,
-  });
-
-  const showFeedback = (message, type) => {
-    setFeedback({ message, type, visible: true });
-    setTimeout(() => {
-      setFeedback(prev => ({ ...prev, visible: false }));
-    }, 3000);
-  };
 
   const {
     control,
     handleSubmit,
-    reset,
-    formState: { errors }
-  } = useForm({
-    resolver: yupResolver(goalFormSchema),
-    defaultValues: defaultGoalFormValues,
-  });
+    formState: { errors },
+    feedback,
+    submitGoal
+  } = useGoalForm();
 
 
 
-  const onSubmit = async (data) => {
-    try {
-      const submitData = {
-        exercise: data.exercise,
-        exerciseType: exerciseService.getExerciseType(data.exercise),
-        targetAmount: parseInt(data.targetAmount, 10),
-        metricUnit: data.metricUnit,
-      };
 
-      await goalApi.createGoal(submitData);
-      showFeedback('目標設定が完了しました', 'success');
-      reset();
-    } catch (error) {
-      console.error('エラー発生:', error.response?.data || error.message);
-      const errorMessage = error.response?.data?.error || 'エラーが発生しました';
-      showFeedback(errorMessage, 'error');
-    }
-  };
 
   return (
     <>
@@ -64,7 +26,7 @@ const GoalsettingForm = () => {
           {feedback.message}
         </Alert>
       )}
-      <form className='formContainer' onSubmit={handleSubmit(onSubmit)}>
+      <form className='formContainer' onSubmit={handleSubmit(submitGoal)}>
         <div className='exercise'>
           <Controller
             name='exercise'
@@ -105,28 +67,15 @@ const GoalsettingForm = () => {
           />
         </div>
 
-        <div className='metricUnit'>
-          <Controller
-            name='metricUnit'
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label='測定単位'
-                select
-                fullWidth
-                error={!!errors.metricUnit}
-                helperText={errors.metricUnit?.message}
-              >
-                {metricUnits.map((unit) => (
-                  <MenuItem key={unit.value} value={unit.value}>
-                    {unit.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
-          />
-        </div>
+        {/* 測定単位は自動で「回」に設定されるため、選択フィールドを削除 */}
+        <Controller
+          name='metricUnit'
+          control={control}
+          render={({ field }) => (
+            <input {...field} type="hidden" value="reps" />
+          )}
+        />
+
         <Button type='submit' variant='contained' color='primary'>
           目標設定
         </Button>
