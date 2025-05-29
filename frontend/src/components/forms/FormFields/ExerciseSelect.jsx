@@ -1,23 +1,35 @@
+import { MenuItem, TextField } from '@mui/material';
 import { Controller } from 'react-hook-form';
-import { TextField, MenuItem } from '@mui/material';
 import { EXERCISE_OPTIONS } from '../../../config/exercise';
 
-const ExerciseSelect = ({ control, errors }) => {
+const ExerciseSelect = ({ 
+  control,
+  errors,
+  exercises = EXERCISE_OPTIONS,
+  label = 'トレーニング種目',
+  name = 'exercise'
+}) => {
+  // エラーハンドリング: exercisesが無効な場合
+  if (!Array.isArray(exercises) || exercises.length === 0) {
+    console.warn('ExerciseSelect: 無効なexercisesデータが渡されました');
+    return null;
+  }
+
   return (
     <div className='exercise'>
       <Controller
-        name='exercise'
+        name={name}
         control={control}
         render={({ field }) => (
           <TextField
             {...field}
-            label='トレーニング種目'
+            label={label}
             select
             fullWidth
-            error={!!errors.exercise}
-            helperText={errors.exercise?.message}
+            error={!!errors[name]}
+            helperText={errors[name]?.message}
           >
-            {EXERCISE_OPTIONS.map((exercise) => (
+            {exercises.map((exercise) => (
               <MenuItem key={exercise.name} value={exercise.name}>
                 {exercise.name}
               </MenuItem>
@@ -26,7 +38,7 @@ const ExerciseSelect = ({ control, errors }) => {
         )}
       />
     </div>
-  )
-}
+  );
+};
 
 export default ExerciseSelect;

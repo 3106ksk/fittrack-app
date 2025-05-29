@@ -1,30 +1,37 @@
 'use strict';
 
+const bcrypt = require('bcrypt');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    const saltRounds = 10;
+    
     await queryInterface.bulkInsert('users', [
       {
-        username: 'user1',
-        email: 'user1@example.com',
-        password: 'user123', // ハッシュ化されたパスワードを挿入
+        username: 'testuser',
+        email: 'test@example.com',
+        password: await bcrypt.hash('password123', saltRounds),
       },
       {
-        username: 'user2',
-        email: 'user2@example.com',
-        password: 'user345', // ハッシュ化された別のパスワードを挿入
+        username: 'john_doe',
+        email: 'john@example.com',
+        password: await bcrypt.hash('john123', saltRounds),
       },
       {
-        username: 'user3',
-        email: 'user3@example.com',
-        password: 'user678', // ハッシュ化されたパスワードを挿入
+        username: 'jane_smith',
+        email: 'jane@example.com',
+        password: await bcrypt.hash('jane456', saltRounds),
       },
-      // 他のユーザーデータも同様に追加
+      {
+        username: 'admin',
+        email: 'admin@fittrack.com',
+        password: await bcrypt.hash('admin123', saltRounds),
+      },
     ], {});
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('users', null, {}); // 全てのレコードを削除
+    await queryInterface.bulkDelete('users', null, {});
   }
 };

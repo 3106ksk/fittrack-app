@@ -2,11 +2,26 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // ユーザーが存在することを前提とした目標データ
+    // ユーザーIDを動的に取得
+    const users = await queryInterface.sequelize.query(
+      `SELECT id FROM users ORDER BY id ASC;`,
+      { type: queryInterface.sequelize.QueryTypes.SELECT }
+    );
+
+    // ユーザーが存在するか確認
+    if (!users || users.length < 3) {
+      console.error('ユーザーデータが不足しています。先にユーザーシードを実行してください。');
+      return;
+    }
+
+    const userId1 = users[0].id; // testuser
+    const userId2 = users[1].id; // john_doe
+    const userId3 = users[2].id; // jane_smith
+
     await queryInterface.bulkInsert('goals', [
-      // ユーザー14の目標（進捗中）
+      // testuser の目標（進捗中）
       {
-        userID: 14,
+        userID: userId1,
         exercise: 'スクワット',
         exerciseType: 'strength',
         targetAmount: 100,
@@ -17,7 +32,7 @@ module.exports = {
         updatedAt: new Date('2024-01-15')
       },
       {
-        userID: 14,
+        userID: userId1,
         exercise: 'ジョギング',
         exerciseType: 'cardio',
         targetAmount: 10,
@@ -28,7 +43,7 @@ module.exports = {
         updatedAt: new Date('2024-01-15')
       },
       {
-        userID: 14,
+        userID: userId1,
         exercise: 'プッシュアップ',
         exerciseType: 'strength',
         targetAmount: 50,
@@ -39,9 +54,9 @@ module.exports = {
         updatedAt: new Date('2024-01-12')
       },
 
-      // ユーザー15の目標（初心者向け）
+      // john_doe の目標（初心者向け）
       {
-        userID: 15,
+        userID: userId2,
         exercise: 'ウォーキング',
         exerciseType: 'cardio',
         targetAmount: 60,
@@ -52,7 +67,7 @@ module.exports = {
         updatedAt: new Date('2024-01-15')
       },
       {
-        userID: 15,
+        userID: userId2,
         exercise: 'クランチ',
         exerciseType: 'strength',
         targetAmount: 30,
@@ -63,7 +78,7 @@ module.exports = {
         updatedAt: new Date('2024-01-15')
       },
       {
-        userID: 15,
+        userID: userId2,
         exercise: 'ベンチプレス',
         exerciseType: 'strength',
         targetAmount: 20,
@@ -74,9 +89,9 @@ module.exports = {
         updatedAt: new Date('2024-01-10')
       },
 
-      // ユーザー16の目標（上級者向け）
+      // jane_smith の目標（上級者向け）
       {
-        userID: 16,
+        userID: userId3,
         exercise: 'デッドリフト',
         exerciseType: 'strength',
         targetAmount: 80,
@@ -87,7 +102,7 @@ module.exports = {
         updatedAt: new Date('2024-01-15')
       },
       {
-        userID: 16,
+        userID: userId3,
         exercise: '懸垂（チンニング）',
         exerciseType: 'strength',
         targetAmount: 40,
@@ -98,7 +113,7 @@ module.exports = {
         updatedAt: new Date('2024-01-14')
       },
       {
-        userID: 16,
+        userID: userId3,
         exercise: 'ジョギング',
         exerciseType: 'cardio',
         targetAmount: 50,
@@ -107,41 +122,6 @@ module.exports = {
         status: 'in_progress',
         createdAt: new Date('2024-01-06'),
         updatedAt: new Date('2024-01-15')
-      },
-
-      // 追加のテストデータ
-      {
-        userID: 14,
-        exercise: 'レッグレイズ',
-        exerciseType: 'strength',
-        targetAmount: 60,
-        progressAmount: 0,
-        metricUnit: 'reps',
-        status: 'in_progress',
-        createdAt: new Date('2024-01-15'),
-        updatedAt: new Date('2024-01-15')
-      },
-      {
-        userID: 15,
-        exercise: 'ジョギング',
-        exerciseType: 'cardio',
-        targetAmount: 120,
-        progressAmount: 45,
-        metricUnit: 'duration',
-        status: 'in_progress',
-        createdAt: new Date('2024-01-12'),
-        updatedAt: new Date('2024-01-15')
-      },
-      {
-        userID: 16,
-        exercise: 'ウォーキング',
-        exerciseType: 'cardio',
-        targetAmount: 15,
-        progressAmount: 15,
-        metricUnit: 'distance',
-        status: 'completed',
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-10')
       }
     ], {});
   },
