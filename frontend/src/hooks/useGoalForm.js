@@ -1,10 +1,10 @@
 
-import { useForm } from 'react-hook-form';
-import { useFeedback } from './useFeedback';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { goalFormSchema, defaultGoalFormValues } from '../schemas/goalSchema';
+import { useForm } from 'react-hook-form';
+import { defaultGoalFormValues, goalFormSchema } from '../schemas/goalSchema';
 import { getExerciseType } from '../services/exerciseService';
 import { createGoal } from '../services/goalApi';
+import { useFeedback } from './useFeedback';
 
 const useGoalForm = () => {
   const { feedback, showFeedback } = useFeedback();
@@ -21,7 +21,7 @@ const useGoalForm = () => {
         exercise: data.exercise,
         exerciseType: getExerciseType(data.exercise),
         targetAmount: parseInt(data.targetAmount, 10),
-        metricUnit: data.metricUnit,
+        metricUnit: 'reps',
       };
 
       const { goal, message } = await createGoal(submitData);

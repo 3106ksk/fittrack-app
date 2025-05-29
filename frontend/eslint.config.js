@@ -1,8 +1,8 @@
 import js from '@eslint/js'
-import globals from 'globals'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import globals from 'globals'
 
 export default [
   { ignores: ['dist'] },
@@ -33,6 +33,30 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+
+      // 追加のルール
+      'no-unused-vars': ['error', {
+        'varsIgnorePattern': '^_',
+        'argsIgnorePattern': '^_'
+      }],
+      'no-console': 'warn',
+      'no-debugger': 'error',
+      'prefer-const': 'error',
+      'no-var': 'error',
+      'eqeqeq': ['error', 'always'],
+      'curly': ['error', 'all'],
+
+      // React固有のルール
+      'react/prop-types': 'warn',
+      'react/no-unused-prop-types': 'warn',
+      'react/jsx-uses-react': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-key': 'error',
+      'react/no-array-index-key': 'warn',
+      'react/jsx-pascal-case': 'error',
+
+      // React Hooks
+      'react-hooks/exhaustive-deps': 'warn'
     },
   },
 ]
