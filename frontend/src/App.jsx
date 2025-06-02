@@ -1,17 +1,17 @@
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import Navbar from './components/Navbar';
-import Register from './pages/Register';
+import { AuthContextProvider } from './components/AuthContext';
 import Login from './components/Login';
 import Logout from './components/Logout';
-import DashboadPage from './pages/Dashboad';
-import { AuthContextProvider } from './components/AuthContext';
+import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
+import DashboadPage from './pages/Dashboad';
+import GoalprogressPage from './pages/GoalprogressPage';
+import GoalsettingPage from './pages/GoalsettingPage';
+import Register from './pages/Register';
 import WorkoutFormPage from './pages/WorkoutForm';
 import WorkoutHistory from './pages/WorkoutHistory';
-import GoalsettingPage from './pages/GoalsettingPage';
-
 function App() {
   return (
     <Router>
@@ -22,7 +22,7 @@ function App() {
           <Route path='/' element={<PrivateRoute element={<WorkoutFormPage />} />} />
           <Route path='/workout-history' element={<PrivateRoute element={<WorkoutHistory />} />} />
           <Route path='/goalsetting' element={<PrivateRoute element={<GoalsettingPage />} />} />
-
+          <Route path='/goalprogress' element={<PrivateRoute element={<GoalprogressPage />} />} />
           <Route path='/signup' element={<PublicRoute element={<Register />} restricted={true} />} />
           <Route path='/login' element={<PublicRoute element={<Login />} restricted={true} />} />
 
