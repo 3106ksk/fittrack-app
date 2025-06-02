@@ -1,0 +1,62 @@
+{
+  "compilerOptions": {
+    // === コンパイル設定 ===
+    "target": "ES2020",                          // モダンブラウザ対応、async/await等の最新機能使用可能
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],    // 使用可能なAPIセットを明示的に定義
+    "allowJs": true,                             // 既存.jsファイルとの混在を許可（段階的移行）
+    "skipLibCheck": true,                        // 外部ライブラリの型チェックをスキップ（ビルド高速化）
+    "esModuleInterop": true,                     // CommonJSとESModuleの相互運用性確保
+    "allowSyntheticDefaultImports": true,        // default exportがないモジュールのインポート許可
+    "strict": true,                              // 厳密な型チェックを有効化
+    "forceConsistentCasingInFileNames": true,    // ファイル名の大文字小文字一貫性を強制
+
+    // === モジュール解決設定 ===
+    "module": "ESNext",                          // 最新のモジュールシステムを使用
+    "moduleResolution": "bundler",               // Viteのバンドラー解決を使用
+    "resolveJsonModule": true,                   // JSONファイルのインポートを許可
+    "isolatedModules": true,                     // 各ファイルを独立してコンパイル（Vite最適化）
+    "noEmit": true,                              // TypeScriptは型チェックのみ、ビルドはViteが担当
+
+    // === JSX設定 ===
+    "jsx": "react-jsx",                          // React 17+の新しいJSX Transform使用
+    "jsxImportSource": "react",                  // JSXのインポートソースを明示
+
+    // === 型チェック厳密性設定（MVP開発最適化） ===
+    "noImplicitAny": true,                       // any型の暗黙的使用を禁止
+    "noImplicitReturns": true,                   // 戻り値がない関数を検出
+    "noFallthroughCasesInSwitch": true,         // switch文のfall-throughを防止
+    "noUncheckedIndexedAccess": true,           // 配列・オブジェクトアクセスの安全性確保
+    "exactOptionalPropertyTypes": true,          // オプショナルプロパティの厳密化
+
+    // === パス解決設定 ===
+    "baseUrl": ".",                             // 相対パスの基準点
+    "paths": {
+      "@/*": ["./src/*"],                       // エイリアス設定でインポートパスを簡潔化
+      "@/components/*": ["./src/components/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/services/*": ["./src/services/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/utils/*": ["./src/utils/*"]
+    }
+  },
+
+  // === インクルード・エクスクルード設定 ===
+  "include": [
+    "src",                                      // srcディレクトリ配下をTypeScript化
+    "src/**/*",                                 // 全サブディレクトリを含む
+    "src/**/*.ts",                              // TypeScriptファイル
+    "src/**/*.tsx",                             // TSXファイル
+    "src/**/*.js",                              // 段階移行のためJSファイルも含む
+    "src/**/*.jsx"                              // 段階移行のためJSXファイルも含む
+  ],
+  "exclude": [
+    "node_modules",                             // 外部依存関係を除外
+    "dist",                                     // ビルド成果物を除外
+    "build",                                    // ビルド成果物を除外
+    "**/*.spec.ts",                             // テストファイルは別設定
+    "**/*.test.ts"                              // テストファイルは別設定
+  ],
+
+  // === Vite関連設定 ===
+  "references": [{ "path": "./tsconfig.node.json" }]  // Node.js環境用設定の参照
+} 

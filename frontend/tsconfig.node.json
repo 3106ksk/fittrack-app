@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    // === Node.js環境専用設定 ===
+    "composite": true,                           // プロジェクト参照を有効化
+    "skipLibCheck": true,                        // 外部ライブラリの型チェックをスキップ
+    "module": "ESNext",                          // 最新のモジュールシステム
+    "moduleResolution": "bundler",               // バンドラー用モジュール解決
+    "allowSyntheticDefaultImports": true,        // default exportがないモジュールの許可
+    "strict": true,                              // 厳密な型チェック
+    "noEmit": false,                             // emit無効化エラーを修正
+    "isolatedModules": true,                     // 独立したモジュールコンパイル
+    "target": "ES2022",                          // Node.js最新LTS対応
+    "lib": ["ES2022"]                            // Node.js環境のAPIセット
+  },
+  "include": [
+    "vite.config.ts",                            // TypeScript版Vite設定ファイル
+    "vitest.config.*",                           // Vitestテスト設定（将来対応）
+    "cypress.config.*",                          // Cypressテスト設定（将来対応）
+    "playwright.config.*"                        // Playwrightテスト設定（将来対応）
+  ]
+} 
