@@ -7,8 +7,11 @@
 
 const router = require('express').Router();
 const goalController = require('../controllers/goalController');
+const authMiddleware = require('../middleware/checkJWT');
 
-router.post('/', goalController.createSetGoal);
-router.get('/', goalController.getGoals);
+router.post('/', authMiddleware, goalController.createSetGoal);
+router.get('/', authMiddleware, goalController.getGoals);
+router.put('/:id/progress', authMiddleware, goalController.updateProgress);
+router.put('/:id/status', authMiddleware, goalController.updateStatus);
 
 module.exports = router;

@@ -1,4 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { goalAPI } from '../services/goalApi';
+
+
 
 interface Goal {
   readonly id: number;          // readonly: 変更不可
@@ -8,7 +11,7 @@ interface Goal {
   targetAmount: number;
   progressAmount: number;
   metricUnit: 'reps' | 'minutes' | 'km';
-  status: 'in_progress' | 'completed' | 'paused';
+  status: 'in_progress' | 'completed';
   createdAt: string;
   updatedAt: string;
 }
@@ -28,84 +31,6 @@ interface GoalCardProps {
   isUpdating: boolean;
 }
 
-
-let mockGoals: Goal[] = [
-  {
-    id: 1,
-    userID: 1,
-    exercise: "腕立て伏せ",
-    exerciseType: "strength",
-    targetAmount: 100,
-    progressAmount: 45,
-    metricUnit: "reps",
-    status: "in_progress",
-    createdAt: "2024-01-01T00:00:00.000Z",
-    updatedAt: "2024-01-15T00:00:00.000Z"
-  },
-  {
-    id: 2,
-    userID: 1,
-    exercise: "ランニング",
-    exerciseType: "cardio",
-    targetAmount: 50,
-    progressAmount: 50,
-    metricUnit: "km",
-    status: "completed",
-    createdAt: "2024-01-01T00:00:00.000Z",
-    updatedAt: "2024-01-20T00:00:00.000Z"
-  },
-  {
-    id: 3,
-    userID: 1,
-    exercise: "スクワット",
-    exerciseType: "strength",
-    targetAmount: 200,
-    progressAmount: 75,
-    metricUnit: "reps",
-    status: "in_progress",
-    createdAt: "2024-01-05T00:00:00.000Z",
-    updatedAt: "2024-01-15T00:00:00.000Z"
-  }
-];
-
-const mockAPI = {
-  async getGoals(): Promise<Goal[]> {
-    console.log("📡 API Call: getGoals()");
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return [...mockGoals];
-  },
-
-  async updateProgress(goalId: number, progressAmount: number): Promise<Goal> {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const goalIndex = mockGoals.findIndex(g => g.id === goalId);
-    if (goalIndex === -1) throw new Error('Goal not found');
-
-    const existingGoal = mockGoals[goalIndex]!;
-    const updatedGoal: Goal = {
-      ...existingGoal,
-      progressAmount,
-      updatedAt: new Date().toISOString(),
-      status: progressAmount >= existingGoal.targetAmount ? 'completed' : 'in_progress'
-    };
-    mockGoals[goalIndex] = updatedGoal;
-    return updatedGoal;
-  },
-
-  async updateStatus(goalId: number, status: Goal['status']): Promise<Goal> {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const goalIndex = mockGoals.findIndex(g => g.id === goalId);
-    if (goalIndex === -1) throw new Error('Goal not found');
-    
-    const existingGoal = mockGoals[goalIndex]!; // Non-null assertion since we checked above
-    const updatedGoal: Goal = {
-      ...existingGoal,
-      status,
-      updatedAt: new Date().toISOString()
-    };
-    mockGoals[goalIndex] = updatedGoal;
-    return updatedGoal;
-  },
-};
 
 const calculateProgress = (goal: Goal): GoalProgress => {
   const percentage = Math.min((goal.progressAmount / goal.targetAmount) * 100, 100);
@@ -263,11 +188,20 @@ const test: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await mockAPI.getGoals(); 
-        setGoals(data); 
+        const data = await goalAPI.getGoals(); 
+        console.log("受信データ:", data); // デバッグ用
+        if (Array.isArray(data)) {
+          setGoals(data); 
+        } else {
+          console.error("データが配列ではありません:", data);
+          setGoals([]); // 安全な初期化
+          setError("データ形式が正しくありません");
+        }
       } catch (err) {
+        console.error("API呼び出しエラー:", err);
         const errorMessage = err instanceof Error ? err.message : '不明なエラー';
         setError(errorMessage);
+        setGoals([]); // エラー時は空配列
       } finally {
         setLoading(false);
       }
@@ -278,7 +212,7 @@ const test: React.FC = () => {
   const handleProgressUpdate = useCallback(async (goalId: number, progressAmount: number) => {
     setUpdatingIds(prev => new Set([...prev, goalId]));
     try {
-      const updatedGoal = await mockAPI.updateProgress(goalId, progressAmount);
+      const updatedGoal = await goalAPI.updateProgress(goalId, progressAmount);
       setGoals(prevGoals =>
         prevGoals.map(goal => goal.id === goalId ? updatedGoal : goal)
       );
@@ -296,7 +230,7 @@ const test: React.FC = () => {
     const handleStatusChange = useCallback(async (goalId: number, status: Goal['status']) => {
     setUpdatingIds(prev => new Set([...prev, goalId]));
     try {
-      const updatedGoal = await mockAPI.updateStatus(goalId, status);
+      const updatedGoal = await goalAPI.updateStatus(goalId, status);
       setGoals(prevGoals => 
         prevGoals.map(goal => goal.id === goalId ? updatedGoal : goal)
       );
@@ -338,11 +272,11 @@ const test: React.FC = () => {
 
       {/* Goal一覧表示 */}
         <div className="space-y-4">
-          {goals.length === 0 ? (
+          {!Array.isArray(goals) || goals.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-lg shadow-md">
               <div className="text-6xl mb-4">🎯</div>
               <p className="text-gray-500 text-xl mb-2">目標データがありません</p>
-              <p className="text-gray-400">モックデータを確認してください</p>
+              <p className="text-gray-400">バックエンドサーバーの起動を確認してください</p>
             </div>
           ) : (
             goals.map((goal: Goal) => (

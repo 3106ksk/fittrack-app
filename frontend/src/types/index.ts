@@ -10,16 +10,16 @@
 // Goal 関連型定義
 export type {
 
-    // API レスポンス型
-    ApiResponse,
-    // リクエスト型
-    CreateGoalRequest,
-    // 基本型
-    Goal, GoalApiError, GoalCardProps,
-    // UI 状態型
-    GoalFilters, GoalListResponse, GoalListState, GoalPermission, GoalProgress,
-    // ユーティリティ型
-    GoalQueryKey, GoalSortOptions, GoalStatistics, GoalStatus, GoalWithProgress, ProgressUpdateRequest, UpdateGoalRequest
+  // API レスポンス型
+  ApiResponse,
+  // リクエスト型
+  // 目標作成リクエスト型
+  // 基本型
+  Goal, GoalApiError, GoalCardProps,
+  // UI 状態型
+  GoalListResponse, GoalPermission, GoalProgress,
+  // ユーティリティ型
+  GoalQueryKey, GoalStatistics
 } from './goal';
 
 // Goal 関連関数のエクスポート
@@ -27,29 +27,29 @@ export { isGoal, isValidProgressAmount } from './goal';
 
 // API 通信型定義
 export type {
-    ApiClient,
-    // API クライアント型
-    ApiClientConfig,
-    ApiClientResponse,
-    // エラー型
-    ApiError,
-    ApiErrorDetail,
-    // リクエスト型
-    ApiRequestConfig, AppError, AuthTokens, AuthenticationError,
-    // レスポンス型
-    BaseApiResponse,
-    // ユーティリティ型
-    ExtractApiData,
-    // Goal API 専用型
-    GoalApiEndpoint, GoalListApiResponse, GoalListParams,
-    // HTTP 基本型
-    HttpMethod,
-    HttpStatusCode,
-    // 認証型
-    JwtPayload, ListRequestParams, LoginRequest,
-    LoginResponse, NetworkError, OptionalOnly, PaginatedApiResponse, PaginationInfo, PaginationParams,
-    // React Query 型
-    QueryKey, RequiredOnly, SearchParams, SortParams, UnwrapPromise
+  ApiClient,
+  // API クライアント型
+  ApiClientConfig,
+  ApiClientResponse,
+  // エラー型
+  ApiError,
+  ApiErrorDetail,
+  // リクエスト型
+  ApiRequestConfig, AppError, AuthenticationError, AuthTokens,
+  // レスポンス型
+  BaseApiResponse,
+  // ユーティリティ型
+  ExtractApiData,
+  // Goal API 専用型
+  GoalApiEndpoint, GoalListApiResponse, GoalListParams,
+  // HTTP 基本型
+  HttpMethod,
+  HttpStatusCode,
+  // 認証型
+  JwtPayload, ListRequestParams, LoginRequest,
+  LoginResponse, NetworkError, OptionalOnly, PaginatedApiResponse, PaginationInfo, PaginationParams,
+  // React Query 型
+  QueryKey, RequiredOnly, SearchParams, SortParams, UnwrapPromise
 } from './api';
 
 // クエリキー定数
