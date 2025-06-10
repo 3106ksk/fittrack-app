@@ -1,11 +1,9 @@
 const { Goal } = require('../models');
-// 一時的にバリデーターをコメントアウト
-// const { validateGoalCreation } = require('../validators/goalValidator');
+const { validateGoalCreation } = require('../validators/goalValidator');
 
 const createSetGoal = async (setGoalData) => {
   try {
-    // 一時的にバリデーションを無効化
-    // await validateGoalCreation(setGoalData);
+    await validateGoalCreation(setGoalData);
 
     const existingGoal = await Goal.findOne({
       where: {
@@ -56,8 +54,40 @@ const getGoalsByUserId = async (userID) => {
   return formattedGoals;
 };
 
+const updateProgress = async (id, userId, progressAmount) => {
+
+    const goal = await Goal.findOne({
+      where: { id, userID: userId }
+    });
+
+    if (!goal) {
+      throw new Error('Goal not found');
+    }
+
+    const status = progressAmount >= goal.targetAmount ? 'completed' : 'in_progress';
+
+return await goal.update({
+      progressAmount,
+      status,
+      updatedAt: new Date()
+    });
+};
+
+const updateStatus = async (id, userId, status) => {
+  const goal = await Goal.findOne({
+    where: { id, userID: userId }
+  });
+
+  if (!goal) {
+    throw new Error('Goal not found');
+  }
+
+  return await goal.update({ status, updatedAt: new Date() });
+};
 
 module.exports = {
   createSetGoal,
-  getGoalsByUserId
+  getGoalsByUserId,
+  updateProgress,
+  updateStatus
 };

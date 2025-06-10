@@ -1,60 +1,17 @@
-
-/**
- * バックエンドGoalモデルと完全互換の基本Goal型
- * データベーススキーマと1:1対応
- */
 export interface Goal {
-  readonly id: number;                    // 読み取り専用ID（不変性保証）
-  userID: number;                         // ユーザーID（外部キー）
-  exercise: string;                       // 運動種目名
-  exerciseType: 'strength' | 'cardio';   // 運動タイプ（列挙型で型安全性確保）
-  targetAmount: number;                   // 目標値（正の整数）
-  progressAmount: number;                 // 現在の進捗値（0以上）
-  metricUnit: 'reps' | 'minutes' | 'km'; // 測定単位（将来拡張対応）
-  status: GoalStatus;                     // 目標ステータス
-  createdAt: string;                      // 作成日時（ISO 8601形式）
-  updatedAt: string;                      // 更新日時（ISO 8601形式）
-}
-
-/**
- * 目標ステータスの型安全な定義
- * データベースENUM値と完全同期
- */
-export type GoalStatus = 'in_progress' | 'completed' | 'paused';
-
-/**
- * 目標作成時のリクエスト型
- * 自動生成フィールド（id, createdAt等）を除外
- */
-export interface CreateGoalRequest {
+  readonly id: number;          // readonly: 変更不可
+  userID: number;
   exercise: string;
-  exerciseType: 'strength' | 'cardio';
+  exerciseType: 'strength' | 'cardio';  // Union型: どちらかのみ
   targetAmount: number;
-  metricUnit: 'reps' | 'minutes' | 'km';
-  // userIDはJWTトークンから自動取得、他は自動生成
-}
-
-/**
- * 目標更新時のリクエスト型
- * 部分更新をサポート（全フィールドオプショナル）
- */
-export interface UpdateGoalRequest {
-  exercise?: string;
-  targetAmount?: number;
-  progressAmount?: number;
-  status?: GoalStatus;
-  // 重要フィールドのみ更新許可（セキュリティ考慮）
-}
-
-/**
- * 進捗更新専用の型
- * 最頻度の操作に最適化された軽量型
- */
-export interface ProgressUpdateRequest {
-  goalId: number;
   progressAmount: number;
-  // 進捗更新のみに特化（シンプル・高速）
+  metricUnit: 'reps' | 'minutes' | 'km';
+  status: 'in_progress' | 'completed';
+  createdAt: string;
+  updatedAt: string;
 }
+
+
 
 // ============================================================================
 // Computed Types - 計算されるプロパティの型定義
@@ -80,9 +37,9 @@ export interface GoalProgress {
  * 再利用可能コンポーネント設計
  */
 export interface GoalCardProps {
-  goal: GoalWithProgress;                 // 表示する目標データ
+  goal: Goal;                 // 表示する目標データ
   onProgressUpdate: (goalId: number, amount: number) => Promise<void>;
-  onStatusChange: (goalId: number, status: GoalStatus) => Promise<void>;
+  onStatusChange: (goalId: number, status: Goal['status']) => Promise<void>;
   onDelete?: (goalId: number) => Promise<void>; // オプショナル削除機能
   isUpdating?: boolean;                   // 更新中状態
   showDetailedProgress?: boolean;         // 詳細進捗表示フラグ

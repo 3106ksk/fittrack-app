@@ -1,14 +1,14 @@
-import { Controller, useForm, useFieldArray } from 'react-hook-form'
 import { useEffect, useState } from 'react';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 
 
-import axios from 'axios';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import {
-  TextField,
-  MenuItem
+  MenuItem,
+  TextField
 } from '@mui/material';
+import axios from 'axios';
+import * as yup from 'yup';
 import '../styles/WorkoutForm.css';
 
 const WORKOUT_TYPES = {
@@ -146,13 +146,6 @@ const WorkoutForm = () => {
     });
   };
 
-  setTimeout(() => {
-    setFeedback(prev => ({ ...prev, visible: false }));
-  }, 3000);
-
-
-
-
   const selectedExerciseName = watch('exercise');
 
   const exerciseType = getExerciseType(selectedExerciseName);
@@ -163,6 +156,7 @@ const WorkoutForm = () => {
   });
   const setNumber = watch('setNumber');
 
+  // セット数変更時のフィールド管理
   useEffect(() => {
     if (exerciseType === WORKOUT_TYPES.STRENGTH && setNumber) {
       const currentLength = fields.length;
@@ -177,7 +171,17 @@ const WorkoutForm = () => {
         }
       }
     }
-  }, [exerciseType, setNumber, watch, fields, append, remove]);
+  }, [exerciseType, setNumber, fields, append, remove]);
+
+  // フィードバック表示時のタイマー管理
+  useEffect(() => {
+    if (feedback.visible) {
+      const timer = setTimeout(() => {
+        setFeedback(prev => ({ ...prev, visible: false }));
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [feedback.visible]);
 
   const onSubmit = (data) => {
     const token = localStorage.getItem('token');

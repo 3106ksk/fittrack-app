@@ -1,9 +1,8 @@
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { defaultGoalFormValues, goalFormSchema } from '../schemas/goalSchema';
 import { getExerciseType } from '../services/exerciseService';
-import { createGoal } from '../services/goalApi';
+import { goalAPI } from '../services/goalApi';
 import { useFeedback } from './useFeedback';
 
 const useGoalForm = () => {
@@ -24,9 +23,9 @@ const useGoalForm = () => {
         metricUnit: 'reps',
       };
 
-      const { goal, message } = await createGoal(submitData);
-      console.log(goal, message);
-      showFeedback('目標設定が完了しました', 'success');
+      const result = await goalAPI.createGoal(submitData);
+      console.log('目標作成成功:', result);
+      showFeedback(result.message || '目標設定が完了しました', 'success');
       form.reset();
     } catch (error) {
       console.error('エラー発生:', error.response?.data || error.message);

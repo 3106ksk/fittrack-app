@@ -1,11 +1,10 @@
 const goalService = require('../services/goalService');
 
 
+
 const createSetGoal = async (req, res) => {
   try {
-    // 一時的にテスト用のuserIDを使用（認証なしでテスト可能にするため）
-    const userId = req.body.userID || 14; // デフォルトでuserID: 14を使用
-
+    const userId = req.user.id;
     const setGoalData = {
       userID: userId,
       exercise: req.body.exercise,
@@ -27,17 +26,43 @@ const createSetGoal = async (req, res) => {
 
 const getGoals = async (req, res) => {
   try {
-    const userId = req.user?.id || 14;
+    const userId = req.user.id;
     const userGoals = await goalService.getGoalsByUserId(userId);
     res.json({
       message: '目標一覧を取得しました',
-      count: userGoals.length,                           // 追加情報
-      goals: userGoals                                   // メインデータ
+      count: userGoals.length, 
+      goals: userGoals 
     });
   } catch (error) {
     handleError(res, error);
   }
 
+};
+
+const updateProgress = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const { progressAmount } = req.body;
+    const userId = req.user.id;
+
+    const updatedGoal = await goalService.updateProgress(id, userId, progressAmount);
+    res.json(updatedGoal);
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+const updateStatus = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const { status } = req.body;
+    const userId = req.user.id;
+
+    const updatedGoal = await goalService.updateStatus(id, userId, status);
+    res.json(updatedGoal);
+  } catch (error) {
+    handleError(res, error);
+  }
 };
 
 // エラーハンドリング関数を追加
@@ -73,5 +98,7 @@ const handleError = (res, error) => {
 
 module.exports = {
   createSetGoal,
-  getGoals
+  getGoals,
+  updateProgress,
+  updateStatus
 };

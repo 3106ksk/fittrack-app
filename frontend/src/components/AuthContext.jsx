@@ -1,7 +1,7 @@
-import { createContext, useState, useEffect, useCallback } from 'react'
-import axios from 'axios'
-import PropTypes from 'prop-types'
+import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import PropTypes from 'prop-types';
+import { createContext, useCallback, useEffect, useState } from 'react';
 
 export const AuthContext = createContext(null)
 
@@ -120,9 +120,6 @@ export const AuthContextProvider = ({ children }) => {
     try {
       const res = await axios.post('http://localhost:8000/authrouter/login', credentials);
       const { token, user } = res.data;
-
-      // トークン取得をログに出力
-      console.log('ログイン成功! トークン:', token);
 
       localStorage.setItem('token', token);
       setAuthToken(token);
