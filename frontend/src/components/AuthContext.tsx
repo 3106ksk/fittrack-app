@@ -3,13 +3,24 @@ import { jwtDecode } from 'jwt-decode';
 import PropTypes from 'prop-types';
 import { createContext, useCallback, useEffect, useState } from 'react';
 
-export const AuthContext = createContext(null)
+import { AxiosResponse } from 'axios';
+import {
+  AuthContextProviderProps,
+  AuthContextValue,
+  JwtPayload,
+  LoginCredentials,
+  LoginResponse,
+  RefreshTokenResponse,
+  User
+} from '../types/auth';
 
-export const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+export const AuthContext = createContext<AuthContextValue | null>(null);
 
-  const setAuthToken = (token) => {
+export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX.Element => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const setAuthToken = (token: string | null): void => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
@@ -17,16 +28,15 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-  const logout = useCallback(() => {
+  const logout = useCallback((): void => {
     localStorage.removeItem('token');
     setAuthToken(null);
     setUser(null);
   }, []);
 
-  const refreshToken = useCallback(async () => {
+  const refreshToken = useCallback(async (): Promise<boolean> => {
     try {
-      // バックエンドに実装されているエンドポイント名に合わせて調整
-      const res = await axios.post('http://localhost:8000/authrouter/refresh-token');
+      const res: AxiosResponse<RefreshTokenResponse> = await axios.post('http://localhost:8000/authrouter/refresh-token');
       const { token } = res.data;
       localStorage.setItem('token', token);
       setAuthToken(token);
@@ -38,11 +48,11 @@ export const AuthContextProvider = ({ children }) => {
     }
   }, [logout]);
 
-  const checkTokenExpiration = useCallback(() => {
+  const checkTokenExpiration = useCallback((): void => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded: JwtPayload = jwtDecode(token);
         const currentTime = Date.now() / 1000;
 
         if (decoded.exp && decoded.exp - currentTime < 600) {
@@ -56,27 +66,22 @@ export const AuthContextProvider = ({ children }) => {
     }
   }, [logout, refreshToken]);
 
-  const loadUser = useCallback(async () => {
+  const loadUser = useCallback(async (): Promise<void> => {
     const token = localStorage.getItem('token');
     if (!token) {
       setLoading(false);
       return;
     }
-
     setAuthToken(token);
     try {
-      // Authorization ヘッダーをログに出力して問題を診断
-      console.log('認証ヘッダー:', axios.defaults.headers.common['Authorization']);
-
-      // バックエンドのルートパスを修正
-      const res = await axios.get('http://localhost:8000/authrouter/me');
+      const res: AxiosResponse<User> = await axios.get('http://localhost:8000/authrouter/me');
       console.log('ユーザーデータ取得成功:', res.data);
       setUser(res.data);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('ユーザーデータ取得エラー:', error);
 
       if (error.response) {
-        let refreshSuccessful;
+        let refreshSuccessful: boolean;
         switch (error.response.status) {
           case 401:
             console.error('認証エラー: トークンが無効です');
@@ -116,9 +121,9 @@ export const AuthContextProvider = ({ children }) => {
     loadUser();
   }, [loadUser]);
 
-  const login = async (credentials) => {
+  const login = async (credentials: LoginCredentials): Promise<User> => {
     try {
-      const res = await axios.post('http://localhost:8000/authrouter/login', credentials);
+      const res: AxiosResponse<LoginResponse> = await axios.post('http://localhost:8000/authrouter/login', credentials);
       const { token, user } = res.data;
 
       localStorage.setItem('token', token);
