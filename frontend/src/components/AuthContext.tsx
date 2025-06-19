@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import PropTypes from 'prop-types';
 import { createContext, useCallback, useEffect, useState } from 'react';
 
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import {
   AuthContextProviderProps,
   AuthContextValue,
@@ -80,7 +80,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
     } catch (error: unknown) {
       console.error('ユーザーデータ取得エラー:', error);
 
-      if (error.response) {
+      if (error instanceof AxiosError && error.response) {
         let refreshSuccessful: boolean;
         switch (error.response.status) {
           case 401:
@@ -102,13 +102,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
           default:
             console.error(`サーバーエラー (${error.response.status}):`, error.response.data);
         }
-      } else if (error.request) {
+      } else if (error instanceof AxiosError && error.request) {
         console.error('サーバー応答なし。接続を確認してください:', error.request);
-      } else {
+      } else if (error instanceof Error) {
         console.error('リクエスト設定エラー:', error.message);
+      } else {
+        console.error('未知のエラー:', error);
       }
-
-      // エラーが発生したらトークンをクリア
       localStorage.removeItem('token');
       setAuthToken(null);
       setUser(null);
@@ -125,22 +125,33 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
     try {
       const res: AxiosResponse<LoginResponse> = await axios.post('http://localhost:8000/authrouter/login', credentials);
       const { token, user } = res.data;
-
       localStorage.setItem('token', token);
       setAuthToken(token);
       setUser(user);
       return user;
-    } catch (error) {
-      if (error.response) {
-        console.error(`ログインエラー (${error.response.status}):`, error.response.data);
-      } else if (error.request) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
+
+        switch (error.response.status) {
+          case 401:
+            console.error('認証エラー: ユーザー名またはパスワードが無効です');
+            break;
+          case 404:
+            console.error('エンドポイントエラー: /login が見つかりません');
+            break;
+          case 500:
+            console.error('サーバーエラー: サーバーが予期せぬエラーを返しました');
+            break;
+          default:
+            console.error(`ログインエラー (${error.response.status}):`, error.response.data);
+        }
+      } else if (error instanceof AxiosError && error.request) {
         console.error('サーバー応答なし:', error.request);
-      } else {
+      } else if (error instanceof Error) {  
         console.error('リクエスト設定エラー:', error.message);
+      } else {
+        console.error('未知のエラー:', error);
       }
-
-      console.error('スタックトレース:', error.stack);
-
       throw error;
     }
   };
