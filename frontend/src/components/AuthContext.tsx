@@ -41,8 +41,29 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
       localStorage.setItem('token', token);
       setAuthToken(token);
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('トークンの更新エラー:', error);
+      if (error instanceof AxiosError && error.response) {
+        switch (error.response.status) {
+          case 401:
+            console.error('認証エラー: トークンが無効です');
+            break;
+          case 403:
+            console.error('認証エラー: トークンの期限が切れています');
+            break;
+          case 500:
+            console.error('サーバーエラー: サーバーが予期せぬエラーを返しました');
+            break;
+          default:
+            console.error(`トークン更新エラー (${error.response.status}):`, error.response.data);
+        }
+      } else if (error instanceof AxiosError && error.request) {
+        console.error('サーバー応答なし:', error.request);
+      } else if (error instanceof Error) {
+        console.error('リクエスト設定エラー:', error.message);
+      } else {
+        console.error('未知のエラー:', error);
+      }
       logout();
       return false;
     }
@@ -59,8 +80,12 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
           console.log('トークンの有効期限が近づいています。更新を試みます。');
           refreshToken();
         }
-      } catch (error) {
-        console.error('トークン検証エラー:', error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('トークン検証エラー:', error.message);
+        } else {
+          console.error('未知のエラー:', error);
+        } 
         logout();
       }
     }
@@ -157,11 +182,12 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
   };
 
   // トークン有効期限チェックの定期実行
-  useEffect(() => {
+  useEffect((): (() => void) | undefined => {
     if (user) {
       const intervalId = setInterval(checkTokenExpiration, 60000);
       return () => clearInterval(intervalId);
     }
+    return undefined;
   }, [user, checkTokenExpiration]);
 
   return (
