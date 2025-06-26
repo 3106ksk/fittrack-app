@@ -1,14 +1,27 @@
 import { AxiosError } from 'axios';
 import { ApiErrorResponse, ErrorProcessResult, SimpleAppError, SimpleErrorType } from '../types/error';
 
+function isAxiosError(error: unknown): error is AxiosError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'isAxiosError' in error &&
+    (error as any).isAxiosError === true
+  );
+}
 
 export const handleApiError = (error : unknown):never => {
   console.error('Goal API Error:', error);
+    console.log('🔍 エラー判定:', {
+    isAxiosErrorInstance: error instanceof AxiosError,
+    hasIsAxiosErrorProperty: typeof error === 'object' && error !== null && 'isAxiosError' in error,
+    isAxiosErrorValue: typeof error === 'object' && error !== null && (error as any).isAxiosError
+  });
 
   function getAxiosErrorMessage(error: AxiosError): string {
   const responseData = error.response?.data as ApiErrorResponse;
   return responseData?.error || 'エラーが発生しました';
-};
+}
 
 function getAxiosErrorType(error: AxiosError): SimpleErrorType {
   if (error.response) {
@@ -52,7 +65,6 @@ switch (statusCode) {
           statusCode: statusCode
         };
       default:
-
         return {
           type: 'API_ERROR',
           userMessage: responseData?.error || 'エラーが発生しました',
@@ -71,13 +83,15 @@ switch (statusCode) {
     userMessage: '予期しないエラーが発生しました'
   };
 }
-
-  if (error instanceof AxiosError) {
+if(isAxiosError(error)){
+  console.log('✅ AxiosErrorとして処理');
     const result = processAxiosError(error);
     throw new SimpleAppError(result.type, result.userMessage, result.statusCode);
-  }
+} else {
+  console.log('❌ AxiosErrorではない');
   const message = error instanceof Error ? error.message :'エラーが発生しました';
   throw new SimpleAppError('UNKNOWN_ERROR', message);
+}
 };
 
 export default handleApiError;

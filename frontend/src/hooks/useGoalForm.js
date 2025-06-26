@@ -24,34 +24,6 @@ const useGoalForm = () => {
       };
 
       console.log('🚀 目標作成開始:', submitData);
-      
-      // テスト用コードをコメントアウト
-      // if (data.targetAmount === 999) { ... }
-      // if (data.targetAmount === 401) { ... }
-      
-      if (data.targetAmount === 100) {
-        console.log('🧪 ネットワークエラーテスト実行');
-        const mockError = {
-          isAxiosError: true,
-          request: {},
-          code: 'ECONNREFUSED'
-        };
-        throw mockError;
-      }
-      
-      if (data.targetAmount === 500) {
-        console.log('🧪 サーバーエラーテスト実行');
-        const mockError = {
-          isAxiosError: true,
-          response: { 
-            status: 500, 
-            data: { error: 'Internal server error' } 
-          }
-        };
-        throw mockError;
-      }
-      
-      // 正常なAPI呼び出し
       const result = await goalAPI.createGoal(submitData);
       console.log('✅ 目標作成成功:', result);
       showFeedback(result.message || '目標設定が完了しました', 'success');
