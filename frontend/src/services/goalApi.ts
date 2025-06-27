@@ -1,12 +1,13 @@
 import { Goal } from '../types';
+import { GoalCreateData } from '../types/form';
 import apiClient from './api';
 
 export const goalAPI = {
-
-  async createGoal(goal: Goal): Promise<{message: string, goal: Goal}> {
+  async createGoal(goalData: GoalCreateData): Promise<{message: string, goal: Goal}> {
     try {
       console.log("📡 API Call: POST /goals");
-      const response = await apiClient.post<{message: string, goal: Goal}>('/goals', goal);
+      const response = await apiClient.post<{message: string, goal: Goal}>('/goals', goalData);
+      console.log("✅ API成功:", response.data);
       return response.data;
     } catch (error) {
       console.error('目標作成エラー:', error);

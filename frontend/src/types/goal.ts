@@ -1,11 +1,9 @@
 export interface Goal {
-  readonly id: number;          // readonly: 変更不可
-  userID: number;
-  exercise: string;
-  exerciseType: 'strength' | 'cardio';  // Union型: どちらかのみ
+ exercise: string;
+  exerciseType: 'strength' | 'cardio';  
   targetAmount: number;
-  progressAmount: number;
-  metricUnit: 'reps' | 'minutes' | 'km';
+  progressAmount: 0;
+  metricUnit: 'reps';
   status: 'in_progress' | 'completed';
   createdAt: string;
   updatedAt: string;
@@ -13,14 +11,7 @@ export interface Goal {
 
 
 
-// ============================================================================
-// Computed Types - 計算されるプロパティの型定義
-// ============================================================================
 
-/**
- * 進捗計算結果の型
- * UIコンポーネントでの表示最適化
- */
 export interface GoalProgress {
   percentage: number;                     // 進捗率（0-100）
   remaining: number;                      // 残り数量
@@ -29,13 +20,6 @@ export interface GoalProgress {
   completionRate: number;                 // 達成率（100%超過可能）
 }
 
-
-
-
-/**
- * 目標カードコンポーネントのProps型
- * 再利用可能コンポーネント設計
- */
 export interface GoalCardProps {
   goal: Goal;                 // 表示する目標データ
   onProgressUpdate: (goalId: number, amount: number) => Promise<void>;
@@ -45,14 +29,7 @@ export interface GoalCardProps {
   showDetailedProgress?: boolean;         // 詳細進捗表示フラグ
 }
 
-// ============================================================================
-// API Response Types - API通信用型定義
-// ============================================================================
 
-/**
- * API共通レスポンス型
- * 一貫したAPIレスポンス構造
- */
 export interface ApiResponse<T> {
   data: T;                                // レスポンスデータ
   message: string;                        // 操作結果メッセージ
