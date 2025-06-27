@@ -4,39 +4,42 @@ import { defaultGoalFormValues, goalFormSchema } from '../schemas/goalSchema';
 import { handleApiError } from '../services/errorHandler';
 import { getExerciseType } from '../services/exerciseService';
 import { goalAPI } from '../services/goalApi';
+import { SimpleAppError } from '../types/error';
+import type { GoalFormData, GoalSubmitData } from '../types/form';
 import { useFeedback } from './useFeedback';
 
-const useGoalForm = () => {
-  const { feedback, showFeedback } = useFeedback();
 
-  const form = useForm({
-    resolver: yupResolver(goalFormSchema),
+
+const useGoalForm = () => {
+  const form = useForm<GoalFormData>({
+    resolver: yupResolver(goalFormSchema) as any,
     defaultValues: defaultGoalFormValues
   });
 
-  const submitGoal = async (data) => {
+  const { feedback, showFeedback } = useFeedback();
+
+  const submitGoal = async (data: GoalFormData): Promise<void> => {
     try {
-      const submitData = {
+      const submitData: GoalSubmitData = {
         exercise: data.exercise,
-        exerciseType: getExerciseType(data.exercise),
-        targetAmount: parseInt(data.targetAmount, 10),
+        exerciseType: getExerciseType(data.exercise) as 'strength' | 'cardio',
+        targetAmount: data.targetAmount,
         metricUnit: 'reps',
       };
-
-      console.log('🚀 目標作成開始:', submitData);
       const result = await goalAPI.createGoal(submitData);
-      console.log('✅ 目標作成成功:', result);
       showFeedback(result.message || '目標設定が完了しました', 'success');
       form.reset();
-    } catch (error) {
+    } catch (error: unknown) {
       console.log('❌ エラーキャッチ:', error);
       try {
         handleApiError(error);
-      } catch (processedError) {
+      } catch (processedError: unknown) {
+        if (processedError instanceof SimpleAppError) {
         console.log('⚡ 処理後エラー:', processedError);
         console.log('📝 エラータイプ:', processedError.type);
         console.log('💬 ユーザーメッセージ:', processedError.message);
         showFeedback(processedError.message, 'error');
+        }
       }
     }
   };
@@ -45,7 +48,7 @@ const useGoalForm = () => {
     ...form,
     submitGoal,
     feedback
-  }
-}
+  };
+};
 
-export default useGoalForm
+export default useGoalForm;

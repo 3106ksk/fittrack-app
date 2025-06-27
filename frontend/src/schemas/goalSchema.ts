@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import type { GoalFormData } from '../types/form';
 
 export const goalFormSchema = yup.object().shape({
   exercise: yup.string().required('トレーニング種目を選択してください'),
@@ -7,7 +8,7 @@ export const goalFormSchema = yup.object().shape({
     .min(1, '1回以上入力してください'),
 });
 
-export const defaultGoalFormValues = {
+export const defaultGoalFormValues: GoalFormData = {
   exercise: '',
-  targetAmount: '',
+  targetAmount: 0,
 };
