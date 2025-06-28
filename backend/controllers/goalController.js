@@ -1,7 +1,5 @@
 const goalService = require('../services/goalService');
 
-
-
 const createSetGoal = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -16,7 +14,7 @@ const createSetGoal = async (req, res) => {
     const createdSetGoal = await goalService.createSetGoal(setGoalData);
 
     res.status(201).json({
-      message: '目標が正常に作成されました',
+      message: createdSetGoal.message,
       goal: createdSetGoal.goal
     });
   } catch (error) {
