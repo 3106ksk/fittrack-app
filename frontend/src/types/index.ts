@@ -22,6 +22,9 @@ export type {
   GoalQueryKey, GoalStatistics
 } from './goal';
 
+// Feedback 関連型定義
+export type { FeedbackState, FeedbackType } from './feedback';
+
 // Goal 関連関数のエクスポート
 export { isGoal, isValidProgressAmount } from './goal';
 
