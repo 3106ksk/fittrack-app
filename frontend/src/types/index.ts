@@ -1,32 +1,8 @@
-// ============================================================================
-// Type Definitions Entry Point - 型定義統合エクスポート
-// ============================================================================
 
-/**
- * すべての型定義を一元的にエクスポート
- * インポート文の簡素化とバンドル最適化
- */
-
-// Goal 関連型定義
-export type {
-
-  // API レスポンス型
-  ApiResponse,
-  // リクエスト型
-  // 目標作成リクエスト型
-  // 基本型
-  Goal, GoalApiError, GoalCardProps,
-  // UI 状態型
-  GoalListResponse, GoalPermission, GoalProgress,
-  // ユーティリティ型
-  GoalQueryKey, GoalStatistics
-} from './goal';
 
 // Feedback 関連型定義
 export type { FeedbackState, FeedbackType } from './feedback';
 
-// Goal 関連関数のエクスポート
-export { isGoal, isValidProgressAmount } from './goal';
 
 // API 通信型定義
 export type {
@@ -43,8 +19,7 @@ export type {
   BaseApiResponse,
   // ユーティリティ型
   ExtractApiData,
-  // Goal API 専用型
-  GoalApiEndpoint, GoalListApiResponse, GoalListParams,
+
   // HTTP 基本型
   HttpMethod,
   HttpStatusCode,
@@ -55,8 +30,7 @@ export type {
   QueryKey, RequiredOnly, SearchParams, SortParams, UnwrapPromise
 } from './api';
 
-// クエリキー定数
-export { goalQueryKeys } from './api';
+
 
 // ============================================================================
 // 開発者向けユーティリティ型
@@ -124,7 +98,6 @@ export type MvpFeatureStatus =
  * 機能の有効/無効を制御
  */
 export interface MvpFeatureFlags {
-  goalProgressDisplay: boolean;           // 目標進捗表示機能
   realTimeUpdates: boolean;               // リアルタイム更新
   advancedFiltering: boolean;             // 高度なフィルタリング
   dataExport: boolean;                    // データエクスポート
@@ -190,5 +163,4 @@ export interface TypeCompatibility {
 
 // TypeScript設定による型チェック強化
 export type { } from './api';
-export type { } from './goal';
 

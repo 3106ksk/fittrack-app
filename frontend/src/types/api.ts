@@ -2,7 +2,6 @@
 // API Communication Types - API通信全般の型定義
 // ============================================================================
 
-import type { Goal } from './goal';
 
 /**
  * HTTP メソッドの型安全な定義
@@ -222,39 +221,7 @@ export interface LoginResponse {
   tokens: AuthTokens;                     // 認証トークン
 }
 
-// ============================================================================
-// Goal API Specific Types - Goal API専用型定義
-// ============================================================================
 
-/**
- * Goal API エンドポイント型
- * 型安全なURL生成に使用
- */
-export type GoalApiEndpoint = 
-  | '/api/goals'                          // 目標一覧取得・作成
-  | '/api/goals/:id'                      // 目標詳細・更新・削除
-  | '/api/goals/:id/progress'             // 進捗更新
-  | '/api/goals/stats'                    // 統計情報取得
-  | '/api/goals/export';                  // データエクスポート
-
-/**
- * Goal一覧取得リクエストパラメータ型
- * Goal特有のフィルタリング・ソート条件
- */
-export interface GoalListParams extends ListRequestParams {
-  status?: ('in_progress' | 'completed' | 'paused')[];  // ステータスフィルター
-  exerciseType?: ('strength' | 'cardio')[];             // 運動タイプフィルター
-  progressMin?: number;                                  // 最小進捗率
-  progressMax?: number;                                  // 最大進捗率
-  dateFrom?: string;                                     // 作成日From（ISO 8601）
-  dateTo?: string;                                       // 作成日To（ISO 8601）
-}
-
-/**
- * Goal一覧レスポンス型
- * ページネーション対応のGoal一覧
- */
-export type GoalListApiResponse = PaginatedApiResponse<Goal>;
 
 // ============================================================================
 // API Client Types - APIクライアント型定義
@@ -305,18 +272,6 @@ export interface ApiClient {
  */
 export type QueryKey = readonly (string | number | boolean | Record<string, unknown> | null | undefined)[];
 
-/**
- * Goal用クエリキーファクトリー
- * Goal関連クエリの型安全管理
- */
-export const goalQueryKeys = {
-  all: ['goals'] as const,
-  lists: () => [...goalQueryKeys.all, 'list'] as const,
-  list: (filters?: GoalListParams) => [...goalQueryKeys.lists(), filters] as const,
-  details: () => [...goalQueryKeys.all, 'detail'] as const,
-  detail: (id: number) => [...goalQueryKeys.details(), id] as const,
-  stats: () => [...goalQueryKeys.all, 'stats'] as const,
-};
 
 // ============================================================================
 // Export Utility Types - エクスポート用ユーティリティ型
