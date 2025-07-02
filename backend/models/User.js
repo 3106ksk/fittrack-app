@@ -27,8 +27,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   User.associate = (models) => {
-    User.hasMany(models.Workout, { foreignKey: 'userID' }); // 1対多の関係を定義
-    User.hasMany(models.Goal, { foreignKey: 'userID' }); // Goalモデルとの1対多の関係を追加
+    User.hasMany(models.Workout, { foreignKey: 'userID' });
   };
 
   return User;

@@ -14,8 +14,6 @@ const Navbar = () => {
               <Link to='/dashboard'>ダッシュボード</Link>
               <Link to='/'>ワークアウトフォーム</Link>
               <Link to='/workout-history'>ワークアウト履歴</Link>
-              <Link to='/goalsetting'>目標設定</Link>
-              <Link to='/goalprogress'>目標進捗</Link>
               <Link to='/logout'>ログアウト</Link>
             </>
           ) : (
