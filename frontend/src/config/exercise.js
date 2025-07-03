@@ -18,3 +18,4 @@ export const EXERCISE_OPTIONS = [
 export const METRIC_UNITS = [
   { value: 'reps', label: '回', forType: WORKOUT_TYPES.STRENGTH }
 ];
+
