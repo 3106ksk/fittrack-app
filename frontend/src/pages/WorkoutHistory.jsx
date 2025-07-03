@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import {
   Container, Typography, TableContainer, Table, TableHead,
   TableRow, TableCell, TableBody, Paper, Button,
@@ -46,6 +47,8 @@ const WorkoutHistory = () => {
       <Typography variant="h4" gutterBottom>
         トレーニング履歴
       </Typography>
+      <WorkoutStatistics workouts={workouts} loading={loading} />
+      
       {loading && <CircularProgress />}
       {error && <Alert severity="error">{error.message}</Alert>}
 
