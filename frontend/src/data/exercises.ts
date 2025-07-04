@@ -23,6 +23,22 @@ export const EXERCISE_DATABASE = {
     beginner: true,
     metrics: ['duration', 'distance'] as const
   },
+    running: {
+    id: 'running',
+    name: 'ランニング',
+    type: 'cardio' as const,
+    description: '高強度の有酸素運動。心肺機能を大幅に向上させ、下半身の筋力強化にも効果的。',
+    beginner: true,
+    metrics: ['duration', 'distance'] as const
+  },
+  cycling: {
+    id: 'cycling',
+    name: 'サイクリング',
+    type: 'cardio' as const,
+    description: '低負荷で持続可能な有酸素運動。膝への負担が少なく、下半身強化に効果的。',
+    beginner: true,
+    metrics: ['duration', 'distance'] as const
+  },
   squat: {
     id: 'squat',
     name: 'スクワット',
@@ -39,12 +55,28 @@ export const EXERCISE_DATABASE = {
     beginner: true,
     metrics: ['sets', 'reps'] as const
   },
+    plank: {
+    id: 'plank',
+    name: 'プランク',
+    type: 'strength' as const,
+    description: '体幹トレーニング。腹筋、背筋、インナーマッスルを同時に鍛える静的運動。',
+    beginner: true,
+    metrics: ['duration'] as const
+  },
   benchpress: {
     id: 'benchpress',
     name: 'ベンチプレス',
     type: 'strength' as const,
     description: '上半身トレーニング。胸筋、三頭筋、肩を鍛える基本的なウェイトトレーニング。',
     beginner: true,
+    metrics: ['sets', 'reps'] as const
+  },
+    diamond_pushup: {
+    id: 'diamond_pushup',
+    name: 'ダイヤモンドプッシュアップ',
+    type: 'strength' as const,
+    description: '上腕三頭筋に特化したプッシュアップバリエーション。胸筋下部も鍛える。',
+    beginner: false,
     metrics: ['sets', 'reps'] as const
   },
   pullup: {
