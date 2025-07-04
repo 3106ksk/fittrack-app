@@ -1,13 +1,22 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import {
-  Container, Typography, TableContainer, Table, TableHead,
-  TableRow, TableCell, TableBody, Paper, Button,
-  CircularProgress, Alert,
-  Collapse
-} from '@mui/material'
-import React from 'react';
+  Alert,
+  Button,
+  CircularProgress,
+  Collapse,
+  Container,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from '@mui/material';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
+
 
 const WorkoutHistory = () => {
   const [workouts, setWorkouts] = useState([]);
@@ -47,6 +56,7 @@ const WorkoutHistory = () => {
       <Typography variant="h4" gutterBottom>
         トレーニング履歴
       </Typography>
+
       <WorkoutStatistics workouts={workouts} loading={loading} />
       
       {loading && <CircularProgress />}
