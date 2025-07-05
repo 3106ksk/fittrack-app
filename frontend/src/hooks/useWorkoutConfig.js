@@ -145,7 +145,6 @@ const useWorkoutConfig = () => {
     alert('最低1つの運動は必要です');
     return;
   }
-  
   const newConfig = {
     ...workoutConfig,
     exercises: workoutConfig.exercises.filter(ex => ex !== exercise)
@@ -187,6 +186,9 @@ const applyPreset = useCallback((presetKey) => {
   return {
     // 状態
     workoutConfig,
+    availableExercises: exerciseData.all,
+    cardioExercises: exerciseData.cardio,
+    strengthExercises: exerciseData.strength,
     presets,
     // ユーティリティ
     isCardioExercise,

@@ -1,3 +1,4 @@
+import { Settings as SettingsIcon } from '@mui/icons-material';
 import {
   Alert,
   Button,
@@ -16,13 +17,26 @@ import {
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
-
+import WorkoutCustomizationDrawer from '../components/WorkoutCustomizationDrawer';
+import useWorkoutConfig from '../hooks/useWorkoutConfig';
 
 const WorkoutHistory = () => {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openId, setOpenId] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const {
+    workoutConfig,
+    availableExercises,
+    presets,
+    isCardioExercise,
+    addExercise,
+    removeExercise,
+    applyPreset,
+    updateMaxSets
+  } = useWorkoutConfig();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -51,11 +65,58 @@ const WorkoutHistory = () => {
     setOpenId(openId === id ? null : id);
   };
 
+
+  const getConfigDescription = () => {
+    if (workoutConfig.exercises.length === 0) {
+      return '種目が選択されていません';
+    }
+    
+    const cardio = workoutConfig.exercises.filter(isCardioExercise);
+    const strength = workoutConfig.exercises.filter(ex => !isCardioExercise(ex));
+    
+    let description = '';
+    if (cardio.length > 0) {
+      description += `${cardio.join('、')} (距離・時間)`;
+      if (strength.length > 0) {
+        description += '、';
+      }
+    }
+    if (strength.length > 0) {
+      description += `${strength.join('、')} (${workoutConfig.maxSets}セット)`;
+    }
+    
+    return description;
+  };
+
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        トレーニング履歴
+      
+      <Typography variant="h6">ワークアウト履歴</Typography>
+      <Typography variant="body2" color="text.secondary">
+        カスタム設定：{getConfigDescription()}
       </Typography>
+      <Button
+      variant="outlined"
+      startIcon={<SettingsIcon />}
+      onClick={() => setDrawerOpen(true)}
+      >
+        カスタマイズ
+      </Button>
+
+      <WorkoutCustomizationDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        workoutConfig={workoutConfig}
+        availableExercises={availableExercises}
+        presets={presets}
+        isCardioExercise={isCardioExercise}
+        addExercise={addExercise}
+        removeExercise={removeExercise}
+        applyPreset={applyPreset}
+        updateMaxSets={updateMaxSets}
+      />
+
+
 
       <WorkoutStatistics workouts={workouts} loading={loading} />
       
