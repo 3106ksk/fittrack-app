@@ -19,6 +19,7 @@ import React, { useEffect, useState } from 'react';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import WorkoutCustomizationDrawer from '../components/WorkoutCustomizationDrawer';
 import useWorkoutConfig from '../hooks/useWorkoutConfig';
+import WorkoutHistoryTable from '../components/WorkoutHistoryTable';
 
 const WorkoutHistory = () => {
   const [workouts, setWorkouts] = useState([]);
@@ -122,6 +123,8 @@ const WorkoutHistory = () => {
       
       {loading && <CircularProgress />}
       {error && <Alert severity="error">{error.message}</Alert>}
+
+      <WorkoutHistoryTable workouts={workouts} />
 
       {workouts.length > 0 && (
         <TableContainer component={Paper}>
