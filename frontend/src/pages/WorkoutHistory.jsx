@@ -18,8 +18,9 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import WorkoutCustomizationDrawer from '../components/WorkoutCustomizationDrawer';
-import useWorkoutConfig from '../hooks/useWorkoutConfig';
 import WorkoutHistoryTable from '../components/WorkoutHistoryTable';
+import useWorkoutConfig from '../hooks/useWorkoutConfig';
+import transformWorkoutData from '../services/TransformWorkoutData';
 
 const WorkoutHistory = () => {
   const [workouts, setWorkouts] = useState([]);
@@ -47,7 +48,9 @@ const WorkoutHistory = () => {
         const response = await axios.get('http://localhost:8000/workouts', {
           signal: controller.signal
         });
-        setWorkouts(response.data);
+        const transformedData = transformWorkoutData(response.data);
+        console.log(transformedData);
+        setWorkouts(transformedData);
         setLoading(false);
       } catch (error) {
         if (axios.isCancel(error)) {
@@ -62,10 +65,11 @@ const WorkoutHistory = () => {
     return () => controller.abort();
   }, []);
 
+
+
   const toggle = (id) => {
     setOpenId(openId === id ? null : id);
   };
-
 
   const getConfigDescription = () => {
     if (workoutConfig.exercises.length === 0) {
