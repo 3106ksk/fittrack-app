@@ -1,10 +1,86 @@
 import React from 'react';
-import useWorkoutConfig from '../hooks/useWorkoutConfig';
 
-const WorkoutHistoryTable = () => {
-  const { workoutConfig, isCardioExercise } = useWorkoutConfig();
+const WorkoutHistoryTable = ({
+  workouts =[],
+  workoutConfig,
+  loading = false,
+  isCardioExercise,
+  isStrengthExercise,
+}) => {
+  
+  if(loading){
+    return (
+            <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">詳細履歴</h2>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+          <span className="ml-3 text-gray-600">読み込み中...</span>
+        </div>
+      </div>
+    );
+  }
+
+    if (workouts.length === 0) {
+    return (
+      <div className="bg-blue-50 border border-blue-200 rounded-md p-6 text-center">
+        <div className="h-12 w-12 text-blue-400 mx-auto mb-4">📅</div>
+        <p className="text-blue-600 font-medium mb-2">ワークアウト履歴がありません</p>
+        <p className="text-blue-500 text-sm">新しいワークアウトを開始しましょう！</p>
+      </div>
+    );
+  }
+
+   const getDisplayDescription = () => {
+    console.log(workoutConfig);
+    const cardioExercises = workoutConfig.exercises.filter(ex => isCardioExercise(ex));
+    const strengthExercises = workoutConfig.exercises.filter(ex => isStrengthExercise(ex));
+    
+    let description = '表示中: ';
+    if (cardioExercises.length > 0) {
+      description += cardioExercises.join('、') + ' (距離・時間)';
+      if (strengthExercises.length > 0) {
+        description += '、';
+      }
+    }
+    if (strengthExercises.length > 0) {
+      description += strengthExercises.join('、') + ` (${workoutConfig.maxSets}セット)`;
+    }
+    
+    return description;
+  };
+
+console.log('=== DETAILED Props Flow Test ===');
+console.log('1. workouts:', workouts);
+console.log('2. workoutConfig:', workoutConfig);
+console.log('3. workoutConfig type:', typeof workoutConfig);
+console.log('4. workoutConfig exercises:', workoutConfig?.exercises);
+console.log('5. loading:', loading);
+console.log('6. isCardioExercise:', isCardioExercise);
+console.log('7. isCardioExercise type:', typeof isCardioExercise);
+
+// 関数動作テスト
+if (isCardioExercise) {
+  console.log('8. isCardioExercise("ランニング"):', isCardioExercise("ランニング"));
+  console.log('9. isCardioExercise("プッシュアップ"):', isCardioExercise("プッシュアップ"));
+}
+
+if (workoutConfig?.exercises) {
+  console.log('10. workoutConfig.exercises:', workoutConfig.exercises);
+  console.log('11. maxSets:', workoutConfig.maxSets);
+  console.log('12. displayColumns:', workoutConfig.displayColumns);
+}
 
   return (
+    <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+      <div className="px-6 py-4 border-b border-gray-200">
+        <h2 className="text-lg font-semibold text-gray-900">詳細履歴</h2>
+        <p className="text-sm text-gray-600 mt-1">
+          {getDisplayDescription()}
+        </p>
+      </div>
+
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
         {/* 第1段階: 種目名のヘッダー */}
@@ -26,6 +102,17 @@ const WorkoutHistoryTable = () => {
                 </React.Fragment>
               );
             })}
+
+                          {workoutConfig.displayColumns?.includes('totalReps') && (
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+                  合計回数
+                </th>
+              )}
+              {workoutConfig.displayColumns?.includes('totalTime') && (
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  合計時間
+                </th>
+              )}
           </tr>
 
           <tr className="bg-gray-100">
@@ -50,6 +137,12 @@ const WorkoutHistoryTable = () => {
                 </React.Fragment>
               );
             })}
+                          {workoutConfig.displayColumns?.includes('totalReps') && (
+                <th className="px-4 py-2 border-r border-gray-200"></th>
+              )}
+              {workoutConfig.displayColumns?.includes('totalTime') && (
+                <th className="px-4 py-2"></th>
+              )}
           </tr>
         </thead>
 
@@ -84,6 +177,7 @@ const WorkoutHistoryTable = () => {
           })}
         </tbody>
       </table>
+    </div>
     </div>
   );
 };
