@@ -34,6 +34,7 @@ const WorkoutHistory = () => {
     availableExercises,
     presets,
     isCardioExercise,
+    isStrengthExercise,
     addExercise,
     removeExercise,
     applyPreset,
@@ -77,7 +78,7 @@ const WorkoutHistory = () => {
     }
     
     const cardio = workoutConfig.exercises.filter(isCardioExercise);
-    const strength = workoutConfig.exercises.filter(ex => !isCardioExercise(ex));
+    const strength = workoutConfig.exercises.filter(isStrengthExercise);
     
     let description = '';
     if (cardio.length > 0) {
@@ -92,6 +93,12 @@ const WorkoutHistory = () => {
     
     return description;
   };
+
+    console.log('WorkoutHistory - useWorkoutConfig result:', {
+    workoutConfig,
+    isCardioExercise,
+    availableExercises
+  });
 
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
@@ -128,7 +135,13 @@ const WorkoutHistory = () => {
       {loading && <CircularProgress />}
       {error && <Alert severity="error">{error.message}</Alert>}
 
-      <WorkoutHistoryTable workouts={workouts} />
+      <WorkoutHistoryTable 
+      workouts={workouts}
+      workoutConfig={workoutConfig}
+      loading={loading}
+      isCardioExercise={isCardioExercise}
+      isStrengthExercise={isStrengthExercise}
+      />
 
       {workouts.length > 0 && (
         <TableContainer component={Paper}>
