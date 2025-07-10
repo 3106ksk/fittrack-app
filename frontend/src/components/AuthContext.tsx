@@ -11,12 +11,14 @@ import {
   LoginCredentials,
   LoginResponse,
   RefreshTokenResponse,
-  User
+  User,
 } from '../types/auth';
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
-export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX.Element => {
+export const AuthContextProvider = ({
+  children,
+}: AuthContextProviderProps): JSX.Element => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -24,7 +26,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
-      delete axios.defaults.headers.common['Authorization']
+      delete axios.defaults.headers.common['Authorization'];
     }
   };
 
@@ -36,7 +38,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
 
   const refreshToken = useCallback(async (): Promise<boolean> => {
     try {
-      const res: AxiosResponse<RefreshTokenResponse> = await axios.post('http://localhost:8000/authrouter/refresh-token');
+      const res: AxiosResponse<RefreshTokenResponse> = await axios.post(
+        'http://localhost:8000/authrouter/refresh-token'
+      );
       const { token } = res.data;
       localStorage.setItem('token', token);
       setAuthToken(token);
@@ -52,10 +56,15 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
             console.error('認証エラー: トークンの期限が切れています');
             break;
           case 500:
-            console.error('サーバーエラー: サーバーが予期せぬエラーを返しました');
+            console.error(
+              'サーバーエラー: サーバーが予期せぬエラーを返しました'
+            );
             break;
           default:
-            console.error(`トークン更新エラー (${error.response.status}):`, error.response.data);
+            console.error(
+              `トークン更新エラー (${error.response.status}):`,
+              error.response.data
+            );
         }
       } else if (error instanceof AxiosError && error.request) {
         console.error('サーバー応答なし:', error.request);
@@ -85,7 +94,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
           console.error('トークン検証エラー:', error.message);
         } else {
           console.error('未知のエラー:', error);
-        } 
+        }
         logout();
       }
     }
@@ -99,7 +108,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
     }
     setAuthToken(token);
     try {
-      const res: AxiosResponse<User> = await axios.get('http://localhost:8000/authrouter/me');
+      const res: AxiosResponse<User> = await axios.get(
+        'http://localhost:8000/authrouter/me'
+      );
       console.log('ユーザーデータ取得成功:', res.data);
       setUser(res.data);
     } catch (error: unknown) {
@@ -125,10 +136,16 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
             console.error('エンドポイントエラー: /me が見つかりません');
             break;
           default:
-            console.error(`サーバーエラー (${error.response.status}):`, error.response.data);
+            console.error(
+              `サーバーエラー (${error.response.status}):`,
+              error.response.data
+            );
         }
       } else if (error instanceof AxiosError && error.request) {
-        console.error('サーバー応答なし。接続を確認してください:', error.request);
+        console.error(
+          'サーバー応答なし。接続を確認してください:',
+          error.request
+        );
       } else if (error instanceof Error) {
         console.error('リクエスト設定エラー:', error.message);
       } else {
@@ -148,7 +165,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
 
   const login = async (credentials: LoginCredentials): Promise<User> => {
     try {
-      const res: AxiosResponse<LoginResponse> = await axios.post('http://localhost:8000/authrouter/login', credentials);
+      const res: AxiosResponse<LoginResponse> = await axios.post(
+        'http://localhost:8000/authrouter/login',
+        credentials
+      );
       const { token, user } = res.data;
       localStorage.setItem('token', token);
       setAuthToken(token);
@@ -156,7 +176,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
       return user;
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response) {
-
         switch (error.response.status) {
           case 401:
             console.error('認証エラー: ユーザー名またはパスワードが無効です');
@@ -165,14 +184,19 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
             console.error('エンドポイントエラー: /login が見つかりません');
             break;
           case 500:
-            console.error('サーバーエラー: サーバーが予期せぬエラーを返しました');
+            console.error(
+              'サーバーエラー: サーバーが予期せぬエラーを返しました'
+            );
             break;
           default:
-            console.error(`ログインエラー (${error.response.status}):`, error.response.data);
+            console.error(
+              `ログインエラー (${error.response.status}):`,
+              error.response.data
+            );
         }
       } else if (error instanceof AxiosError && error.request) {
         console.error('サーバー応答なし:', error.request);
-      } else if (error instanceof Error) {  
+      } else if (error instanceof Error) {
         console.error('リクエスト設定エラー:', error.message);
       } else {
         console.error('未知のエラー:', error);
@@ -191,12 +215,14 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps): JSX
   }, [user, checkTokenExpiration]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, refreshToken }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, loading, refreshToken }}
+    >
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};
 
 AuthContextProvider.propTypes = {
-  children: PropTypes.node.isRequired
-}
+  children: PropTypes.node.isRequired,
+};

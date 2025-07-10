@@ -2,12 +2,12 @@ import { MenuItem, TextField } from '@mui/material';
 import { Controller } from 'react-hook-form';
 import { EXERCISE_OPTIONS } from '../../../config/exercise';
 
-const ExerciseSelect = ({ 
+const ExerciseSelect = ({
   control,
   errors,
   exercises = EXERCISE_OPTIONS,
   label = 'トレーニング種目',
-  name = 'exercise'
+  name = 'exercise',
 }) => {
   // エラーハンドリング: exercisesが無効な場合
   if (!Array.isArray(exercises) || exercises.length === 0) {
@@ -16,7 +16,7 @@ const ExerciseSelect = ({
   }
 
   return (
-    <div className='exercise'>
+    <div className="exercise">
       <Controller
         name={name}
         control={control}
@@ -29,7 +29,7 @@ const ExerciseSelect = ({
             error={!!errors[name]}
             helperText={errors[name]?.message}
           >
-            {exercises.map((exercise) => (
+            {exercises.map(exercise => (
               <MenuItem key={exercise.name} value={exercise.name}>
                 {exercise.name}
               </MenuItem>

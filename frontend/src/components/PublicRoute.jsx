@@ -18,7 +18,7 @@ const PublicRoute = ({ element, restricted = false }) => {
 
 PublicRoute.propTypes = {
   element: PropTypes.node.isRequired,
-  restricted: PropTypes.bool
+  restricted: PropTypes.bool,
 };
 
-export default PublicRoute; 
+export default PublicRoute;

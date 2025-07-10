@@ -1,10 +1,5 @@
-
-
 export const DashboadPage = () => {
-  return (
-    <>
-    </>
-  )
-}
+  return <></>;
+};
 
 export default DashboadPage;

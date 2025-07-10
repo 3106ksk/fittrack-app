@@ -2,7 +2,6 @@
 // API Communication Types - API通信全般の型定義
 // ============================================================================
 
-
 /**
  * HTTP メソッドの型安全な定義
  * RESTful API設計に準拠
@@ -13,16 +12,16 @@ export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
  * HTTP ステータスコードの型定義
  * 主要なステータスコードを網羅
  */
-export type HttpStatusCode = 
-  | 200  // OK
-  | 201  // Created
-  | 204  // No Content
-  | 400  // Bad Request
-  | 401  // Unauthorized
-  | 403  // Forbidden
-  | 404  // Not Found
-  | 422  // Unprocessable Entity
-  | 429  // Too Many Requests
+export type HttpStatusCode =
+  | 200 // OK
+  | 201 // Created
+  | 204 // No Content
+  | 400 // Bad Request
+  | 401 // Unauthorized
+  | 403 // Forbidden
+  | 404 // Not Found
+  | 422 // Unprocessable Entity
+  | 429 // Too Many Requests
   | 500; // Internal Server Error
 
 /**
@@ -30,11 +29,11 @@ export type HttpStatusCode =
  * 全APIエンドポイントの共通構造
  */
 export interface BaseApiResponse<T = unknown> {
-  data: T;                                // レスポンスデータ（ジェネリック）
-  message: string;                        // 操作結果メッセージ
-  status: 'success' | 'error';            // 操作ステータス
-  timestamp: string;                      // レスポンス時刻（ISO 8601）
-  requestId?: string;                     // リクエスト追跡ID（デバッグ用）
+  data: T; // レスポンスデータ（ジェネリック）
+  message: string; // 操作結果メッセージ
+  status: 'success' | 'error'; // 操作ステータス
+  timestamp: string; // レスポンス時刻（ISO 8601）
+  requestId?: string; // リクエスト追跡ID（デバッグ用）
 }
 
 /**
@@ -42,12 +41,12 @@ export interface BaseApiResponse<T = unknown> {
  * 一覧API共通のページネーション
  */
 export interface PaginationInfo {
-  currentPage: number;                    // 現在ページ（1始まり）
-  totalPages: number;                     // 総ページ数
-  totalItems: number;                     // 総アイテム数
-  itemsPerPage: number;                   // 1ページ辺りのアイテム数
-  hasNextPage: boolean;                   // 次ページ存在フラグ
-  hasPreviousPage: boolean;               // 前ページ存在フラグ
+  currentPage: number; // 現在ページ（1始まり）
+  totalPages: number; // 総ページ数
+  totalItems: number; // 総アイテム数
+  itemsPerPage: number; // 1ページ辺りのアイテム数
+  hasNextPage: boolean; // 次ページ存在フラグ
+  hasPreviousPage: boolean; // 前ページ存在フラグ
 }
 
 /**
@@ -55,7 +54,7 @@ export interface PaginationInfo {
  * 一覧取得APIの標準レスポンス
  */
 export interface PaginatedApiResponse<T> extends BaseApiResponse<T[]> {
-  pagination: PaginationInfo;             // ページネーション情報
+  pagination: PaginationInfo; // ページネーション情報
 }
 
 // ============================================================================
@@ -67,10 +66,10 @@ export interface PaginatedApiResponse<T> extends BaseApiResponse<T[]> {
  * フィールド別バリデーションエラー対応
  */
 export interface ApiErrorDetail {
-  field: string;                          // エラー対象フィールド名
-  message: string;                        // エラーメッセージ
-  code: string;                           // エラーコード
-  value?: unknown;                        // 無効な値（デバッグ用）
+  field: string; // エラー対象フィールド名
+  message: string; // エラーメッセージ
+  code: string; // エラーコード
+  value?: unknown; // 無効な値（デバッグ用）
 }
 
 /**
@@ -78,13 +77,13 @@ export interface ApiErrorDetail {
  * 全エラーレスポンスの標準構造
  */
 export interface ApiError {
-  status: 'error';                        // 固定値
-  code: string;                           // エラーコード（例：VALIDATION_ERROR）
-  message: string;                        // ユーザー向けエラーメッセージ
-  details?: ApiErrorDetail[];             // 詳細エラー情報
-  timestamp: string;                      // エラー発生時刻
-  requestId?: string;                     // リクエスト追跡ID
-  stack?: string;                         // スタックトレース（開発環境のみ）
+  status: 'error'; // 固定値
+  code: string; // エラーコード（例：VALIDATION_ERROR）
+  message: string; // ユーザー向けエラーメッセージ
+  details?: ApiErrorDetail[]; // 詳細エラー情報
+  timestamp: string; // エラー発生時刻
+  requestId?: string; // リクエスト追跡ID
+  stack?: string; // スタックトレース（開発環境のみ）
 }
 
 /**
@@ -92,10 +91,10 @@ export interface ApiError {
  * 通信障害、タイムアウト等の処理
  */
 export interface NetworkError {
-  type: 'network';                        // エラータイプ識別
-  message: string;                        // エラーメッセージ
-  code?: string;                          // エラーコード（例：TIMEOUT）
-  isRetryable: boolean;                   // リトライ可能フラグ
+  type: 'network'; // エラータイプ識別
+  message: string; // エラーメッセージ
+  code?: string; // エラーコード（例：TIMEOUT）
+  isRetryable: boolean; // リトライ可能フラグ
 }
 
 /**
@@ -103,10 +102,10 @@ export interface NetworkError {
  * JWT有効期限切れ、権限不足等
  */
 export interface AuthenticationError {
-  type: 'authentication';                 // エラータイプ識別
-  message: string;                        // エラーメッセージ
+  type: 'authentication'; // エラータイプ識別
+  message: string; // エラーメッセージ
   code: 'TOKEN_EXPIRED' | 'TOKEN_INVALID' | 'INSUFFICIENT_PERMISSIONS';
-  redirectTo?: string;                    // リダイレクト先URL
+  redirectTo?: string; // リダイレクト先URL
 }
 
 /**
@@ -124,13 +123,13 @@ export type AppError = ApiError | NetworkError | AuthenticationError;
  * Axios設定の型安全ラッパー
  */
 export interface ApiRequestConfig {
-  method: HttpMethod;                     // HTTPメソッド
-  url: string;                            // エンドポイントURL
-  params?: Record<string, unknown>;       // URLパラメータ
-  data?: unknown;                         // リクエストボディ
-  headers?: Record<string, string>;       // カスタムヘッダー
-  timeout?: number;                       // タイムアウト時間（ミリ秒）
-  withCredentials?: boolean;              // クレデンシャル含有フラグ
+  method: HttpMethod; // HTTPメソッド
+  url: string; // エンドポイントURL
+  params?: Record<string, unknown>; // URLパラメータ
+  data?: unknown; // リクエストボディ
+  headers?: Record<string, string>; // カスタムヘッダー
+  timeout?: number; // タイムアウト時間（ミリ秒）
+  withCredentials?: boolean; // クレデンシャル含有フラグ
 }
 
 /**
@@ -138,9 +137,9 @@ export interface ApiRequestConfig {
  * 一覧取得API共通パラメータ
  */
 export interface PaginationParams {
-  page?: number;                          // ページ番号（デフォルト：1）
-  limit?: number;                         // 取得件数（デフォルト：20）
-  offset?: number;                        // オフセット（ページ番号と排他）
+  page?: number; // ページ番号（デフォルト：1）
+  limit?: number; // 取得件数（デフォルト：20）
+  offset?: number; // オフセット（ページ番号と排他）
 }
 
 /**
@@ -148,8 +147,8 @@ export interface PaginationParams {
  * 一覧取得APIのソート機能
  */
 export interface SortParams {
-  sortBy?: string;                        // ソート対象フィールド
-  sortOrder?: 'asc' | 'desc';            // ソート方向
+  sortBy?: string; // ソート対象フィールド
+  sortOrder?: 'asc' | 'desc'; // ソート方向
 }
 
 /**
@@ -157,15 +156,18 @@ export interface SortParams {
  * 一覧取得APIの検索機能
  */
 export interface SearchParams {
-  q?: string;                             // 検索クエリ
-  filters?: Record<string, unknown>;      // フィルター条件
+  q?: string; // 検索クエリ
+  filters?: Record<string, unknown>; // フィルター条件
 }
 
 /**
  * 統合リクエストパラメータ型
  * 一覧取得APIの全機能を統合
  */
-export interface ListRequestParams extends PaginationParams, SortParams, SearchParams {
+export interface ListRequestParams
+  extends PaginationParams,
+    SortParams,
+    SearchParams {
   // 追加の共通パラメータがあればここに定義
 }
 
@@ -178,13 +180,13 @@ export interface ListRequestParams extends PaginationParams, SortParams, SearchP
  * JWTトークンに含まれる情報
  */
 export interface JwtPayload {
-  sub: string;                            // ユーザーID（subject）
-  iat: number;                            // 発行時刻（issued at）
-  exp: number;                            // 有効期限（expiration time）
-  iss?: string;                           // 発行者（issuer）
-  aud?: string;                           // 対象者（audience）
-  email?: string;                         // ユーザーメールアドレス
-  role?: string;                          // ユーザー権限
+  sub: string; // ユーザーID（subject）
+  iat: number; // 発行時刻（issued at）
+  exp: number; // 有効期限（expiration time）
+  iss?: string; // 発行者（issuer）
+  aud?: string; // 対象者（audience）
+  email?: string; // ユーザーメールアドレス
+  role?: string; // ユーザー権限
 }
 
 /**
@@ -192,10 +194,10 @@ export interface JwtPayload {
  * JWT認証システムのトークン管理
  */
 export interface AuthTokens {
-  accessToken: string;                    // アクセストークン
-  refreshToken?: string;                  // リフレッシュトークン（将来対応）
-  tokenType: 'Bearer';                    // トークンタイプ
-  expiresIn: number;                      // 有効期限（秒）
+  accessToken: string; // アクセストークン
+  refreshToken?: string; // リフレッシュトークン（将来対応）
+  tokenType: 'Bearer'; // トークンタイプ
+  expiresIn: number; // 有効期限（秒）
 }
 
 /**
@@ -203,9 +205,9 @@ export interface AuthTokens {
  * 認証API用
  */
 export interface LoginRequest {
-  email: string;                          // メールアドレス
-  password: string;                       // パスワード
-  rememberMe?: boolean;                   // ログイン保持フラグ
+  email: string; // メールアドレス
+  password: string; // パスワード
+  rememberMe?: boolean; // ログイン保持フラグ
 }
 
 /**
@@ -214,14 +216,12 @@ export interface LoginRequest {
  */
 export interface LoginResponse {
   user: {
-    id: number;                           // ユーザーID
-    email: string;                        // メールアドレス
-    name: string;                         // ユーザー名
+    id: number; // ユーザーID
+    email: string; // メールアドレス
+    name: string; // ユーザー名
   };
-  tokens: AuthTokens;                     // 認証トークン
+  tokens: AuthTokens; // 認証トークン
 }
-
-
 
 // ============================================================================
 // API Client Types - APIクライアント型定義
@@ -232,11 +232,11 @@ export interface LoginResponse {
  * APIクライアントクラスの設定
  */
 export interface ApiClientConfig {
-  baseURL: string;                        // ベースURL
-  timeout: number;                        // タイムアウト時間
-  retryAttempts: number;                  // リトライ回数
-  retryDelay: number;                     // リトライ間隔（ミリ秒）
-  enableLogging: boolean;                 // ログ出力フラグ
+  baseURL: string; // ベースURL
+  timeout: number; // タイムアウト時間
+  retryAttempts: number; // リトライ回数
+  retryDelay: number; // リトライ間隔（ミリ秒）
+  enableLogging: boolean; // ログ出力フラグ
 }
 
 /**
@@ -244,10 +244,10 @@ export interface ApiClientConfig {
  * APIクライアント統一レスポンス
  */
 export interface ApiClientResponse<T> {
-  data: T;                                // レスポンスデータ
-  status: HttpStatusCode;                 // HTTPステータスコード
-  headers: Record<string, string>;        // レスポンスヘッダー
-  config: ApiRequestConfig;               // リクエスト設定
+  data: T; // レスポンスデータ
+  status: HttpStatusCode; // HTTPステータスコード
+  headers: Record<string, string>; // レスポンスヘッダー
+  config: ApiRequestConfig; // リクエスト設定
 }
 
 /**
@@ -270,8 +270,14 @@ export interface ApiClient {
  * 基本クエリキータイプ
  * React Queryキーの型安全な管理
  */
-export type QueryKey = readonly (string | number | boolean | Record<string, unknown> | null | undefined)[];
-
+export type QueryKey = readonly (
+  | string
+  | number
+  | boolean
+  | Record<string, unknown>
+  | null
+  | undefined
+)[];
 
 // ============================================================================
 // Export Utility Types - エクスポート用ユーティリティ型
@@ -305,4 +311,4 @@ export type OptionalOnly<T> = {
   [K in keyof T as T[K] extends Required<T>[K] ? never : K]: T[K];
 };
 
-// Tree shakingとバンドル最適化のため、named exportのみ使用 
+// Tree shakingとバンドル最適化のため、named exportのみ使用

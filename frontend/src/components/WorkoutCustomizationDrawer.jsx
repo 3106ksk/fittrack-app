@@ -51,9 +51,9 @@ const WorkoutCustomizationDrawer = ({
   console.log(availableToAdd);
 
   return (
-    <Drawer 
-      anchor='right' 
-      open={open} 
+    <Drawer
+      anchor="right"
+      open={open}
       onClose={onClose}
       sx={{
         '& .MuiDrawer-paper': {
@@ -64,14 +64,16 @@ const WorkoutCustomizationDrawer = ({
     >
       <Box sx={{ p: 2 }}>
         {/* ヘッダー */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          p: 2,
-          borderBottom: '1px solid',
-          borderColor: 'divider'
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
           <Typography variant="h6" component="h2">
             ワークアウトカスタマイズ設定
           </Typography>
@@ -84,24 +86,22 @@ const WorkoutCustomizationDrawer = ({
         <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
           {/* プリセットセクション - 折りたたみ式 */}
           <Box sx={{ mb: 2 }}>
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'space-between',
                 cursor: 'pointer',
                 py: 1,
                 borderRadius: 1,
                 '&:hover': {
-                  bgcolor: 'action.hover'
-                }
+                  bgcolor: 'action.hover',
+                },
               }}
               onClick={handlePresetToggle}
             >
               <Box>
-                <Typography variant="subtitle1">
-                  プリセット
-                </Typography>
+                <Typography variant="subtitle1">プリセット</Typography>
                 <Typography variant="body2" color="text.secondary">
                   よく使われる設定から選択
                 </Typography>
@@ -110,7 +110,7 @@ const WorkoutCustomizationDrawer = ({
                 size="small"
                 sx={{
                   transform: presetExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.3s ease'
+                  transition: 'transform 0.3s ease',
                 }}
               >
                 <ExpandMoreIcon />
@@ -120,19 +120,20 @@ const WorkoutCustomizationDrawer = ({
             <Collapse in={presetExpanded} timeout="auto" unmountOnExit>
               <Box sx={{ mt: 2 }}>
                 {Object.entries(presets).map(([key, preset]) => {
-                  const cardioCount = preset.exercises.filter(isCardioExercise).length;
+                  const cardioCount =
+                    preset.exercises.filter(isCardioExercise).length;
                   const strengthCount = preset.exercises.length - cardioCount;
-                  return(
+                  return (
                     <Card
-                      key={key} 
-                      variant="outlined" 
-                      sx={{ 
+                      key={key}
+                      variant="outlined"
+                      sx={{
                         cursor: 'pointer',
                         mb: 1,
-                        '&:hover': { 
+                        '&:hover': {
                           borderColor: 'primary.main',
-                          bgcolor: 'primary.50' 
-                        }
+                          bgcolor: 'primary.50',
+                        },
                       }}
                       onClick={() => applyPreset(key)}
                     >
@@ -143,9 +144,16 @@ const WorkoutCustomizationDrawer = ({
                         <Typography variant="body2" color="text.secondary">
                           {preset.exercises.join(', ')}
                         </Typography>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 1 }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            gap: 1,
+                            flexWrap: 'wrap',
+                            mt: 1,
+                          }}
+                        >
                           {cardioCount > 0 && (
-                            <Chip 
+                            <Chip
                               icon={<RunIcon />}
                               label={`カーディオ ${cardioCount}種目`}
                               size="small"
@@ -153,7 +161,7 @@ const WorkoutCustomizationDrawer = ({
                             />
                           )}
                           {strengthCount > 0 && (
-                            <Chip 
+                            <Chip
                               icon={<FitnessCenterIcon />}
                               label={`筋トレ ${strengthCount}種目 (${preset.maxSets}セット)`}
                               size="small"
@@ -190,17 +198,17 @@ const WorkoutCustomizationDrawer = ({
                       <FitnessCenterIcon color="primary" fontSize="small" />
                     )}
                   </Box>
-                  <ListItemText 
+                  <ListItemText
                     primary={exercise}
                     secondary={
-                      isCardioExercise(exercise) 
-                        ? 'カーディオ' 
+                      isCardioExercise(exercise)
+                        ? 'カーディオ'
                         : `筋トレ (${workoutConfig.maxSets}セット)`
                     }
                   />
                   <ListItemSecondaryAction>
-                    <IconButton 
-                      edge="end" 
+                    <IconButton
+                      edge="end"
                       size="small"
                       onClick={() => removeExercise(exercise)}
                       color="error"
@@ -223,7 +231,7 @@ const WorkoutCustomizationDrawer = ({
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               筋トレ種目の最大セット数を設定
             </Typography>
-            
+
             <Box sx={{ px: 2 }}>
               <Typography variant="body2" gutterBottom>
                 最大セット数: {workoutConfig.maxSets}
@@ -239,7 +247,7 @@ const WorkoutCustomizationDrawer = ({
                   { value: 2, label: '2' },
                   { value: 3, label: '3' },
                   { value: 4, label: '4' },
-                  { value: 5, label: '5' }
+                  { value: 5, label: '5' },
                 ]}
                 valueLabelDisplay="auto"
                 sx={{ mb: 2 }}
@@ -265,7 +273,7 @@ const WorkoutCustomizationDrawer = ({
                 種目追加
               </Typography>
               <List dense sx={{ maxHeight: 200, overflow: 'auto' }}>
-                {availableToAdd.map((exercise) => (
+                {availableToAdd.map(exercise => (
                   <ListItem key={exercise} divider>
                     <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
                       {isCardioExercise(exercise) ? (
@@ -274,13 +282,15 @@ const WorkoutCustomizationDrawer = ({
                         <FitnessCenterIcon color="primary" fontSize="small" />
                       )}
                     </Box>
-                    <ListItemText 
+                    <ListItemText
                       primary={exercise}
-                      secondary={isCardioExercise(exercise) ? 'カーディオ' : '筋トレ'}
+                      secondary={
+                        isCardioExercise(exercise) ? 'カーディオ' : '筋トレ'
+                      }
                     />
                     <ListItemSecondaryAction>
-                      <IconButton 
-                        edge="end" 
+                      <IconButton
+                        edge="end"
                         size="small"
                         onClick={() => addExercise(exercise)}
                         color="primary"
@@ -296,18 +306,15 @@ const WorkoutCustomizationDrawer = ({
         </Box>
 
         {/* フッター */}
-        <Box sx={{ 
-          p: 2, 
-          borderTop: '1px solid', 
-          borderColor: 'divider',
-          bgcolor: 'background.paper'
-        }}>
-          <Button 
-            variant="contained" 
-            fullWidth 
-            onClick={onClose}
-            size="large"
-          >
+        <Box
+          sx={{
+            p: 2,
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Button variant="contained" fullWidth onClick={onClose} size="large">
             設定を適用
           </Button>
         </Box>

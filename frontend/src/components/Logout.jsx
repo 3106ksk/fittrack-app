@@ -11,9 +11,7 @@ const Logout = () => {
     navigate('/login');
   }, [logout, navigate]);
 
-  return (
-    <div>ログアウト中...</div>
-  )
-}
+  return <div>ログアウト中...</div>;
+};
 
-export default Logout
+export default Logout;

@@ -22,6 +22,6 @@ export const useFeedback = () => {
   return {
     feedback,
     showFeedback,
-    hideFeedback
+    hideFeedback,
   };
 };
