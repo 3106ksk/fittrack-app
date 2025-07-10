@@ -1,5 +1,4 @@
-
-import { useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from './Hook';
@@ -15,7 +14,7 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async data => {
     try {
       await login(data);
       navigate('/dashboard');
@@ -29,34 +28,42 @@ const Login = () => {
       }
       console.error('ログインエラー', error);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <input type="text" placeholder="Email" {...register('email', {
-          required: 'Email is required',
-          pattern: {
-            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: '有効なメールアドレスを入力してください',
-          },
-        })} />
+        <input
+          type="text"
+          placeholder="Email"
+          {...register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: '有効なメールアドレスを入力してください',
+            },
+          })}
+        />
         {errors.email && <p>{errors.email.message}</p>}
       </div>
       <div>
-        <input type="password" placeholder="Password" {...register('password', {
-          required: 'Password is required',
-          minLength: {
-            value: 8,
-            message: 'パスワードは8文字以上で入力してください',
-          },
-        })} />
+        <input
+          type="password"
+          placeholder="Password"
+          {...register('password', {
+            required: 'Password is required',
+            minLength: {
+              value: 8,
+              message: 'パスワードは8文字以上で入力してください',
+            },
+          })}
+        />
         {errors.password && <p>{errors.password.message}</p>}
       </div>
 
       <button type="submit">ログイン</button>
-      {errorMessage && <p className='error-message'>{errorMessage}</p>}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
     </form>
-  )
-}
-export default Login
+  );
+};
+export default Login;

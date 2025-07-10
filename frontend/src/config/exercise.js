@@ -1,6 +1,6 @@
 export const WORKOUT_TYPES = {
   CARDIO: 'strength',
-  STRENGTH: 'strength'
+  STRENGTH: 'strength',
 };
 
 export const EXERCISE_OPTIONS = [
@@ -12,10 +12,9 @@ export const EXERCISE_OPTIONS = [
   { name: '懸垂（チンニング）', type: WORKOUT_TYPES.STRENGTH },
   { name: 'デッドリフト', type: WORKOUT_TYPES.STRENGTH },
   { name: 'クランチ', type: WORKOUT_TYPES.STRENGTH },
-  { name: 'レッグレイズ', type: WORKOUT_TYPES.STRENGTH }
+  { name: 'レッグレイズ', type: WORKOUT_TYPES.STRENGTH },
 ];
 
 export const METRIC_UNITS = [
-  { value: 'reps', label: '回', forType: WORKOUT_TYPES.STRENGTH }
+  { value: 'reps', label: '回', forType: WORKOUT_TYPES.STRENGTH },
 ];
-

@@ -1,20 +1,17 @@
 import calculateWorkoutStats from '../../services/StatisticsService';
 import StatCard from './StatCard';
 import StatisticsLoading from './StatisticsLoading';
-import { 
-  Grid, 
-} from '@mui/material';
+import { Grid } from '@mui/material';
 
 import {
   CalendarToday as CalendarIcon,
   FitnessCenter as FitnessIcon,
-  Timer as TimerIcon
+  Timer as TimerIcon,
 } from '@mui/icons-material';
 
 const WorkoutStatistics = ({ workouts, loading }) => {
-
   const stats = calculateWorkoutStats(workouts);
-  
+
   if (loading) {
     return <StatisticsLoading />;
   }

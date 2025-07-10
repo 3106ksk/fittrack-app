@@ -1,7 +1,7 @@
 const configStructure = {
   exercisesDisplay: [],
   maxExercises: 3,
-  displayColumns: []
+  displayColumns: [],
 };
 
 export default configStructure;

@@ -1,4 +1,4 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
 import { AuthContextProvider } from './components/AuthContext';
 import Login from './components/Login';
@@ -16,15 +16,33 @@ function App() {
       <AuthContextProvider>
         <Navbar />
         <Routes>
-          <Route path='/dashboard' element={<PrivateRoute element={<DashboadPage />} />} />
-          <Route path='/' element={<PrivateRoute element={<WorkoutFormPage />} />} />
-          <Route path='/workout-history' element={<PrivateRoute element={<WorkoutHistory />} />} />
-          <Route path='/workout-history' element={<PrivateRoute element={<WorkoutHistory />} />} />
-          <Route path='/signup' element={<PublicRoute element={<Register />} restricted={true} />} />
-          <Route path='/login' element={<PublicRoute element={<Login />} restricted={true} />} />
+          <Route
+            path="/dashboard"
+            element={<PrivateRoute element={<DashboadPage />} />}
+          />
+          <Route
+            path="/"
+            element={<PrivateRoute element={<WorkoutFormPage />} />}
+          />
+          <Route
+            path="/workout-history"
+            element={<PrivateRoute element={<WorkoutHistory />} />}
+          />
+          <Route
+            path="/workout-history"
+            element={<PrivateRoute element={<WorkoutHistory />} />}
+          />
+          <Route
+            path="/signup"
+            element={<PublicRoute element={<Register />} restricted={true} />}
+          />
+          <Route
+            path="/login"
+            element={<PublicRoute element={<Login />} restricted={true} />}
+          />
 
           {/* ログアウトルート - 誰でもアクセス可能 */}
-          <Route path='/logout' element={<Logout />} />
+          <Route path="/logout" element={<Logout />} />
         </Routes>
       </AuthContextProvider>
     </Router>
