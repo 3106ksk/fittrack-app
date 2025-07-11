@@ -6,8 +6,6 @@ const useFormValidation = (formConfig) => {
   const { isCardioExercise } = useWorkoutConfig();
   
   return useMemo(() => {
-    console.log('🔄 バリデーションスキーマ再生成:', formConfig);
-    
     const schemaFields = {};
     
     formConfig.exercises.forEach(exercise => {

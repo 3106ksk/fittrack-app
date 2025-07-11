@@ -38,7 +38,7 @@ export type {
   RequiredOnly,
   SearchParams,
   SortParams,
-  UnwrapPromise,
+  UnwrapPromise
 } from './api';
 
 // ============================================================================
@@ -146,7 +146,7 @@ declare global {
 // 環境変数による条件付きエクスポート
 if (process.env.NODE_ENV === 'development') {
   // 開発環境専用の型とユーティリティをエクスポート
-  console.log('TypeScript type definitions loaded for development');
+  
 }
 
 // ============================================================================
@@ -171,4 +171,5 @@ export interface TypeCompatibility {
 }
 
 // TypeScript設定による型チェック強化
-export type {} from './api';
+export type { } from './api';
+
