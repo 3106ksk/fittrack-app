@@ -10,7 +10,7 @@ const calculateWorkoutStats = workouts => {
     { totalDays: 0, totalReps: 0, totalTime: 0 }
   );
 
-  console.log(currentStats);
+  
 
   // 前月のモックデータ
   const lastMonthStats = {

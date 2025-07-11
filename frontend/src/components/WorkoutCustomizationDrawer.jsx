@@ -48,7 +48,6 @@ const WorkoutCustomizationDrawer = ({
   const availableToAdd = availableExercises.filter(
     exercise => !workoutConfig.exercises.includes(exercise)
   );
-  console.log(availableToAdd);
 
   return (
     <Drawer
@@ -185,7 +184,7 @@ const WorkoutCustomizationDrawer = ({
               現在選択中の種目
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              選択中: {workoutConfig.exercises.length}/3種目
+              選択中: {workoutConfig.exercises.length}/5種目
             </Typography>
 
             <List dense>
@@ -258,7 +257,7 @@ const WorkoutCustomizationDrawer = ({
           <Divider sx={{ my: 2 }} />
 
           {/* 種目追加セクション */}
-          {workoutConfig.exercises.length >= 3 ? (
+          {workoutConfig.exercises.length >= 5 ? (
             <Box sx={{ mb: 2, textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
                 📝 種目は最大3つまで選択可能です

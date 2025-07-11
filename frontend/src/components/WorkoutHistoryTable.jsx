@@ -59,8 +59,7 @@ const WorkoutHistoryTable = ({
     return description;
   };
 
-  console.log('💪🏃‍♀️WorkoutHistoryTable - workouts:', workouts);
-  console.log('💪🏃‍♀️WorkoutHistoryTable - workoutConfig:', workoutConfig);
+
 
   return (
     <div className="bg-white rounded-lg shadow-sm border overflow-hidden">

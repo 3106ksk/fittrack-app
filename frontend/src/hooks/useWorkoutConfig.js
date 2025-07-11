@@ -31,8 +31,10 @@ const useWorkoutConfig = () => {
       exerciseData.nameMapping.pushup || 'プッシュアップ',
       exerciseData.nameMapping.squat || 'スクワット',
       exerciseData.nameMapping.walking || 'ウォーキング',
+      exerciseData.nameMapping.jumping_lunge || 'ジャンプランジ',
+      exerciseData.nameMapping.jump_squat || 'ジャンプスクワット',
     ],
-    maxSets: 3,
+    maxSets: 5,
     displayColumns: ['totalReps', 'totalTime'],
   });
 
@@ -122,7 +124,7 @@ const useWorkoutConfig = () => {
               ? validExercises
               : workoutConfig.exercises,
         });
-        console.log('📖 設定読み込み・バリデーション完了:', parsed);
+
       } catch (error) {
         console.error('❌ 設定読み込み失敗:', error);
       }
@@ -132,20 +134,18 @@ const useWorkoutConfig = () => {
   const saveConfig = useCallback(newConfig => {
     setWorkoutConfig(newConfig);
     localStorage.setItem('workoutConfig', JSON.stringify(newConfig));
-    console.log('💾 設定保存完了:', newConfig);
   }, []);
 
   const addExercise = useCallback(
     exercise => {
       if (!exerciseData.all.includes(exercise)) {
         console.error('❌ 未定義の種目:', exercise);
-        console.log('利用可能な種目:', exerciseData.all);
         alert(`「${exercise}」は利用できません`);
         return;
       }
 
-      if (workoutConfig.exercises.length >= 3) {
-        alert('種目は最大3つまでです');
+      if (workoutConfig.exercises.length >= 5) {
+        alert('種目は最大5つまでです');
         return;
       }
 
@@ -184,7 +184,6 @@ const useWorkoutConfig = () => {
 
       if (!preset) {
         console.error('❌ 存在しないプリセット:', presetKey);
-        console.log('利用可能なプリセット:', Object.keys(presets));
         return;
       }
 

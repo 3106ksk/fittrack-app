@@ -37,7 +37,6 @@ const WorkoutHistory = () => {
           },
         });
         const transformedData = transformWorkoutData(response.data);
-        console.log('📊WorkoutHistory - transformedData:', transformedData);
         setWorkouts(transformedData);
         setLoading(false);
       } catch (error) {
