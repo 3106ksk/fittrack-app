@@ -1,5 +1,8 @@
 const calculateWorkoutStats = workouts => {
-  const currentStats = workouts.reduce(
+  // workoutsが未定義またはnullの場合、空の配列として処理
+  const safeWorkouts = workouts || [];
+  
+  const currentStats = safeWorkouts.reduce(
     (acc, workout) => {
       return {
         totalDays: acc.totalDays + 1,

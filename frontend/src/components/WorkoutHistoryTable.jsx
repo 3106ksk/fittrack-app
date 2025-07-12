@@ -1,3 +1,16 @@
+import { CalendarMonth as CalendarIcon } from '@mui/icons-material';
+import {
+    Box,
+    CircularProgress,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
+    useTheme
+} from '@mui/material';
 import React from 'react';
 
 const WorkoutHistoryTable = ({
@@ -7,32 +20,67 @@ const WorkoutHistoryTable = ({
   isCardioExercise,
   isStrengthExercise,
 }) => {
+  const theme = useTheme();
+
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">詳細履歴</h2>
-        </div>
-
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-          <span className="ml-3 text-gray-600">読み込み中...</span>
-        </div>
-      </div>
+      <Box>
+        <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            詳細履歴
+          </Typography>
+        </Box>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            height: 256,
+            flexDirection: 'column',
+            gap: 2,
+          }}
+        >
+          <CircularProgress size={32} />
+          <Typography variant="body2" color="text.secondary">
+            読み込み中...
+          </Typography>
+        </Box>
+      </Box>
     );
   }
 
   if (workouts.length === 0) {
     return (
-      <div className="bg-blue-50 border border-blue-200 rounded-md p-6 text-center">
-        <div className="h-12 w-12 text-blue-400 mx-auto mb-4">📅</div>
-        <p className="text-blue-600 font-medium mb-2">
-          ワークアウト履歴がありません
-        </p>
-        <p className="text-blue-500 text-sm">
-          新しいワークアウトを開始しましょう！
-        </p>
-      </div>
+      <Box>
+        <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            詳細履歴
+          </Typography>
+        </Box>
+        <Box 
+          sx={{ 
+            p: 6, 
+            textAlign: 'center',
+            bgcolor: theme.palette.info.light + '20',
+            borderRadius: 2,
+            m: 3,
+          }}
+        >
+          <CalendarIcon 
+            sx={{ 
+              fontSize: 48, 
+              color: theme.palette.info.main,
+              mb: 2,
+            }} 
+          />
+          <Typography variant="h6" color="info.main" sx={{ fontWeight: 'bold', mb: 1 }}>
+            ワークアウト履歴がありません
+          </Typography>
+          <Typography variant="body2" color="info.main">
+            新しいワークアウトを開始しましょう！
+          </Typography>
+        </Box>
+      </Box>
     );
   }
 
@@ -59,60 +107,85 @@ const WorkoutHistoryTable = ({
     return description;
   };
 
-
-
   return (
-    <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">詳細履歴</h2>
-        <p className="text-sm text-gray-600 mt-1">{getDisplayDescription()}</p>
-      </div>
+    <Box>
+      {/* ヘッダー */}
+      <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
+        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+          詳細履歴
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {getDisplayDescription()}
+        </Typography>
+      </Box>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-
+      {/* テーブル */}
+      <TableContainer>
+        <Table sx={{ minWidth: 650 }} aria-label="workout history table">
           {/* 第1段階: 種目名のヘッダー */}
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+          <TableHead>
+            <TableRow sx={{ bgcolor: theme.palette.grey[50] }}>
+              <TableCell 
+                sx={{ 
+                  fontWeight: 'bold',
+                  borderRight: `1px solid ${theme.palette.divider}`,
+                  minWidth: 100,
+                }}
+              >
                 日付
-              </th>
+              </TableCell>
               {workoutConfig.exercises.map(exerciseName => {
                 const isCardio = isCardioExercise(exerciseName);
                 const colSpan = isCardio ? 2 : workoutConfig.maxSets;
 
                 return (
-                  <React.Fragment key={exerciseName}>
-                    <th
-                      colSpan={colSpan}
-                      className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200"
-                    >
-                      {exerciseName}
-                      {isCardio && (
-                        <div className="text-xs text-gray-400 mt-1">
-                          (距離・時間)
-                        </div>
-                      )}
-                    </th>
-                  </React.Fragment>
+                  <TableCell
+                    key={exerciseName}
+                    colSpan={colSpan}
+                    align="center"
+                    sx={{ 
+                      fontWeight: 'bold',
+                      borderRight: `1px solid ${theme.palette.divider}`,
+                      minWidth: isCardio ? 160 : colSpan * 80,
+                    }}
+                  >
+                    {exerciseName}
+                    {isCardio && (
+                      <Typography variant="caption" display="block" color="text.secondary">
+                        (距離・時間)
+                      </Typography>
+                    )}
+                  </TableCell>
                 );
               })}
 
               {workoutConfig.displayColumns?.includes('totalReps') && (
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
+                <TableCell 
+                  align="center"
+                  sx={{ 
+                    fontWeight: 'bold',
+                    borderRight: `1px solid ${theme.palette.divider}`,
+                  }}
+                >
                   合計回数
-                </th>
+                </TableCell>
               )}
 
               {workoutConfig.displayColumns?.includes('totalTime') && (
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <TableCell 
+                  align="center"
+                  sx={{ fontWeight: 'bold' }}
+                >
                   合計時間
-                </th>
+                </TableCell>
               )}
-            </tr>
+            </TableRow>
 
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border-r border-gray-200"></th>
+            {/* 第2段階: セット/詳細のヘッダー */}
+            <TableRow sx={{ bgcolor: theme.palette.grey[100] }}>
+              <TableCell 
+                sx={{ borderRight: `1px solid ${theme.palette.divider}` }}
+              />
               {workoutConfig.exercises.map(exerciseName => {
                 const isCardio = isCardioExercise(exerciseName);
 
@@ -120,21 +193,43 @@ const WorkoutHistoryTable = ({
                   <React.Fragment key={`${exerciseName}-headers`}>
                     {isCardio ? (
                       <>
-                        <th className="px-3 py-2 text-xs text-gray-600 border-r border-gray-200">
+                        <TableCell 
+                          align="center"
+                          sx={{ 
+                            fontSize: '0.75rem',
+                            color: theme.palette.text.secondary,
+                            borderRight: `1px solid ${theme.palette.divider}`,
+                            py: 1,
+                          }}
+                        >
                           距離(km)
-                        </th>
-                        <th className="px-3 py-2 text-xs text-gray-600 border-r border-gray-200">
+                        </TableCell>
+                        <TableCell 
+                          align="center"
+                          sx={{ 
+                            fontSize: '0.75rem',
+                            color: theme.palette.text.secondary,
+                            borderRight: `1px solid ${theme.palette.divider}`,
+                            py: 1,
+                          }}
+                        >
                           時間(分)
-                        </th>
+                        </TableCell>
                       </>
                     ) : (
                       Array.from({ length: workoutConfig.maxSets }, (_, i) => (
-                        <th
+                        <TableCell
                           key={i}
-                          className="px-3 py-2 text-xs text-gray-600 border-r border-gray-200"
+                          align="center"
+                          sx={{ 
+                            fontSize: '0.75rem',
+                            color: theme.palette.text.secondary,
+                            borderRight: `1px solid ${theme.palette.divider}`,
+                            py: 1,
+                          }}
                         >
                           {i + 1}セット
-                        </th>
+                        </TableCell>
                       ))
                     )}
                   </React.Fragment>
@@ -142,69 +237,112 @@ const WorkoutHistoryTable = ({
               })}
 
               {workoutConfig.displayColumns?.includes('totalReps') && (
-                <th className="px-4 py-2 border-r border-gray-200"></th>
+                <TableCell 
+                  sx={{ borderRight: `1px solid ${theme.palette.divider}` }}
+                />
               )}
               {workoutConfig.displayColumns?.includes('totalTime') && (
-                <th className="px-4 py-2"></th>
+                <TableCell />
               )}
-            </tr>
-          </thead>
+            </TableRow>
+          </TableHead>
 
-<tbody className="bg-white divide-y divide-gray-200">
-  {workouts.map((workout, index) => (
-    <tr key={workout.date} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-      {/* 日付セル */}
-      <td className="px-4 py-3 text-sm font-medium text-gray-900 border-r border-gray-200">
-        {workout.date}
-      </td>
-      
-      {/* 各種目のデータセル */}
-      {workoutConfig.exercises.map((exerciseName) => {
-        const exercise = workout.exercises[exerciseName]; // ✅ 正しいアクセス
-        const isCardio = isCardioExercise(exerciseName);
-        
-        return (
-          <React.Fragment key={`${workout.date}-${exerciseName}`}>
-            {isCardio ? (
-              <>
-                <td className="px-3 py-3 text-sm text-center text-gray-700 border-r border-gray-200">
-                  {exercise?.distance ? `${exercise.distance}km` : '-'}
-                </td>
-                <td className="px-3 py-3 text-sm text-center text-gray-700 border-r border-gray-200">
-                  {exercise?.duration ? `${exercise.duration}分` : '-'}
-                </td>
-              </>
-            ) : (
-              Array.from({ length: workoutConfig.maxSets }, (_, i) => {
-                const setKey = `set${i + 1}`;
-                return (
-                  <td key={setKey} className="px-3 py-3 text-sm text-center text-gray-700 border-r border-gray-200">
-                    {exercise?.[setKey] || '-'}
-                  </td>
-                );
-              })
-            )}
-          </React.Fragment>
-        );
-      })}
-      
-      {/* 合計値セル */}
-      {workoutConfig.displayColumns?.includes('totalReps') && (
-        <td className="px-4 py-3 text-sm text-center font-semibold text-blue-600 border-r border-gray-200">
-          {workout.totalReps}
-        </td>
-      )}
-      {workoutConfig.displayColumns?.includes('totalTime') && (
-        <td className="px-4 py-3 text-sm text-center font-semibold text-purple-600">
-          {workout.totalTime}分
-        </td>
-      )}
-    </tr>
-  ))}
-</tbody>
-        </table>
-      </div>
-    </div>
+          {/* データ行 */}
+          <TableBody>
+                         {workouts.map((workout) => (
+              <TableRow 
+                key={workout.date} 
+                sx={{ 
+                  '&:nth-of-type(odd)': { 
+                    bgcolor: theme.palette.action.hover 
+                  },
+                  '&:hover': {
+                    bgcolor: theme.palette.action.selected,
+                  },
+                }}
+              >
+                {/* 日付セル */}
+                <TableCell 
+                  component="th" 
+                  scope="row"
+                  sx={{ 
+                    fontWeight: 'bold',
+                    borderRight: `1px solid ${theme.palette.divider}`,
+                  }}
+                >
+                  {workout.date}
+                </TableCell>
+                
+                {/* 各種目のデータセル */}
+                {workoutConfig.exercises.map((exerciseName) => {
+                  const exercise = workout.exercises[exerciseName];
+                  const isCardio = isCardioExercise(exerciseName);
+                  
+                  return (
+                    <React.Fragment key={`${workout.date}-${exerciseName}`}>
+                      {isCardio ? (
+                        <>
+                          <TableCell 
+                            align="center"
+                            sx={{ borderRight: `1px solid ${theme.palette.divider}` }}
+                          >
+                            {exercise?.distance ? `${exercise.distance}km` : '-'}
+                          </TableCell>
+                          <TableCell 
+                            align="center"
+                            sx={{ borderRight: `1px solid ${theme.palette.divider}` }}
+                          >
+                            {exercise?.duration ? `${exercise.duration}分` : '-'}
+                          </TableCell>
+                        </>
+                      ) : (
+                        Array.from({ length: workoutConfig.maxSets }, (_, i) => {
+                          const setKey = `set${i + 1}`;
+                          return (
+                            <TableCell 
+                              key={setKey} 
+                              align="center"
+                              sx={{ borderRight: `1px solid ${theme.palette.divider}` }}
+                            >
+                              {exercise?.[setKey] || '-'}
+                            </TableCell>
+                          );
+                        })
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+                
+                {/* 合計値セル */}
+                {workoutConfig.displayColumns?.includes('totalReps') && (
+                  <TableCell 
+                    align="center"
+                    sx={{ 
+                      fontWeight: 'bold',
+                      color: theme.palette.primary.main,
+                      borderRight: `1px solid ${theme.palette.divider}`,
+                    }}
+                  >
+                    {workout.totalReps}
+                  </TableCell>
+                )}
+                {workoutConfig.displayColumns?.includes('totalTime') && (
+                  <TableCell 
+                    align="center"
+                    sx={{ 
+                      fontWeight: 'bold',
+                      color: theme.palette.secondary.main,
+                    }}
+                  >
+                    {workout.totalTime}分
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
 
