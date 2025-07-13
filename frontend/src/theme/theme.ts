@@ -1,22 +1,21 @@
-// src/theme/theme.ts
 import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#2E7D32', // フィットネス緑
+      main: '#2E7D32', // 緑色 - フィットネス・健康をイメージ
       dark: '#1B5E20',
       light: '#4CAF50',
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#FF6F00', // エネルギーオレンジ
+      main: '#FF6F00', // オレンジ色 - エネルギー・アクティビティをイメージ
       dark: '#E65100',
       light: '#FF8F00',
       contrastText: '#ffffff',
     },
     background: {
-      default: '#F8FAF8', // 軽やかなグレイッシュホワイト
+      default: '#F8FAF8',
       paper: '#FFFFFF',
     },
     success: {
@@ -26,7 +25,7 @@ export const theme = createTheme({
     },
     info: {
       main: '#2196F3',
-      light: '#64B5F6', 
+      light: '#64B5F6',
       dark: '#1976D2',
     },
     warning: {
@@ -82,11 +81,10 @@ export const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: 12, // 丸みを帯びたモダンデザイン
+    borderRadius: 12,
   },
   spacing: 8,
   components: {
-    // Card コンポーネントのデフォルトスタイル
     MuiCard: {
       styleOverrides: {
         root: {
@@ -99,12 +97,11 @@ export const theme = createTheme({
         },
       },
     },
-    // Button コンポーネントのデフォルトスタイル
     MuiButton: {
       styleOverrides: {
         root: {
           borderRadius: 8,
-          textTransform: 'none', // 大文字変換無効
+          textTransform: 'none',
           fontSize: '1rem',
           fontWeight: 500,
           padding: '10px 24px',
@@ -117,7 +114,6 @@ export const theme = createTheme({
         },
       },
     },
-    // AppBar のデフォルトスタイル
     MuiAppBar: {
       styleOverrides: {
         root: {
@@ -127,7 +123,14 @@ export const theme = createTheme({
         },
       },
     },
-    // Chip のデフォルトスタイル
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#FAFAFA',
+          borderRight: '1px solid #E0E0E0',
+        },
+      },
+    },
     MuiChip: {
       styleOverrides: {
         root: {
@@ -136,7 +139,6 @@ export const theme = createTheme({
         },
       },
     },
-    // LinearProgress のデフォルトスタイル
     MuiLinearProgress: {
       styleOverrides: {
         root: {
@@ -148,4 +150,4 @@ export const theme = createTheme({
   },
 });
 
-export default theme;
+export default theme; 

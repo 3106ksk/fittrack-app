@@ -1,5 +1,15 @@
-import { Settings as SettingsIcon } from '@mui/icons-material';
-import { Button, Container, Typography } from '@mui/material';
+import { Refresh as RefreshIcon, Settings as SettingsIcon } from '@mui/icons-material';
+import {
+    Alert,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Container,
+    Paper,
+    Typography,
+    useTheme
+} from '@mui/material';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
@@ -9,10 +19,11 @@ import useWorkoutConfig from '../hooks/useWorkoutConfig';
 import transformWorkoutData from '../services/TransformWorkoutData';
 
 const WorkoutHistory = () => {
+  const theme = useTheme();
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [drawerOpen, setDrawerOpen] = useState(false); // カスタマイズドロワーの開閉状態
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const {
     workoutConfig,
@@ -26,26 +37,28 @@ const WorkoutHistory = () => {
     updateMaxSets,
   } = useWorkoutConfig();
 
+  const fetchWorkouts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:8000/workouts', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const transformedData = transformWorkoutData(response.data);
+      setWorkouts(transformedData);
+    } catch (error) {
+      console.error('ワークアウト履歴の取得に失敗しました:', error);
+      setError(error);
+      setWorkouts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchWorkouts = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/workouts', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const transformedData = transformWorkoutData(response.data);
-        setWorkouts(transformedData);
-        setLoading(false);
-      } catch (error) {
-        console.error('ワークアウト履歴の取得に失敗しました:', error);
-        setError(error);
-        setLoading(false);
-        setWorkouts([]);
-      }
-    };
     fetchWorkouts();
   }, []);
 
@@ -71,49 +84,73 @@ const WorkoutHistory = () => {
     return description;
   };
 
-  if (error) {
-    const getErrorMessage = () => {
-      if (error.response?.status === 401) {
-        return '認証情報が無効です。再度ログインしてください。';
-      }
-      if (error.code === 'ERR_NETWORK') {
-        return 'インターネット接続を確認してください。';
-      }
-      return `エラーが発生しました。': ${error.message}`;
-    };
+  const getErrorMessage = () => {
+    if (error?.response?.status === 401) {
+      return '認証情報が無効です。再度ログインしてください。';
+    }
+    if (error?.code === 'ERR_NETWORK') {
+      return 'インターネット接続を確認してください。';
+    }
+    return `エラーが発生しました: ${error?.message || '不明なエラー'}`;
+  };
 
+  if (error) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-red-600">{getErrorMessage()}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Alert 
+          severity="error" 
+          action={
+            <Button 
+              color="inherit" 
+              size="small" 
+              onClick={fetchWorkouts}
+              startIcon={<RefreshIcon />}
             >
               再試行
-            </button>
-          </div>
-        </div>
-      </div>
+            </Button>
+          }
+          sx={{ mb: 3 }}
+        >
+          {getErrorMessage()}
+        </Alert>
+      </Container>
     );
   }
 
-
-
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h6">ワークアウト履歴</Typography>
-      <Typography variant="body2" color="text.secondary">
-        カスタム設定：{getConfigDescription()}
-      </Typography>
-      <Button
-        variant="outlined"
-        startIcon={<SettingsIcon />}
-        onClick={() => setDrawerOpen(true)}
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      {/* ヘッダーセクション */}
+      <Paper 
+        elevation={2} 
+        sx={{ 
+          p: 3, 
+          mb: 4,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main}10, ${theme.palette.secondary.main}10)`,
+        }}
       >
-        カスタマイズ
-      </Button>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Box>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              ワークアウト履歴
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              カスタム設定：{getConfigDescription()}
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<SettingsIcon />}
+            onClick={() => setDrawerOpen(true)}
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              py: 1,
+            }}
+          >
+            カスタマイズ
+          </Button>
+        </Box>
+      </Paper>
 
       {/* カスタマイズドロワー */}
       <WorkoutCustomizationDrawer
@@ -129,17 +166,25 @@ const WorkoutHistory = () => {
         updateMaxSets={updateMaxSets}
       />
 
-      {/* 統計情報 */}
-      <WorkoutStatistics workouts={workouts} loading={loading} />
+      {/* 統計情報セクション */}
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <WorkoutStatistics workouts={workouts} loading={loading} />
+        </CardContent>
+      </Card>
 
-      {/* ワークアウト履歴テーブル */}
-      <WorkoutHistoryTable
-        workouts={workouts}
-        workoutConfig={workoutConfig}
-        loading={loading}
-        isCardioExercise={isCardioExercise}
-        isStrengthExercise={isStrengthExercise}
-      />
+      {/* ワークアウト履歴テーブルセクション */}
+      <Card>
+        <CardContent sx={{ p: 0 }}>
+          <WorkoutHistoryTable
+            workouts={workouts}
+            workoutConfig={workoutConfig}
+            loading={loading}
+            isCardioExercise={isCardioExercise}
+            isStrengthExercise={isStrengthExercise}
+          />
+        </CardContent>
+      </Card>
     </Container>
   );
 };

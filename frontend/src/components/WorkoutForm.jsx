@@ -1,12 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Alert, Box, Button, Card, CardContent, Chip, Divider, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import useFormConfig from '../hooks/useFormConfig';
 import useFormValidation from '../hooks/useFormValidation';
 import useWorkoutConfig from '../hooks/useWorkoutConfig';
+import { workoutEffectAnalyzer } from '../services/workoutEffectAnalyzer';
 import { generateDefaultValues } from '../utils/formDefaults';
+import WorkoutEffectAnalysis from './WorkoutEffectAnalysis';
 
 const WorkoutForm = () => {
   const formConfig = useFormConfig();
@@ -18,6 +20,12 @@ const WorkoutForm = () => {
     type: '',
     visible: false,
   });
+
+  // トレーニング効果分析をリアルタイムで計算
+  const workoutAnalysis = useMemo(() => {
+    if (formConfig.exercises.length === 0) {return null;}
+    return workoutEffectAnalyzer.analyzeWorkout(formConfig.exercises, formConfig.maxSets);
+  }, [formConfig.exercises, formConfig.maxSets]);
 
 
   const {
@@ -149,6 +157,18 @@ const WorkoutForm = () => {
               履歴ページで種目設定を変更できます
             </Typography>
           </Box>
+
+          {/* トレーニング効果予測 */}
+          {workoutAnalysis && (
+            <Card variant="outlined" sx={{ mb: 3, bgcolor: 'primary.50' }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  🎯 今回のワークアウト効果予測
+                </Typography>
+                <WorkoutEffectAnalysis analysis={workoutAnalysis} compact />
+              </CardContent>
+            </Card>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={3}>
