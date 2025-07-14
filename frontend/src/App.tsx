@@ -1,3 +1,4 @@
+import { CssBaseline, ThemeProvider } from '@mui/material';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
 import { AuthContextProvider } from './components/AuthContext';
@@ -10,18 +11,22 @@ import DashboadPage from './pages/Dashboad';
 import Register from './pages/Register';
 import WorkoutFormPage from './pages/WorkoutForm';
 import WorkoutHistory from './pages/WorkoutHistory';
+import { theme } from './theme/theme';
+
 function App() {
   return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
     <Router>
       <AuthContextProvider>
         <Navbar />
         <Routes>
           <Route
-            path="/dashboard"
+            path="/"
             element={<PrivateRoute element={<DashboadPage />} />}
           />
           <Route
-            path="/"
+            path="/workout-form"
             element={<PrivateRoute element={<WorkoutFormPage />} />}
           />
           <Route
@@ -46,6 +51,7 @@ function App() {
         </Routes>
       </AuthContextProvider>
     </Router>
+    </ThemeProvider>
   );
 }
 
