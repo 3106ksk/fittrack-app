@@ -5,9 +5,9 @@ import {
   Logout as LogoutIcon,
   MoreVert as MoreVertIcon,
   DirectionsRun as RunIcon,
-  } from '@mui/icons-material';
+} from '@mui/icons-material';
 
-import { AppBar, Avatar, Box, Button, IconButton, Toolbar, Typography, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
+import { AppBar, Avatar, Box, Button, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from './Hook';
