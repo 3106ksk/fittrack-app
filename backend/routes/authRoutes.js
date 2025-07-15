@@ -17,10 +17,10 @@ router.post("/register",
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-      const existingUser = await User.findOne({ where: { username } });
+      const existingEmail = await User.findOne({ where: { email } });
 
-      if (existingUser) {
-        return res.status(400).json([{ message: "This username is already taken" }]);
+      if (existingEmail) {
+        return res.status(409).json([{ message: "This email is already taken" }]);
       }
 
       let hashedPassword = await bcrypt.hash(password, 10);
