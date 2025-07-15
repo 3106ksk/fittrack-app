@@ -53,13 +53,7 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-
-  console.log(isLoading);
-  console.log(onSubmit);
-  console.log(errors);
-  console.log(register);
-  console.log(handleSubmit);
-
+  
   return (
     <Container component="main" maxWidth="sm">
       <Box

@@ -120,7 +120,8 @@ const WorkoutForm = () => {
   };
   const DISTANCE_OPTIONS = Array.from({ length: 21 }, (_, i) => (i * 0.5).toFixed(1));
   const DURATION_OPTIONS = Array.from({ length: 25 }, (_, i) => i * 5).filter(d => d > 0);
-  const REPS_OPTIONS = [5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100];
+  const REPS_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+  
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
