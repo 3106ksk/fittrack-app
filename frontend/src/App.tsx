@@ -7,7 +7,7 @@ import Logout from './components/Logout';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
-import DashboadPage from './pages/Dashboad';
+import DashboardPage from './pages/Dashboard';
 import Register from './pages/Register';
 import WorkoutFormPage from './pages/WorkoutForm';
 import WorkoutHistory from './pages/WorkoutHistory';
@@ -22,8 +22,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route
-            path="/"
-            element={<PrivateRoute element={<DashboadPage />} />}
+            path="/dashboard"
+            element={<PrivateRoute element={<DashboardPage />} />}
           />
           <Route
             path="/workout-form"
