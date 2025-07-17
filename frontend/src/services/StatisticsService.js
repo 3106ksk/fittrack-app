@@ -5,9 +5,10 @@ const calculateWorkoutStats = workouts => {
         totalDays: acc.totalDays + 1,
         totalReps: acc.totalReps + (workout.totalReps || 0),
         totalTime: acc.totalTime + (workout.totalTime || 0),
+
       };
     },
-    { totalDays: 0, totalReps: 0, totalTime: 0 }
+    { totalDays: 0, totalReps: 0, totalTime: 0, averageIntensity: 0 }
   );
 
   
@@ -17,6 +18,7 @@ const calculateWorkoutStats = workouts => {
     totalDays: 12,
     totalReps: 340,
     totalTime: 150,
+
   };
 
   const calculateChangeRate = (current, last) => {
@@ -36,6 +38,7 @@ const calculateWorkoutStats = workouts => {
     lastTotalDays: lastMonthStats.totalDays,
     lastTotalReps: lastMonthStats.totalReps,
     lastTotalTime: lastMonthStats.totalTime,
+
 
     // 変化率
     daysChangeRate: calculateChangeRate(
