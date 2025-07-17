@@ -1,16 +1,11 @@
+
 import {
-  Grid,
-  Card,
-  CardContent,
-  Typography,
   Box,
-  Avatar,
+  Card,
   Chip,
+  Grid,
+  Typography
 } from '@mui/material';
-import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-} from '@mui/icons-material';
 
 const StatCard = ({
   title,
@@ -20,73 +15,73 @@ const StatCard = ({
   icon: Icon,
   lastValue,
   color,
+  gridSize = {xs:6, sm:3}
 }) => {
   const isPositive = changeRate >= 0;
-  const TrendIcon = isPositive ? TrendingUpIcon : TrendingDownIcon;
+
+
+
 
   return (
-    <Grid item xs={12} sm={6} md={4}>
-      <Card
-        elevation={2}
-        sx={{
-          height: '100%',
-          transition: 'transform 0.2s ease-in-out',
+    <Grid item {...gridSize}>
+      <Card 
+        elevation={2} 
+        sx={{ 
+          borderRadius: 2, 
+          textAlign: 'center', 
+          p: 2,
+          height: '100%',  // 統一された高さ
+          transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
           '&:hover': {
             transform: 'translateY(-4px)',
-            boxShadow: 3,
+            boxShadow: 4,
           },
         }}
       >
-        <CardContent>
-          <Box display="flex" alignItems="center" mb={2}>
-            <Avatar
-              sx={{
-                bgcolor: `${color}.main`,
-                mr: 2,
-                width: 48,
-                height: 48,
-              }}
-            >
-              <Icon />
-            </Avatar>
-            <Box flex={1}>
-              <Typography
-                variant="h4"
-                component="div"
-                fontWeight="bold"
-                color="text.primary"
-              >
-                {value}
-                {unit}
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ mt: 0.5 }}
-              >
-                {title}
-              </Typography>
-            </Box>
-          </Box>
+        {/* アイコンエリア */}
+        <Box sx={{ color: `${color}.main`, mb: 1 }}>
+          <Icon sx={{ fontSize: 40 }} />
+        </Box>
 
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography variant="caption" color="text.secondary">
-              先月 {lastValue}
-              {unit}
-            </Typography>
-            <Chip
-              icon={<TrendIcon />}
-              label={`${isPositive ? '+' : ''}${changeRate}%`}
-              color={isPositive ? 'success' : 'error'}
-              size="small"
-              variant="outlined"
-            />
-          </Box>
-        </CardContent>
+        {/* 値表示エリア */}
+        <Typography 
+          variant="h4" 
+          fontWeight="bold" 
+          color={`${color}.main`}
+          component="div"
+        >
+          {value}{unit}
+        </Typography>
+
+        {/* タイトルエリア */}
+        <Typography 
+          variant="body2" 
+          color="text.secondary"
+          sx={{ mb: 1 }}
+        >
+          {title}
+        </Typography>
+
+        {/* 前月比較チップ */}
+        <Box sx={{ mt: 1 }}>
+          <Chip 
+            label={
+              changeRate !== undefined 
+                ? `先月より ${isPositive ? '+' : ''}${changeRate}%`
+                : `先月 ${lastValue}${unit}`
+            }
+            size="small" 
+            color={
+              changeRate !== undefined 
+                ? (isPositive ? 'success' : 'error')
+                : 'default'
+            }
+            sx={{ 
+              fontSize: '0.7rem',
+              height: 24,  // 統一された高さ
+            }}
+          />
+        </Box>
       </Card>
     </Grid>
   );

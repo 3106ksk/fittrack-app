@@ -19,7 +19,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const {
-    register,
+    // register,
     handleSubmit,
     control,
     formState: { errors },
