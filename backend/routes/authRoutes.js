@@ -23,7 +23,8 @@ router.post("/register",
         return res.status(409).json([{ message: "This email is already taken" }]);
       }
 
-      let hashedPassword = await bcrypt.hash(password, 10);
+      const saltRounds = parseInt(process.env.BCRYPT_ROUNDS);
+      let hashedPassword = await bcrypt.hash(password, saltRounds);
       const newUser = await User.create({ username, email, password: hashedPassword });
       return res.status(201).json(newUser);
 
@@ -49,7 +50,7 @@ router.post("/login", async (req, res) => {
     const token = await JWT.sign(
       { id: existingUser.id },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "24h" }
+      { expiresIn: process.env.JWT_EXPIRES_IN }
     );
     return res.json({
       token,
@@ -107,7 +108,7 @@ router.post("/refresh-token", async (req, res) => {
     const token = await JWT.sign(
       { id: user.id },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "24h" }
+      { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
     return res.json({ token });

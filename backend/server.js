@@ -1,16 +1,16 @@
 const express = require('express');
 const app = express();
-const port = 8000;
+require('dotenv').config();
+const port = process.env.PORT;
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const authRouter = require("./routes/authRoutes");
 const workouts = require('./routes/workouts');
-require('dotenv').config();
 
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: process.env.CORS_ORIGIN
 }));
 
 app.use(express.json());
