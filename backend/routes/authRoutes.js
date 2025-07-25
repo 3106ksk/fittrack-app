@@ -6,9 +6,10 @@ const bcrypt = require('bcrypt');
 const JWT = require("jsonwebtoken")
 
 router.post("/register",
-  [body("username").notEmpty().withMessage("Username is required"),
-  body("email").isEmail().withMessage("Invalid email format"),
-  body("password").isLength({ min: 6 }).withMessage("password is minimum 6characters")
+  [
+    body("username").notEmpty().withMessage("Username is required"),
+    body("email").isEmail().withMessage("Invalid email format"),
+    body("password").isLength({ min: 6 }).withMessage("password is minimum 6characters")
   ], async (req, res) => {
     const { username, email, password } = req.body;
     const errors = validationResult(req);
@@ -20,7 +21,9 @@ router.post("/register",
       const existingEmail = await User.findOne({ where: { email } });
 
       if (existingEmail) {
-        return res.status(409).json([{ message: "This email is already taken" }]);
+        return res.status(409).json({
+          error: "This email is already taken"
+        });
       }
 
       const saltRounds = parseInt(process.env.BCRYPT_ROUNDS);
@@ -35,6 +38,10 @@ router.post("/register",
   });
 
 router.post("/login", async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   const { email, password } = req.body;
   try {
     const existingUser = await User.findOne({ where: { email } });
