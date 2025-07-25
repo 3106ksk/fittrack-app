@@ -1,6 +1,6 @@
 // backend/tests/auth.test.js
 const request = require('supertest');
-const app = require('../app'); // Express appをインポート
+const app = require('../server');
 const { User } = require('../models');
 
 describe('認証機能', () => {
