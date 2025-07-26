@@ -27,10 +27,21 @@ router.post("/register",
       }
 
       const saltRounds = parseInt(process.env.BCRYPT_ROUNDS);
-      let hashedPassword = await bcrypt.hash(password, saltRounds);
-      const newUser = await User.create({ username, email, password: hashedPassword });
-      return res.status(201).json(newUser);
 
+      let hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      const newUser = await User.create({ 
+        username,
+        email,
+        password: hashedPassword,
+      });
+
+      const userResponse = {
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email
+      };
+      return res.status(201).json(userResponse);
     } catch (error) {
       console.error("Error finding user:", error);
       return res.status(500).json({ message: "Internal server error" });
