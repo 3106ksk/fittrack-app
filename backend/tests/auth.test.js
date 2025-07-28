@@ -95,4 +95,103 @@ describe('認証機能', () => {
     });
   });
 
+  describe('POST /authrouter/login', () => {
+    let testUser;
+    beforeEach(async () => {
+      testUser = await createTestUser();
+    });
+
+    test('正しい認証情報でログインできる', async () => {
+      console.log('Test user password (hashed):', testUser.password);
+      console.log('Login password (plain):', 'password123');
+
+      const loginData = {
+        email: 'test@example.com',
+        password: 'password123'
+      };
+
+      const response = await request(app)
+        .post('/authrouter/login')
+        .send(loginData)
+        .expect(200);
+
+      expect(response.body).toHaveProperty('token');
+      expect(response.body.user).toHaveProperty('id', testUser.id);
+      expect(response.body.user.email).toBe(testUser.email);
+    });
+
+    test('間違ったパスワードでログインに失敗する', async () => {
+      const loginData = {
+        email: 'test@example.com',
+        password: 'wrongpassword'
+      };
+
+      const response = await request(app)
+        .post('/authrouter/login')
+        .send(loginData)
+        .expect(401);
+
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body[0]).toHaveProperty('message');
+      expect(response.body[0].message).toContain('Incorrect password'); 
+    });
+
+    test('存在しないメールアドレスでログインに失敗する', async () => {
+      const loginData = {
+        email: 'nonexistent@example.com',
+        password: 'password123'
+      };
+
+      const response = await request(app)
+        .post('/authrouter/login')
+        .send(loginData)
+        .expect(401);
+
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body[0]).toHaveProperty('message');
+      expect(response.body[0].message).toContain('This user is not found');
+    });
+
+    test('空のメールアドレスでログインに失敗する', async () => {
+      const loginData = {
+        email: '',
+        password: 'password123'
+      };
+
+      const response = await request(app)
+        .post('/authrouter/login')
+        .send(loginData)
+        .expect(400);
+
+      expect(response.body).toHaveProperty('errors');
+      expect(Array.isArray(response.body.errors)).toBe(true);
+    });
+
+    test('空のパスワードでログインに失敗する', async () => {
+      const loginData = {
+        email: 'test@example.com',
+        password: ''
+      };
+
+      const response = await request(app)
+        .post('/authrouter/login')
+        .send(loginData)
+        .expect(400);
+
+      expect(response.body).toHaveProperty('errors');
+      expect(Array.isArray(response.body.errors)).toBe(true);
+    });
+
+    test('リクエストボディが空の場合にエラーが発生する', async () => {
+      const response = await request(app)
+        .post('/authrouter/login')
+        .send({})
+        .expect(400);
+
+      expect(response.body).toHaveProperty('errors');
+      expect(Array.isArray(response.body.errors)).toBe(true);
+    });
+
+  });
+
 });

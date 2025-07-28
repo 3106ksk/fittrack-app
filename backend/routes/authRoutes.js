@@ -48,7 +48,10 @@ router.post("/register",
     }
   });
 
-router.post("/login", async (req, res) => {
+router.post("/login", [
+  body("email").notEmpty().withMessage("Email is required"),
+  body("password").notEmpty().withMessage("Password is required")
+], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -58,11 +61,11 @@ router.post("/login", async (req, res) => {
     const existingUser = await User.findOne({ where: { email } });
 
     if (!existingUser) {
-      return res.status(400).json([{ message: "This user is not found" }]);
+      return res.status(401).json([{ message: "This user is not found" }]);
     }
     const isMatch = await bcrypt.compare(password, existingUser.password);
     if (!isMatch) {
-      return res.status(400).json([{ message: "Incorrect password" }]);
+      return res.status(401).json([{ message: "Incorrect password" }]);
     }
 
     const token = await JWT.sign(
