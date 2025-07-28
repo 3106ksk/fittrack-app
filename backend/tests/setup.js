@@ -26,9 +26,13 @@ afterAll(async () => {
 // テスト用のユーティリティ関数
 global.createTestUser = async () => {
   const { User } = require('../models');
+  const bcrypt = require('bcrypt');
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash('password123', salt);
+
   return await User.create({
     username: 'testuser',
     email: 'test@example.com',
-    password: 'password123'
+    password: hashedPassword
   });
 };
