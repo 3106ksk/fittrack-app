@@ -2,6 +2,7 @@
 const request = require('supertest');
 const app = require('../server');
 const { User } = require('../models');
+const JWT = require('jsonwebtoken');
 
 describe('認証機能', () => {
   describe('POST /authrouter/register', () => {
@@ -102,8 +103,6 @@ describe('認証機能', () => {
     });
 
     test('正しい認証情報でログインできる', async () => {
-      console.log('Test user password (hashed):', testUser.password);
-      console.log('Login password (plain):', 'password123');
 
       const loginData = {
         email: 'test@example.com',
@@ -191,7 +190,176 @@ describe('認証機能', () => {
       expect(response.body).toHaveProperty('errors');
       expect(Array.isArray(response.body.errors)).toBe(true);
     });
-
   });
 
+  describe('POST /authrouter/me', () => {
+    let testUser;
+    let token;
+
+    beforeEach(async () => {
+      testUser = await createTestUser();
+      const loginResponse = await request(app)
+      .post('/authrouter/login')
+      .send({
+        email: 'test@example.com',
+        password: 'password123'
+      });
+
+      token = loginResponse.body.token;
+    });
+
+    test('正常なトークンが提供された場合、ユーザー情報が返される', async () => {
+      const response = await request(app)
+      .get('/authrouter/me')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+      expect(response.body).toHaveProperty('id', testUser.id);
+      expect(response.body).toHaveProperty('username', testUser.username);
+      expect(response.body).toHaveProperty('email', testUser.email);
+      expect(response.body).not.toHaveProperty('password');
+    });
+
+    test('トークンなしでアクセスした場合401エラー', async () => {
+      const response = await request(app)
+      .get('/authrouter/me')
+      .expect(401);
+
+      expect(response.body).toEqual({ message: "Unauthorized" });
+    });
+
+    test('無効なトークンでアクセスした場合403エラー', async () => {
+      const response = await request(app)
+      .get('/authrouter/me')
+      .set('Authorization', 'Bearer invalidtoken')
+      .expect(403);
+
+      expect(response.body).toEqual({ message: "Forbidden" });
+    });
+
+    test('Bearerなしのトークンでアクセスした場合401エラー', async () => {
+      const response = await request(app)
+      .get('/authrouter/me')
+      .set('Authorization', token)
+      .expect(401);
+
+      expect(response.body).toEqual({ message: "Unauthorized" });
+    });
+
+    test('トークンが期限切れの場合403エラー', async () => {
+      const expiredToken = JWT.sign(
+        { id: testUser.id },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: '-1s' }
+      );
+
+      const response = await request(app)
+      .get('/authrouter/me')
+      .set('Authorization', `Bearer ${expiredToken}`)
+      .expect(403);
+
+      expect(response.body).toEqual({ message: "Forbidden" });
+    });
+  });
+
+  describe('POST /authrouter/refresh-token', () => {
+    let testUser;
+    let oldToken;
+
+    beforeEach(async () => {
+      testUser = await createTestUser();
+      const loginResponse = await request(app)
+      .post('/authrouter/login')
+      .send({
+        email: 'test@example.com',
+        password: 'password123'
+      });
+
+      oldToken = loginResponse.body.token;
+    });
+
+    test('正常なトークンが提供された場合、新しいトークンが返される', async () => {
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await request(app)
+      .post('/authrouter/refresh-token')
+      .set('Authorization', `Bearer ${oldToken}`)
+      .expect(200);
+
+      expect(response.body).toHaveProperty('token');
+      expect(typeof response.body.token).toBe('string');
+      expect(response.body.token).not.toBe(oldToken);
+    });
+
+    test('Bearerなしのトークンで401エラー', async () => {
+      const response = await request(app)
+      .post('/authrouter/refresh-token')
+      .set('Authorization', oldToken)
+      .expect(401);
+
+      expect(response.body).toEqual({ message: "トークンがありません" });
+  });
+
+  test('形式不正なトークンで403エラー', async () => {
+    const response = await request(app)
+    .post('/authrouter/refresh-token')
+    .set('Authorization', `Bearer notajwt`)
+    .expect(403);
+
+    expect(response.body).toEqual({ message: "無効なトークンです" });
+  });
+
+    test('トークンなしでアクセスした場合401エラー', async () => {
+      const response = await request(app)
+      .post('/authrouter/refresh-token')
+      .expect(401);
+
+      expect(response.body).toEqual({ message: "トークンがありません" });
+    });
+
+    test('期限切れトークンでも新しいトークンを取得できる', async () => {
+      const expiredToken = JWT.sign(
+        { id: testUser.id },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: '-1s' }
+      );
+
+      const response = await request(app)
+      .post('/authrouter/refresh-token')
+      .set('Authorization', `Bearer ${expiredToken}`)
+      .expect(200);
+
+      expect(response.body).toHaveProperty('token');
+    });
+
+    test('署名が無効なトークンでリフレッシュに失敗する', async () => {
+      const invalidToken = JWT.sign(
+        { id: testUser.id },
+        'invalid-secret',
+        { expiresIn: '1h' }
+      );
+
+      const response = await request(app)
+      .post('/authrouter/refresh-token')
+      .set('Authorization', `Bearer ${invalidToken}`)
+      .expect(403);
+
+      expect(response.body).toEqual({ message: "無効なトークンです" });
+    });
+
+    test('存在しないユーザーのトークンでリフレッシュに失敗する', async () => {
+      const nonExistingUserToken = JWT.sign(
+        { id: 999999 },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: '1h' }
+      );
+
+      const response = await request(app)
+      .post('/authrouter/refresh-token')
+      .set('Authorization', `Bearer ${nonExistingUserToken}`)
+      .expect(404);
+
+      expect(response.body).toEqual({ message: "ユーザーが見つかりません" });
+    });
+  });
 });
