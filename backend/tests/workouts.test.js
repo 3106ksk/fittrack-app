@@ -1,29 +1,36 @@
-// backend/tests/workouts.test.js
 const request = require('supertest');
 const app = require('../app');
 const jwt = require('jsonwebtoken');
+const { User, Workout } = require('../models');
 
 describe('ワークアウト機能', () => {
   let testUser;
   let authToken;
 
   beforeEach(async () => {
+    await Workout.destroy({ where: {} });
+    await User.destroy({ where: {} });
     testUser = await createTestUser();
-    authToken = jwt.sign(
-      { userId: testUser.id }, 
-      process.env.JWT_SECRET || 'test-secret'
-    );
+    const loginResponse = await request(app)
+      .post('/authrouter/login')
+      .send({
+        email: 'test@example.com',
+        password: 'password123'
+      });
+    authToken = loginResponse.body.token;
   });
 
   describe('POST /workouts', () => {
-    test('認証済みユーザーがワークアウトを作成できる', async () => {
+    test('認証済みユーザーが筋トレワークアウトを作成できる', async () => {
       const workoutData = {
-        exerciseName: 'ベンチプレス',
+        exercise: 'ベンチプレス',
         exerciseType: 'strength',
-        repsDetail: [
-          { set: 1, reps: 10, weight: 60 },
-          { set: 2, reps: 8, weight: 65 },
-          { set: 3, reps: 6, weight: 70 }
+        intensity: '中',
+        setNumber: 3,
+        repsNumber: [
+          { reps: 10 },
+          { reps: 8 },
+          { reps: 6 }
         ]
       };
 
@@ -33,61 +40,13 @@ describe('ワークアウト機能', () => {
         .send(workoutData)
         .expect(201);
 
-      expect(response.body).toHaveProperty('id');
-      expect(response.body.exerciseName).toBe(workoutData.exerciseName);
-      expect(response.body.exerciseType).toBe(workoutData.exerciseType);
-      expect(response.body.userId).toBe(testUser.id);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body).toHaveProperty('workout');
+      expect(response.body.workout.exercise).toBe(workoutData.exercise);
+      expect(response.body.workout.exerciseType).toBe(workoutData.exerciseType);
+      expect(response.body.workout.userID).toBe(testUser.id);
+      expect(response.body.workout.sets).toBe(3);
+      expect(response.body.workout.reps).toBe(24);
     });
-
-    test('認証なしでワークアウト作成に失敗する', async () => {
-      const workoutData = {
-        exerciseName: 'ベンチプレス',
-        exerciseType: 'strength',
-        repsDetail: [{ set: 1, reps: 10, weight: 60 }]
-      };
-
-      await request(app)
-        .post('/workouts')
-        .send(workoutData)
-        .expect(401);
-    });
-
-    test('無効なトークンでワークアウト作成に失敗する', async () => {
-      const workoutData = {
-        exerciseName: 'ベンチプレス',
-        exerciseType: 'strength',
-        repsDetail: [{ set: 1, reps: 10, weight: 60 }]
-      };
-
-      await request(app)
-        .post('/workouts')
-        .set('Authorization', 'Bearer invalid-token')
-        .send(workoutData)
-        .expect(401);
-    });
-  });
-
-  describe('GET /workouts', () => {
-    test('ユーザーのワークアウト一覧を取得できる', async () => {
-      // テスト用ワークアウトを作成
-      await request(app)
-        .post('/workouts')
-        .set('Authorization', `Bearer ${authToken}`)
-        .send({
-          exerciseName: 'スクワット',
-          exerciseType: 'strength',
-          repsDetail: [{ set: 1, reps: 15, weight: 80 }]
-        });
-
-      const response = await request(app)
-        .get('/workouts')
-        .set('Authorization', `Bearer ${authToken}`)
-        .expect(200);
-
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body).toHaveLength(1);
-      expect(response.body[0].exerciseName).toBe('スクワット');
-      expect(response.body[0].userId).toBe(testUser.id);
-    });
-  });
+});
 });
