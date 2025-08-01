@@ -157,7 +157,6 @@ router.post('/', authMiddleware, async (req, res) => {
       message: "ワークアウトが正常に作成されました",
       workout: workoutData,
     });
-
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
       return res.status(400).json({
