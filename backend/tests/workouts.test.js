@@ -48,5 +48,43 @@ describe('ワークアウト機能', () => {
       expect(response.body.workout.sets).toBe(3);
       expect(response.body.workout.reps).toBe(24);
     });
-});
+
+    test('認証済みユーザーがカーディオワークアウトを作成できる', async () => {
+      const workoutData = {
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
+        intensity: '高',
+        distance: 10,
+        duration: 30
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(201);
+
+      expect(response.body.workout.distance).toBe(10);
+      expect(response.body.workout.duration).toBe(30);
+    });
+
+    test('認証なしではワークアウトを作成できない', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [
+          { reps: 10 }
+        ]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .send(workoutData)
+        .expect(401);
+
+      expect(response.body.error).toBe('認証エラー - リクエストにユーザー情報がありません');
+    });
+  });
 });
