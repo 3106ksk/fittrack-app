@@ -67,14 +67,16 @@ describe('ワークアウト機能', () => {
       expect(response.body.workout.distance).toBe(10);
       expect(response.body.workout.duration).toBe(30);
     });
+  });
 
-    test('認証なしではワークアウトを作成できない', async () => {
-      const workoutData = {
-        exercise: 'ベンチプレス',
-        exerciseType: 'strength',
-        intensity: '中',
-        setNumber: 1,
-        repsNumber: [
+    describe('POST /workouts - 認証エラー', () => {
+      test('認証なしではワークアウトを作成できない', async () => {
+        const workoutData = {
+          exercise: 'ベンチプレス',
+          exerciseType: 'strength',
+          intensity: '中',
+          setNumber: 1,
+          repsNumber: [
           { reps: 10 }
         ]
       };
@@ -129,4 +131,27 @@ describe('ワークアウト機能', () => {
       expect(response.body.error).toBe('認証エラー - トークンの有効期限が切れています');
     });
   });
+
+  describe('POST /workouts - バリデーションエラー', () => {
+    describe('基本必須フィールド', () => {
+      test('exerciseフィールドが不足している場合にエラーとなる', async () => {
+        const workoutData = {
+          exerciseType: 'strength',
+          intensity: '中',
+          setNumber: 1,
+          repsNumber: [{ reps: 10 }]
+        };
+
+        const response = await request(app)
+          .post('/workouts')
+          .set('Authorization', `Bearer ${authToken}`)
+          .send(workoutData)
+          .expect(400);
+
+        expect(response.body.error).toBe('エクササイズ名は必須です');
+      });
+    });
+  });
 });
+
+
