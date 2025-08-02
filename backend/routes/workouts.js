@@ -6,9 +6,7 @@ const { Op } = require("sequelize");
 const VALID_INTENSITIES = ["低", "中", "高"];
 
 router.post('/', authMiddleware, async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ error: "認証エラー - リクエストにユーザー情報がありません" });
-  }
+  
   const userId = req.user.id;
   const {
     exercise,
@@ -151,7 +149,6 @@ router.post('/', authMiddleware, async (req, res) => {
       } : {}),
       intensity
     });
-
 
     res.status(201).json({
       message: "ワークアウトが正常に作成されました",
