@@ -86,5 +86,47 @@ describe('ワークアウト機能', () => {
 
       expect(response.body.error).toBe('認証エラー - リクエストにユーザー情報がありません');
     });
+    
+    test('無効なトークンでワークアウト作成に失敗する', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [{ reps: 10 }]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', 'Bearer invalid-token')
+        .send(workoutData)
+        .expect(401);
+
+      expect(response.body.error).toBe('認証エラー - トークンが無効です');
+    });
+
+    test('トークンの有効期限が切れている場合、ワークアウト作成に失敗する', async () => {
+      const expiredToken = jwt.sign(
+        { id: testUser.id },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: '-1s' }
+      );
+
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [{ reps: 10 }]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${expiredToken}`)
+        .send(workoutData)
+        .expect(401);
+
+      expect(response.body.error).toBe('認証エラー - トークンの有効期限が切れています');
+    });
   });
 });
