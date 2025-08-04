@@ -56,7 +56,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
 
   if (exerciseType === 'cardio') {
-    if (!duration && duration !== 0) {
+    if (duration === null || duration === '') {
       return res.status(400).json({ error: "時間は必須です" });
     }
     if (isNaN(duration)) {
@@ -66,7 +66,7 @@ router.post('/', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "時間は0より大きい値を入力してください" });
     }
 
-    if (!distance && distance !== 0) {
+    if (distance === null || distance === '') {
       return res.status(400).json({ error: "距離は必須です" });
     }
     if (isNaN(distance)) {
