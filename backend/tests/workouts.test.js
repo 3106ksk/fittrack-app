@@ -69,14 +69,14 @@ describe('ワークアウト機能', () => {
     });
   });
 
-    describe('POST /workouts - 認証エラー', () => {
-      test('認証なしではワークアウトを作成できない', async () => {
-        const workoutData = {
-          exercise: 'ベンチプレス',
-          exerciseType: 'strength',
-          intensity: '中',
-          setNumber: 1,
-          repsNumber: [
+  describe('POST /workouts - 認証エラー', () => {
+    test('認証なしではワークアウトを作成できない', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [
           { reps: 10 }
         ]
       };
@@ -152,7 +152,7 @@ describe('ワークアウト機能', () => {
       });
 
       test('exerciseTypeフィールドが不足している場合にエラーとなる', async () => {
-          const workoutData = {
+        const workoutData = {
           exercise: 'ベンチプレス',
           intensity: '中',
           setNumber: 1,
@@ -202,100 +202,207 @@ describe('ワークアウト機能', () => {
         expect(response.body.validValues).toBe('低、中、高');
       });
     });
-    
   });
 
   describe('筋トレ(strength)バリデーション', () => {
-      test('setNumber が不足している場合にエラーとなる', async () => {
-        const workoutData = {
-          exercise: 'ベンチプレス',
-          exerciseType: 'strength',
-          intensity: '中',
-          repsNumber: [{ reps: 10 }]
-        };
+    test('setNumber が不足している場合にエラーとなる', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        repsNumber: [{ reps: 10 }]
+      };
 
-        const response = await request(app)
-          .post('/workouts')
-          .set('Authorization', `Bearer ${authToken}`)
-          .send(workoutData)
-          .expect(400);
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
 
-        expect(response.body.error).toBe('セット数は数値で入力してください');
-      });
-
-      test('repsNumber が不足している場合にエラーとなる', async () => {
-        const workoutData = {
-          exercise: 'ベンチプレス',
-          exerciseType: 'strength',
-          intensity: '中',
-          setNumber: 1
-        };
-
-        const response = await request(app)
-          .post('/workouts')
-          .set('Authorization', `Bearer ${authToken}`)
-          .send(workoutData)
-          .expect(400);
-
-        expect(response.body.error).toBe('レップ数情報は必須です');
-      });
-
-      test('セット数とレップ数データが一致しない場合エラー', async () => {
-        const workoutData = {
-          exercise: 'ベンチプレス',
-          exerciseType: 'strength',
-          intensity: '中',
-          setNumber: 3,
-          repsNumber: [{ reps: 10 }] 
-        };
-
-        const response = await request(app)
-          .post('/workouts')
-          .set('Authorization', `Bearer ${authToken}`)
-          .send(workoutData)
-          .expect(400);
-
-        expect(response.body.error).toContain('セット数(3)とレップ数データの数(1)が一致しません');
-      });
+      expect(response.body.error).toBe('セット数は数値で入力してください');
     });
 
-    describe('有酸素運動(cardio)バリデーション', () => {
-      test('duration が不足している場合エラー', async () => {
-        const workoutData = {
-          exercise: 'ランニング',
-          exerciseType: 'cardio',
-          intensity: '中',
-          distance: 5.0
-          // duration が不足
-        };
+    test('repsNumber が不足している場合にエラーとなる', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1
+      };
 
-        const response = await request(app)
-          .post('/workouts')
-          .set('Authorization', `Bearer ${authToken}`)
-          .send(workoutData)
-          .expect(400);
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
 
-        expect(response.body.error).toBe('時間は必須です');
-      });
-
-      test('distance が不足している場合エラー', async () => {
-        const workoutData = {
-          exercise: 'ランニング',
-          exerciseType: 'cardio',
-          intensity: '中',
-          duration: 30.0
-          // distance が不足
-        };
-
-        const response = await request(app)
-          .post('/workouts')
-          .set('Authorization', `Bearer ${authToken}`)
-          .send(workoutData)
-          .expect(400);
-
-        expect(response.body.error).toBe('距離は必須です');
-      });
+      expect(response.body.error).toBe('レップ数情報は必須です');
     });
+
+    test('セット数とレップ数データが一致しない場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 3,
+        repsNumber: [{ reps: 10 }] 
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toContain('セット数(3)とレップ数データの数(1)が一致しません');
+    });
+  });
+
+  describe('有酸素運動(cardio)バリデーション', () => {
+    test('duration が不足している場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
+        intensity: '中',
+        distance: 5.0
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('時間は必須です');
+    });
+    
+    test('durationが数値以外の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
+        intensity: '中',
+        distance: 5.0,
+        duration: 'invalid'
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      console.log('実際のレスポンス:', response.body);
+      expect(response.body.error).toBe('時間は数値で入力してください');
+    });
+
+    test('durationが0以下の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
+        intensity: '中',
+        distance: 5.0,
+        duration: 0
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('時間は0より大きい値を入力してください');
+    });
+
+    test('durationが負の値の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
+        intensity: '中',
+        distance: 5.0,
+        duration: -10
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('時間は0より大きい値を入力してください');
+    });
+
+    test('distance が不足している場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
+        intensity: '中',
+        duration: 30.0
+        // distance が不足
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('距離は必須です');
+    });
+
+    test('distanceが数値以外の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
+        intensity: '中',
+        distance: 'invalid',
+        duration: 30.0
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('距離は数値で入力してください');
+    });
+
+    test('distanceが0以下の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
+        intensity: '中',
+        distance: 0,
+        duration: 30.0
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('距離は0より大きい値を入力してください');
+    });
+
+    test('distanceが負の値の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
+        intensity: '中',
+        distance: -5.0,
+        duration: 30.0
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('距離は0より大きい値を入力してください');
+    });
+  });
 });
 
 
