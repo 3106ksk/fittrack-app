@@ -21,8 +21,12 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 
   let repsNumber = [];
-  if (req.body.repsNumber !== undefined && Array.isArray(req.body.repsNumber)) {
-    repsNumber = req.body.repsNumber;
+  if (req.body.repsNumber !== undefined) {
+    if (Array.isArray(req.body.repsNumber)) {
+      repsNumber = req.body.repsNumber;
+    } else {
+      repsNumber = req.body.repsNumber;
+    }
   }
 
   let duration = null;

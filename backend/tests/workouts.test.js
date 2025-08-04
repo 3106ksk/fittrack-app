@@ -222,6 +222,61 @@ describe('ワークアウト機能', () => {
       expect(response.body.error).toBe('セット数は数値で入力してください');
     });
 
+    test('setNumberが1未満の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 0,
+        repsNumber: [{ reps: 10 }]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('セット数は1以上を入力してください');
+    });
+
+    test('setNumberが負の値の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: -1,
+        repsNumber: [{ reps: 10 }]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('セット数は1以上を入力してください');
+    });
+
+    test('repsNumberが配列以外の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: 'not-an-array'
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('レップ数情報は配列形式で入力してください');
+    });
+
+
     test('repsNumber が不足している場合にエラーとなる', async () => {
       const workoutData = {
         exercise: 'ベンチプレス',
@@ -255,6 +310,118 @@ describe('ワークアウト機能', () => {
         .expect(400);
 
       expect(response.body.error).toContain('セット数(3)とレップ数データの数(1)が一致しません');
+    });
+
+    test('レップ数データの形式が不正な場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [{ invalidField: 10 }]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('セット 1 のレップ数データが不正です');
+    });
+
+    test('レップ数データがnullの場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [null]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('セット 1 のレップ数データが不正です');
+    });
+
+    test('レップ数が1未満の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [{ reps: 0 }]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('セット 1 のレップ数は1以上の整数を入力してください');
+    });
+
+    test('レップ数が負の値の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [{ reps: -5 }]
+      };  
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('セット 1 のレップ数は1以上の整数を入力してください');
+    });
+
+    test('レップ数が数値以外の場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [{ reps: 'invalid' }]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('セット 1 のレップ数は1以上の整数を入力してください');
+    });
+
+    test('複数セットでレップ数が不正な場合エラー', async () => {
+      const workoutData = {
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 3,
+        repsNumber: [
+          { reps: 10 },
+          { reps: 0 },
+          { reps: 8 }
+        ]
+      };
+
+      const response = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(workoutData)
+        .expect(400);
+
+      expect(response.body.error).toBe('セット 2 のレップ数は1以上の整数を入力してください');
     });
   });
 
@@ -291,7 +458,6 @@ describe('ワークアウト機能', () => {
         .send(workoutData)
         .expect(400);
 
-      console.log('実際のレスポンス:', response.body);
       expect(response.body.error).toBe('時間は数値で入力してください');
     });
 
@@ -337,7 +503,6 @@ describe('ワークアウト機能', () => {
         exerciseType: 'cardio',
         intensity: '中',
         duration: 30.0
-        // distance が不足
       };
 
       const response = await request(app)
