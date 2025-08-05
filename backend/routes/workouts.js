@@ -38,7 +38,8 @@ router.post('/', authMiddleware, async (req, res) => {
   if (req.body.distance !== undefined) {
     distance = parseFloat(req.body.distance);
   }
-
+  
+  // 基本必須フィールドのバリデーション
   if (!exercise) {
     return res.status(400).json({ error: "エクササイズ名は必須です" });
   }
@@ -58,7 +59,7 @@ router.post('/', authMiddleware, async (req, res) => {
     });
   }
 
-
+  // カーディオバリデーション
   if (exerciseType === 'cardio') {
     if (duration === null || duration === '') {
       return res.status(400).json({ error: "時間は必須です" });
@@ -81,6 +82,7 @@ router.post('/', authMiddleware, async (req, res) => {
     }
   }
 
+  // 筋トレバリデーション
   if (exerciseType === 'strength') {
     if (typeof setNumber !== 'number' || isNaN(setNumber)) {
       return res.status(400).json({ error: "セット数は数値で入力してください" });
@@ -120,12 +122,14 @@ router.post('/', authMiddleware, async (req, res) => {
     }
   }
 
+  // データベース作成
   try {
     const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ error: "ユーザーが見つかりません" });
     }
 
+    // 筋トレの場合のデータ整形
     const repsDetailData = repsNumber.map((item, index) => {
       return {
         setNumber: index + 1,
@@ -137,6 +141,7 @@ router.post('/', authMiddleware, async (req, res) => {
       return sum + parseInt(item.reps, 10);
     }, 0);
 
+    // ワークアウトデータ作成
     const workoutData = await Workout.create({
       userID: userId,
       date: new Date().toISOString().split('T')[0],
@@ -170,9 +175,6 @@ router.post('/', authMiddleware, async (req, res) => {
         error: "データベースエラーが発生しました",
         message: error.message
       });
-    }
-    if (error.message && error.message.includes('レップ数が無効')) {
-      return res.status(400).json({ error: error.message });
     }
     return res.status(500).json({
       error: "サーバーエラーが発生しました",
