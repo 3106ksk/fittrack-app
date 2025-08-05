@@ -131,6 +131,29 @@ describe('POST /workouts - エラーハンドリング', () => {
     expect(response.body.message).toBe('Unexpected error occurred');
   });
 
+  test('認証なしでワークアウト一覧取得に失敗する', async () => {
+    const response = await request(app)
+      .get('/workouts')
+      .expect(401);
+
+    expect(response.body.error).toBe('認証エラー - リクエストにユーザー情報がありません');
+  });
+
+  test('存在しないユーザーでワークアウト一覧取得に失敗する', async () => {
+    const invalidUserToken = jwt.sign(
+      { id: 999999 },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: '1h' }
+    );
+
+    const response = await request(app)
+      .get('/workouts')
+      .set('Authorization', `Bearer ${invalidUserToken}`)
+      .expect(404);
+
+    expect(response.body.error).toBe('ユーザーが見つかりません');
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });

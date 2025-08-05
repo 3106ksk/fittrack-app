@@ -68,6 +68,33 @@ describe('ワークアウト機能', () => {
       expect(response.body.workout.duration).toBe(30);
     });
   });
+
+  describe('GET /workouts', () => {
+  test('認証済みユーザーがワークアウト一覧を取得できる', async () => {
+    await request(app)
+      .post('/workouts')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        exercise: 'スクワット',
+        exerciseType: 'strength',
+        intensity: '中',
+        setNumber: 1,
+        repsNumber: [{ reps: 15 }]
+      });
+
+    const response = await request(app)
+      .get('/workouts')
+      .set('Authorization', `Bearer ${authToken}`)
+      .expect(200);
+
+    expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body.length).toBeGreaterThan(0);
+    expect(response.body[0]).toHaveProperty('exercise');
+    expect(response.body[0]).toHaveProperty('exerciseType');
+    expect(response.body[0]).toHaveProperty('intensity');
+  });
+});
+
 });
 
 
