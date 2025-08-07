@@ -70,8 +70,9 @@ describe('ワークアウト機能', () => {
   });
 
   describe('GET /workouts', () => {
-  test('認証済みユーザーがワークアウト一覧を取得できる', async () => {
-    await request(app)
+    test('認証済みユーザーがワークアウト一覧を取得できる', async () => {
+      
+      await request(app)
       .post('/workouts')
       .set('Authorization', `Bearer ${authToken}`)
       .send({
@@ -93,8 +94,78 @@ describe('ワークアウト機能', () => {
     expect(response.body[0]).toHaveProperty('exerciseType');
     expect(response.body[0]).toHaveProperty('intensity');
   });
-});
+ });
 
+  describe('GET /workouts- データ分離テスト', () => {
+    test('ログインユーザーは自分のワークアウトのみ取得できる', async () => {
+
+      const user1 = await createTestUser({
+        username: 'user1',
+        email: 'user1@example.com',
+        password: 'password123'
+      });
+
+      const loginResponse1 = await request(app)
+        .post('/authrouter/login')
+        .send({
+          email: 'user1@example.com',
+          password: 'password123'
+        });
+
+      const authToken1 = loginResponse1.body.token;
+      
+      const response1 = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken1}`)
+        .send({
+          exercise: 'スクワット',
+          exerciseType: 'strength',
+          intensity: '中',
+          setNumber: 1,
+          repsNumber: [{ reps: 15 }]
+        })
+        .expect(201);
+
+      const user2 = await createTestUser({
+        username: 'user2',
+        email: 'user2@example.com',
+        password: 'password456'
+      });
+
+      const loginResponse2 = await request(app)
+        .post('/authrouter/login')
+        .send({
+          email: 'user2@example.com',
+          password: 'password456'
+        });
+
+      const authToken2 = loginResponse2.body.token;
+
+      const response2 = await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken2}`)
+        .send({
+          exercise: 'ランニング',
+          exerciseType: 'cardio',
+          intensity: '高',
+          distance: 10,
+          duration: 30
+        })
+        .expect(201);
+
+      const getResponse = await request(app)
+        .get('/workouts')
+        .set('Authorization', `Bearer ${authToken1}`)
+        .expect(200);
+
+        expect(getResponse.body.length).toBe(1);
+        expect(getResponse.body[0].exercise).toBe('スクワット');
+        expect(getResponse.body[0].exerciseType).toBe('strength');
+        expect(getResponse.body).not.toContainEqual(
+          expect.objectContaining({exercise: 'ランニング'})
+        );
+  });
+  });
 });
 
 

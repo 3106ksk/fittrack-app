@@ -24,15 +24,22 @@ afterAll(async () => {
 });
 
 // テスト用のユーティリティ関数
-global.createTestUser = async () => {
+global.createTestUser = async (options = {}) => {
   const { User } = require('../models');
   const bcrypt = require('bcrypt');
+
+  const {
+    username = 'testuser',
+    email = 'test@example.com',
+    password = 'password123'
+  } = options;
+
   const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash('password123', salt);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
   return await User.create({
-    username: 'testuser',
-    email: 'test@example.com',
+    username,
+    email,
     password: hashedPassword
   });
 };
