@@ -45,3 +45,4 @@ pnpm-lock.yaml
 
 # Development copy directories
 fittrack-app copy/
+.vercel
