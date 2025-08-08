@@ -10,6 +10,7 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest --watch",
     "build": "vite build",
+    "build:check": "tsc --noEmit && vite build",
     "lint": "eslint src",
     "preview": "vite preview"
   },
