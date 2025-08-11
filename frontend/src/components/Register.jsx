@@ -7,10 +7,10 @@ import {
   VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 import { Alert, Avatar, Box, Button, Card, CardContent, Container, Divider, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
-import axios from 'axios';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
+import apiClient from '../services/api';
 
 const Register = () => {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -37,7 +37,7 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      await axios.post('http://localhost:8000/authrouter/register', {
+      await apiClient.post('/authrouter/register', {
         username: data.username,
         email: data.email,
         password: data.password,

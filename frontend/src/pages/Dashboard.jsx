@@ -21,11 +21,11 @@ import {
   Paper,
   Typography
 } from '@mui/material';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../components/Hook';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
+import apiClient from '../services/api';
 import transformWorkoutData from '../services/TransformWorkoutData';
 
 
@@ -37,12 +37,8 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/workouts', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        console.log('📊 ダッシュボードデータを取得中...');
+        const response = await apiClient.get('/workouts');
         const transformedData = transformWorkoutData(response.data);
         setWorkouts(transformedData);
         setLoading(false);
