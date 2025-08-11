@@ -1,11 +1,11 @@
 import { Settings as SettingsIcon } from '@mui/icons-material';
 import { Button, Container, Typography } from '@mui/material';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import WorkoutCustomizationDrawer from '../components/WorkoutCustomizationDrawer';
 import WorkoutHistoryTable from '../components/WorkoutHistoryTable';
 import useWorkoutConfig from '../hooks/useWorkoutConfig';
+import apiClient from '../services/api';
 import transformWorkoutData from '../services/TransformWorkoutData';
 
 const WorkoutHistory = () => {
@@ -30,12 +30,8 @@ const WorkoutHistory = () => {
     const fetchWorkouts = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/workouts', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        console.log('📅 ワークアウト履歴を取得中...');
+        const response = await apiClient.get('/workouts');
         const transformedData = transformWorkoutData(response.data);
         setWorkouts(transformedData);
         setLoading(false);

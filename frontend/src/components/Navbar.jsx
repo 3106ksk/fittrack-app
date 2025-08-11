@@ -29,8 +29,6 @@ const Navbar = () => {
   const isActive = (path) => {
     return location.pathname === path;
   };
-
-  console.log(anchorEl);
   
   if(loading) {
     return(

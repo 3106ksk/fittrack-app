@@ -1,11 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Alert, Box, Button, Card, CardContent, Chip, Divider, Grid, MenuItem, TextField, Typography } from '@mui/material';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import useFormConfig from '../hooks/useFormConfig';
 import useFormValidation from '../hooks/useFormValidation';
 import useWorkoutConfig from '../hooks/useWorkoutConfig';
+import apiClient from '../services/api';
 import { generateDefaultValues } from '../utils/formDefaults';
 
 const WorkoutForm = () => {
@@ -60,14 +60,8 @@ const WorkoutForm = () => {
 
   // フォーム送信処理
   const onSubmit = async (data) => {
-    const token = localStorage.getItem('token');
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    };
-
     try {
+      console.log('💪 ワークアウトデータを保存中...');
 
       for (const exercise of formConfig.exercises) {
         if (isCardioExercise(exercise)) {
@@ -84,7 +78,7 @@ const WorkoutForm = () => {
               intensity: data.intensity
             };
             
-            await axios.post("http://localhost:8000/workouts", submitData, config);
+            await apiClient.post('/workouts', submitData);
           }
         } else {
 
@@ -105,7 +99,7 @@ const WorkoutForm = () => {
               intensity: data.intensity
             };
             
-            await axios.post("http://localhost:8000/workouts", submitData, config);
+            await apiClient.post('/workouts', submitData);
           }
         }
       }

@@ -16,10 +16,6 @@ apiClient.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log(
-        '🔐 JWT Token added to request:',
-        `Bearer ${token.substring(0, 20)}...`
-      );
     } else {
       console.warn('JWTトークンが見つかりませんでした。');
     }
