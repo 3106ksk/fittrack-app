@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import PropTypes from 'prop-types';
 import { createContext, useCallback, useEffect, useState } from 'react';
@@ -13,6 +12,7 @@ import {
   RefreshTokenResponse,
   User,
 } from '../types/auth';
+import apiClient from '../services/api';
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -22,28 +22,20 @@ export const AuthContextProvider = ({
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const setAuthToken = (token: string | null): void => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    } else {
-      delete axios.defaults.headers.common['Authorization'];
-    }
-  };
-
   const logout = useCallback((): void => {
     localStorage.removeItem('token');
-    setAuthToken(null);
     setUser(null);
   }, []);
 
   const refreshToken = useCallback(async (): Promise<boolean> => {
     try {
-      const res: AxiosResponse<RefreshTokenResponse> = await axios.post(
-        'http://localhost:8000/authrouter/refresh-token'
+      console.log('🔄 トークンの更新を開始...');
+      const res: AxiosResponse<RefreshTokenResponse> = await apiClient.post(
+        '/authrouter/refresh-token'
       );
+      console.log('🔄 トークンの更新成功:', res.data);
       const { token } = res.data;
       localStorage.setItem('token', token);
-      setAuthToken(token);
       return true;
     } catch (error: unknown) {
       console.error('トークンの更新エラー:', error);
@@ -106,10 +98,9 @@ export const AuthContextProvider = ({
       setLoading(false);
       return;
     }
-    setAuthToken(token);
     try {
-      const res: AxiosResponse<User> = await axios.get(
-        'http://localhost:8000/authrouter/me'
+      const res: AxiosResponse<User> = await apiClient.get(
+        '/authrouter/me'
       );
       console.log('ユーザーデータ取得成功:', res.data);
       setUser(res.data);
@@ -124,10 +115,8 @@ export const AuthContextProvider = ({
             break;
           case 403:
             console.error('認証エラー: トークンの期限が切れています');
-            // トークン更新を試みる
             refreshSuccessful = await refreshToken();
             if (refreshSuccessful) {
-              // トークンが更新されたら再度ユーザー情報を取得
               loadUser();
               return;
             }
@@ -152,7 +141,6 @@ export const AuthContextProvider = ({
         console.error('未知のエラー:', error);
       }
       localStorage.removeItem('token');
-      setAuthToken(null);
       setUser(null);
     } finally {
       setLoading(false);
@@ -165,13 +153,12 @@ export const AuthContextProvider = ({
 
   const login = async (credentials: LoginCredentials): Promise<User> => {
     try {
-      const res: AxiosResponse<LoginResponse> = await axios.post(
-        'http://localhost:8000/authrouter/login',
+      const res: AxiosResponse<LoginResponse> = await apiClient.post(
+        '/authrouter/login',
         credentials
       );
       const { token, user } = res.data;
       localStorage.setItem('token', token);
-      setAuthToken(token);
       setUser(user);
       return user;
     } catch (error: unknown) {

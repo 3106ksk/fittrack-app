@@ -11,7 +11,6 @@ const apiClient = axios.create({
   },
 });
 
-// リクエストインターセプター: 全てのリクエストにJWTトークンを自動追加
 apiClient.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
@@ -22,17 +21,16 @@ apiClient.interceptors.request.use(
         `Bearer ${token.substring(0, 20)}...`
       );
     } else {
-      console.warn('⚠️ No JWT token found in localStorage');
+      console.warn('JWTトークンが見つかりませんでした。');
     }
     return config;
   },
   error => {
-    console.error('❌ Request interceptor error:', error);
+    console.error('リクエストインターセプターエラー:', error);
     return Promise.reject(error);
   }
 );
 
-// レスポンスインターセプター: 401エラーの処理
 apiClient.interceptors.response.use(
   response => {
     return response;
@@ -40,12 +38,9 @@ apiClient.interceptors.response.use(
   error => {
     if (error.response?.status === 401) {
       console.error(
-        '🚫 401 Unauthorized - JWT token may be invalid or expired'
+        '401 Unauthorized - JWTトークンが無効または期限切れです'
       );
-      // トークンが無効な場合は削除
       localStorage.removeItem('token');
-      // ログインページにリダイレクト（必要に応じて）
-      // window.location.href = '/login';
     }
     return Promise.reject(error);
   }
