@@ -1,5 +1,6 @@
-import { beforeAll, afterEach, afterAll } from 'vitest';
 import { server } from '@/test/mocks/server';
+import { afterAll, afterEach, beforeAll } from 'vitest';
+import '@testing-library/jest-dom';
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'error' });

@@ -47,7 +47,8 @@
     "src/**/*.ts",                              // TypeScriptファイル
     "src/**/*.tsx",                             // TSXファイル
     "src/**/*.js",                              // 段階移行のためJSファイルも含む
-    "src/**/*.jsx"                              // 段階移行のためJSXファイルも含む
+    "src/**/*.jsx",                              // 段階移行のためJSXファイルも含む
+    "src/test/jest-dom.d.ts"
   ],
   "exclude": [
     "node_modules",                             // 外部依存関係を除外
