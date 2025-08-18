@@ -36,6 +36,7 @@ const Register = () => {
 
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
     try {
       await apiClient.post('/authrouter/register', {
         username: data.username,
