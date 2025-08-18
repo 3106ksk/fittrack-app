@@ -44,5 +44,8 @@ pnpm-lock.yaml
 .prettierrc
 
 # Development copy directories
-fittrack-app copy/
 .vercel
+
+#mdファイル
+Debug/
+dev schdule/
