@@ -7,6 +7,7 @@ import Logout from './components/Logout';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
+import SplashScreen from './components/SplashScreen';
 import DashboardPage from './pages/Dashboard';
 import Register from './pages/Register';
 import WorkoutFormPage from './pages/WorkoutForm';
@@ -21,6 +22,7 @@ function App() {
       <AuthContextProvider>
         <Navbar />
         <Routes>
+          <Route path="/" element={<SplashScreen />} />
           <Route
             path="/dashboard"
             element={<PrivateRoute element={<DashboardPage />} />}
