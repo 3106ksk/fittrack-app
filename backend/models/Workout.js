@@ -53,6 +53,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    external_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    source: {
+      type: DataTypes.ENUM('manual', 'strava'),
+      allowNull: false,
+      defaultValue: 'manual',
+    },
+    raw_data: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
+    synced_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
 
   }, {
     tableName: 'workouts',
