@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const authRouter = require("./routes/authRoutes");
 const workouts = require('./routes/workouts');
+const stravaRoutes = require('./routes/stravaRoutes');
 
 app.use(cors({
   origin: [
@@ -15,6 +16,7 @@ app.use(cors({
 app.use(express.json());
 app.use("/authrouter", authRouter);
 app.use("/workouts", workouts);
+app.use("/api/strava", stravaRoutes);
 
 app.use((err, req, res, next) => {
 
