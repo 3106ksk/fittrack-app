@@ -49,4 +49,12 @@ pnpm-lock.yaml
 #mdファイル
 .github/
 docs/
-Debug/
+.claude/
+
+# 学習関連
+learning/
+daily/
+sharing/
+
+
+

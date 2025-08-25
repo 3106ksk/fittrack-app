@@ -10,7 +10,6 @@ class StravaService {
     this.authURL = 'https://www.strava.com/oauth';
   }
 
-  // OAuth認証URL生成
   getAuthUrl(state) {
     const params = new URLSearchParams({
       client_id: this.clientId,
@@ -20,11 +19,10 @@ class StravaService {
       scope: 'read,activity:read_all',
       state
     });
-    
+
     return `${this.authURL}/authorize?${params}`;
   }
 
-  // 認証コードをアクセストークンに交換
   async exchangeCodeForToken(code) {
     try {
       const response = await axios.post(`${this.authURL}/token`, {
@@ -40,7 +38,6 @@ class StravaService {
     }
   }
 
-  // リフレッシュトークンでアクセストークンを更新
   async refreshAccessToken(refreshToken) {
     try {
       const response = await axios.post(`${this.authURL}/token`, {
@@ -56,23 +53,13 @@ class StravaService {
     }
   }
 
-  // アクティビティ取得
-  async getActivities(accessToken, page = 1, perPage = 30, after = null) {
+  async getActivities(accessToken) {
     try {
-      const params = {
-        page,
-        per_page: perPage
-      };
-      
-      if (after) {
-        params.after = Math.floor(after.getTime() / 1000);
-      }
 
       const response = await axios.get(`${this.baseURL}/athlete/activities`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
-        },
-        params
+        }
       });
 
       return response.data;
@@ -107,16 +94,12 @@ class StravaService {
     return crypto.randomBytes(32).toString('hex');
   }
 
-  // StravaアクティビティをWorkout形式に変換
   mapStravaToWorkout(stravaActivity, userId) {
     const typeMapping = {
       'Run': 'ランニング',
-      'Ride': 'サイクリング', 
-      'Swim': '水泳',
       'Walk': 'ウォーキング',
-      'Hike': 'ハイキング',
       'WeightTraining': 'ウェイトトレーニング'
-    };
+    }
 
     return {
       userID: userId,
@@ -124,12 +107,12 @@ class StravaService {
       source: 'strava',
       date: stravaActivity.start_date.split('T')[0],
       exercise: stravaActivity.name,
-      exerciseType: typeMapping[stravaActivity.sport_type] || 'その他',
-      distance: stravaActivity.distance ? stravaActivity.distance / 1000 : null, // m→km
-      duration: stravaActivity.moving_time || stravaActivity.elapsed_time, // seconds
-      raw_data: stravaActivity,
-      synced_at: new Date()
-    };
+      exerciseType: typeMapping[stravaActivity.sport_type] || '不明',
+      distance: stravaActivity.distance ? stravaActivity.distance / 1000 : null,
+      duration: stravaActivity.moving_time || stravaActivity.elapsed_time,
+      raw_data: stravaActivity,  
+      synced_at: new Date(),
+    }
   }
 }
 
