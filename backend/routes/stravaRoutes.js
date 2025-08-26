@@ -4,55 +4,64 @@ const authMiddleware = require('../middleware/checkJWT');
 const stravaService = require('../services/stravaService');
 const { User } = require('../models');
 
-// メモリベースのstateストレージ（本番では Redis等を使用推奨）
+
 const stateStorage = new Map();
 
-// OAuth認証開始
 router.post('/auth', authMiddleware, async (req, res) => {
+
   try {
     const state = stravaService.generateState();
     const authUrl = stravaService.getAuthUrl(state);
-    
-    // stateをストレージに保存（5分で期限切れ）
     stateStorage.set(state, {
       userId: req.user.id,
       timestamp: Date.now()
     });
-    
-    // 5分後にstateを削除
     setTimeout(() => {
       stateStorage.delete(state);
     }, 5 * 60 * 1000);
+
+
+    console.log('Generated OAuth state:', state);
+    console.log('Generated auth URL:', authUrl);
     
-    res.json({ authUrl, state });
+    if (process.env.NODE_ENV === 'development') {
+      res.json({ 
+        authUrl,
+        debug: {
+          state,
+          message: 'In development: redirect manually to authUrl'
+        }
+      });
+    } else {
+      res.redirect(authUrl);
+    }
+
   } catch (error) {
     console.error('Strava auth initiation error:', error);
     res.status(500).json({ error: 'Failed to initiate Strava authentication' });
   }
+  
 });
 
-// OAuth認証コールバック
+
 router.get('/callback', async (req, res) => {
   try {
-    const { code, state, scope } = req.query;
+    const { code, state } = req.query;
     
     if (!code || !state) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
     
-    // state検証
     const stateData = stateStorage.get(state);
     if (!stateData) {
       return res.status(400).json({ error: 'Invalid or expired state parameter' });
     }
     
-    // stateを削除（使い捨て）
     stateStorage.delete(state);
     
-    // アクセストークンを取得
     const tokenData = await stravaService.exchangeCodeForToken(code);
+    console.log('Token exchange successful:', { athlete_id: tokenData.athlete.id });
     
-    // ユーザー情報を更新
     await User.update({
       strava_athlete_id: tokenData.athlete.id.toString(),
       strava_access_token: stravaService.encryptToken(tokenData.access_token),
@@ -62,33 +71,40 @@ router.get('/callback', async (req, res) => {
       where: { id: stateData.userId } 
     });
 
-    // フロントエンドにリダイレクト
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = process.env.FRONTEND_URL;
     res.redirect(`${frontendUrl}/dashboard?strava=connected`);
     
   } catch (error) {
     console.error('Strava callback error:', error);
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = process.env.FRONTEND_URL;
     res.redirect(`${frontendUrl}/dashboard?strava=error&message=${encodeURIComponent(error.message)}`);
   }
 });
 
-// Strava連携ステータス確認
+
 router.get('/status', authMiddleware, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id);
     
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const connected = !!(user.strava_athlete_id && user.strava_access_token);
+
+    const now = Math.floor(Date.now() / 1000);
+    const connected = !!(
+      user.strava_athlete_id &&
+      user.strava_access_token &&
+      user.strava_token_expires_at > now
+    );
     
     res.json({
       connected,
       athlete_id: user.strava_athlete_id,
       last_sync: user.strava_last_sync,
-      activities_count: 0 // TODO: 実際の同期済みアクティビティ数を取得
+      activities_count: 0,
+      token_expires_at: user.strava_token_expires_at
     });
   } catch (error) {
     console.error('Strava status check error:', error);
@@ -96,7 +112,7 @@ router.get('/status', authMiddleware, async (req, res) => {
   }
 });
 
-// Strava連携解除
+
 router.delete('/disconnect', authMiddleware, async (req, res) => {
   try {
     await User.update({
