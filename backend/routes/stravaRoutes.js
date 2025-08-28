@@ -132,4 +132,96 @@ router.delete('/disconnect', authMiddleware, async (req, res) => {
   }
 });
 
+/*
+ * 完成版のsyncエンドポイント実装（参考用）
+ * 認証、バリデーション、ビジネスロジック、エラーハンドリング含む
+ */
+// router.post('/sync_BACKUP', authMiddleware, async (req, res) => {
+//   try {
+//     const { days = 30 } = req.body;
+//     const user = await User.findByPk(req.user.id);
+//     
+//     if (!user.strava_access_token) {
+//       return res.status(401).json({ 
+//         success: false, error: 'Strava認証が必要です', action: 'connect' 
+//       });
+//     }
+//     
+//     const now = Math.floor(Date.now() / 1000);
+//     if (user.strava_token_expires_at <= now) {
+//       return res.status(401).json({ 
+//         success: false, error: 'Stravaトークンの有効期限が切れています', action: 'reconnect' 
+//       });
+//     }
+//     
+//     const accessToken = stravaService.decryptToken(user.strava_access_token);
+//     const activities = await stravaService.getActivities(accessToken, { days });
+//     const results = await stravaService.syncActivitiesToWorkouts(activities, user.id);
+//     await user.update({ strava_last_sync: new Date() });
+//     
+//     let message = `${results.synced}件のアクティビティを同期しました`;
+//     if (results.skipped > 0) message += ` (${results.skipped}件はスキップ)`;
+//     if (results.errors.length > 0) message += ` (${results.errors.length}件でエラー)`;
+//     if (results.aborted) message += ' (連続エラーのため中断)';
+//     
+//     res.json({
+//       success: true, synced: results.synced, skipped: results.skipped,
+//       errors: results.errors.length, aborted: results.aborted || false,
+//       message, error_details: results.errors.length > 0 ? results.errors : undefined
+//     });
+//   } catch (error) {
+//     console.error('Strava sync error:', error);
+//     res.status(500).json({ success: false, error: error.message || '同期処理中にエラーが発生しました' });
+//   }
+// });
+
+// TODO(human): POST /sync エンドポイントの段階的再実装
+// Step1: 基本構造 - router.post + authMiddleware + async
+// Step2: リクエスト処理 - req.body分割代入 + User.findByPk
+// Step3: 認証・バリデーション - トークン存在確認 + 有効期限チェック
+// Step4: ビジネスロジック - Strava API呼び出し + データ同期
+// Step5: レスポンス設計 - 成功時JSON + 統計情報
+// Step6: エラーハンドリング - try-catch + HTTPステータスコード
+
+router.post('/sync', authMiddleware, async (req, res) => {
+  try {
+    const { days = 30 } = req.body;
+    const user = await User.findByPk(req.user.id);
+
+    if (!user.strava_access_token) {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Strava認証が必要です',
+        action: 'connect'
+      });
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+    if (user.strava_token_expires_at <= now) {
+      return res.status(401).json({
+        success: false,
+        error: 'Stravaトークンの有効期限が切れています',
+        action: 'reconnect'
+      });
+    }
+
+    const accessToken = stravaService.decryptToken(user.strava_access_token);
+    const activities = await stravaService.getActivities(accessToken, { days });
+    const results = await stravaService.syncActivitiesToWorkouts(activities, user.id);
+    await user.update({ strava_last_sync: new Date() });
+    res.json({
+      success: true,
+      synced: results.synced,
+      skipped: results.skipped,
+      errors: results.errors.length || 0,
+      message: results.message
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message || '同期処理中にエラーが発生しました'
+    });
+  }
+});
+
 module.exports = router;
