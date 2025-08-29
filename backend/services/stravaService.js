@@ -103,22 +103,33 @@ class StravaService {
   // トークン暗号化
   encryptToken(token) {
     if (!token) return null;
-    const cipher = crypto.createCipher('aes-256-cbc', process.env.ENCRYPTION_KEY);
+    const key = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest();
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
     let encrypted = cipher.update(token, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    return encrypted;
+    return iv.toString('hex') + ':' + encrypted;
   }
 
   // トークン復号化
   decryptToken(encryptedToken) {
     if (!encryptedToken) return null;
-    const decipher = crypto.createDecipher('aes-256-cbc', process.env.ENCRYPTION_KEY);
-    let decrypted = decipher.update(encryptedToken, 'hex', 'utf8');
+
+    const key = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest();
+    const parts = encryptedToken.split(':');
+    if (parts.length !== 2) {
+      throw new Error('Invalid encrypted token format');
+    }
+
+    const iv = Buffer.from(parts[0], 'hex');
+    const encryptedData = parts[1];
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     return decrypted;
   }
 
-  // state生成（CSRF対策）
+
   generateState() {
     return crypto.randomBytes(32).toString('hex');
   }

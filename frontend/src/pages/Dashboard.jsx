@@ -25,6 +25,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../components/Hook';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
+import StravaConnect from '../components/strava/StravaConnect';
 import apiClient from '../services/api';
 import transformWorkoutData from '../services/TransformWorkoutData';
 
@@ -155,6 +156,8 @@ const DashboardPage = () => {
               <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: 'primary.main' }}>
                 🎯 今日のアクション
               </Typography>
+
+              <StravaConnect />
               
               <Box sx={{ mb: 3 }}>
                 <Button
