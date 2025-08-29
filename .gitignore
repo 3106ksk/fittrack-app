@@ -48,13 +48,17 @@ pnpm-lock.yaml
 
 #mdファイル
 .github/
-docs/
 .claude/
+images/
 
 # 学習関連
 learning/
 daily/
 sharing/
+schedule/
+exploration/
+understanding/
+knowledge/
 
 
 

@@ -48,8 +48,6 @@ const DashboardPage = () => {
         setLoading(false);
       }
     };
-
-    fetchDashboardData();
   }, []);
 
   const getGreeting = () => {
