@@ -54,8 +54,6 @@ const StravaConnect = () => {
     }
   };
 
-  // TODO(human): Connection/disconnection handler logic will go here
-
   const handleConnect = async () =>{
     try {
       setConnectionState(prev => ({
