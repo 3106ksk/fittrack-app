@@ -54,7 +54,6 @@ class StravaService {
   }
 
   async getActivities(accessToken, options = {}) {
-
     const { days = 30, page = 1, per_page = 50 } = options;
 
     const startDate = new Date();
@@ -66,17 +65,17 @@ class StravaService {
 
     const makeRequest = async () => {
       try {
-              const response = await axios.get(`${this.baseURL}/athlete/activities`, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        },
-        params: {
-          after: startTimestamp,
-          page,
-          per_page
-        }
-      });
-      return response.data;
+        const response = await axios.get(`${this.baseURL}/athlete/activities`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          },
+          params: {
+            after: startTimestamp,
+            page,
+            per_page
+          }
+        });
+        return response.data;
       } catch (error) {
         if (error.response?.status === 429 && retryCount < maxRetries) {
           retryCount++;
@@ -96,11 +95,10 @@ class StravaService {
       if (error.response?.status === 401) {
         throw new Error('認証エラー：トークンの有効期限切れ');
       }
-      throw new Error(`アクティビティ取得失敗: ${error.response?.data?.message || error.message}`);
+      throw new Error(`Failed to fetch activities: ${error.response?.data?.message || error.message}`);
     }
   }
 
-  // トークン暗号化
   encryptToken(token) {
     if (!token) return null;
     const key = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest();
@@ -111,7 +109,6 @@ class StravaService {
     return iv.toString('hex') + ':' + encrypted;
   }
 
-  // トークン復号化
   decryptToken(encryptedToken) {
     if (!encryptedToken) return null;
 
@@ -191,7 +188,6 @@ class StravaService {
           continue;
         }
         
-        // データ変換・保存
         const workoutData = this.mapStravaToWorkout(activity, userId);
         await Workout.create(workoutData);
         console.log(`✅ 同期成功: ${activity.name}`);

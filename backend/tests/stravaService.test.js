@@ -99,7 +99,7 @@ describe('StravaService', () => {
   });
 
   describe('getActivities', () => {
-    test('正常なアクセストークンでアクティビティを取得する', async () => {
+    test('デフォルト設定でアクティビティを取得する', async () => {
       const mockAccessToken = 'valid_access_token';
       const mockActivities = [
         {
@@ -122,6 +122,11 @@ describe('StravaService', () => {
         {
           headers: {
             'Authorization': `Bearer ${mockAccessToken}`
+          },
+          params: {
+            after: expect.any(Number),
+            page: 1,
+            per_page: 50
           }
         }
       );
@@ -137,7 +142,7 @@ describe('StravaService', () => {
       mockedAxios.get.mockRejectedValue(mockError);
 
       await expect(stravaService.getActivities(mockAccessToken))
-        .rejects.toThrow('Access token expired');
+        .rejects.toThrow('認証エラー：トークンの有効期限切れ');
     });
 
     test('ネットワークエラー（responseなし）の場合のエラー処理', async () => {
