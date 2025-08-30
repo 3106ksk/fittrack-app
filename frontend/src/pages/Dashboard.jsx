@@ -26,6 +26,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../components/Hook';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import StravaConnect from '../components/strava/StravaConnect';
+import StravaSync from '../components/strava/StravaSync';
 import apiClient from '../services/api';
 import transformWorkoutData from '../services/TransformWorkoutData';
 
@@ -34,21 +35,32 @@ const DashboardPage = () => {
   const { user } = useAuth();
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stravaStatus, setStravaStatus] = useState({ connected: false, loading: true });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         console.log('📊 ダッシュボードデータを取得中...');
-        const response = await apiClient.get('/workouts');
-        const transformedData = transformWorkoutData(response.data);
+        
+        // 並行してワークアウトデータとStrava状態を取得
+        const [workoutResponse, stravaResponse] = await Promise.all([
+          apiClient.get('/workouts'),
+          apiClient.get('/api/strava/status').catch(() => ({ data: { connected: false } }))
+        ]);
+        
+        const transformedData = transformWorkoutData(workoutResponse.data);
         setWorkouts(transformedData);
+        setStravaStatus({ connected: stravaResponse.data.connected, loading: false });
         setLoading(false);
       } catch (error) {
         console.error('📈ダッシュボードデータ取得エラー📊:', error);
       } finally {
         setLoading(false);
+        setStravaStatus(prev => ({ ...prev, loading: false }));
       }
     };
+    
+    fetchDashboardData();
   }, []);
 
   const getGreeting = () => {
@@ -68,6 +80,11 @@ const DashboardPage = () => {
     totalWorkouts: 905,
     totalMinutes: 90,
     weeklyGoalProgress: 75
+  };
+
+  // Strava接続状態更新用のコールバック
+  const handleStravaStatusChange = (newStatus) => {
+    setStravaStatus(prev => ({ ...prev, connected: newStatus.connected }));
   };
 
   return (
@@ -157,7 +174,17 @@ const DashboardPage = () => {
                 🎯 今日のアクション
               </Typography>
 
-              <StravaConnect />
+              {/* Strava関連コンポーネント */}
+              <Box sx={{ mb: 3 }}>
+                <StravaConnect onStatusChange={handleStravaStatusChange} />
+                
+                {/* Strava接続済みの場合のみ同期UIを表示 */}
+                {stravaStatus.connected && !stravaStatus.loading && (
+                  <Box sx={{ mt: 2 }}>
+                    <StravaSync />
+                  </Box>
+                )}
+              </Box>
               
               <Box sx={{ mb: 3 }}>
                 <Button
