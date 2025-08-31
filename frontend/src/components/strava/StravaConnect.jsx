@@ -19,7 +19,7 @@ import {
 import { useEffect, useState } from 'react';
 import apiClient from '../../services/api';
 
-const StravaConnect = () => {
+const StravaConnect = ({ onStatusChange }) => {
   const [connectionState, setConnectionState] = useState({
     loading: true,
     connected: false,
@@ -36,21 +36,33 @@ const StravaConnect = () => {
     try {
       setConnectionState(prev => ({ ...prev, loading: true, error: null }));
       const response = await apiClient.get('/api/strava/status');
-      setConnectionState({
+      const newState = {
         loading: false,
         connected: response.data.connected,
         error: null,
         athleteId: response.data.athlete_id,
         lastSync: response.data.last_sync
-      });
+      };
+      setConnectionState(newState);
+      
+      // 親コンポーネントに状態変更を通知
+      if (onStatusChange) {
+        onStatusChange({ connected: response.data.connected });
+      }
     } catch (error) {
-      setConnectionState({
+      const newState = {
         loading: false,
         connected: false,
         error: error.response?.data?.error || 'ステータス確認に失敗しました',
         athleteId: null,
         lastSync: null
-      });
+      };
+      setConnectionState(newState);
+      
+      // 親コンポーネントに状態変更を通知
+      if (onStatusChange) {
+        onStatusChange({ connected: false });
+      }
     }
   };
 
