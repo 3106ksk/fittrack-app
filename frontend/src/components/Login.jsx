@@ -116,6 +116,7 @@ const Login = () => {
               render={({ field }) => (
                 <TextField
                 {...field}
+                data-testid="email-field"
                 margin="normal"
                 required
                 fullWidth
@@ -147,6 +148,7 @@ const Login = () => {
               render={({ field }) => (
                 <TextField
                 {...field}
+                data-testid="password-field"
                 margin="normal"
                 required
                 fullWidth
