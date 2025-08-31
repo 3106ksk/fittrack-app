@@ -8,7 +8,7 @@ import {
 
 import { Alert, Avatar, Box, Button, Card, CardContent, Container, Divider, IconButton, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './Hook';
 
@@ -19,11 +19,11 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const {
-    // register,
+    register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm({
+    mode: 'onSubmit', // バリデーションは送信時に実行される
     defaultValues: {
       email: '',
       password: '',
@@ -38,12 +38,27 @@ const Login = () => {
       navigate('/dashboard');
     } catch (error) {
       if (error.response) {
-        if (error.response.data && error.response.data.message) {
-          setErrorMessage(error.response.data.message);
-        } else if (error.response.status === 400) {
-          setErrorMessage('入力内容に問題があります。');
-        } else if (error.response.status === 401) {
-          setErrorMessage('メールアドレスまたはパスワードが正しくありません。');
+        const { status, data } = error.response;
+        
+        if (status === 400) {
+          if (data.errors && data.errors.length > 0) {
+            setErrorMessage(data.errors[0].msg);
+          } else {
+            setErrorMessage('入力内容に問題があります。');
+          }
+        } else if (status === 401) {
+
+          if (Array.isArray(data) && data.length > 0 && data[0].message) {
+            setErrorMessage(data[0].message);
+          } else {
+            setErrorMessage('メールアドレスまたはパスワードが正しくありません。');
+          }
+        } else if (status === 500) {
+
+          const message = data.message || 'サーバーエラーが発生しました。しばらく待ってから再試行してください。';
+          setErrorMessage(message);
+        } else {
+          setErrorMessage('予期しないエラーが発生しました。');
         }
       } else {
         setErrorMessage('ネットワークエラーが発生しました。');
@@ -103,19 +118,14 @@ const Login = () => {
 
             {/* フォーム */}
             <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-              <Controller
-              name="email"
-              control={control}
-              rules={{
-                required: 'メールアドレスは必須です',
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: '有効なメールアドレスを入力してください',
-                },
-              }}
-              render={({ field }) => (
-                <TextField
-                {...field}
+              <TextField
+                {...register('email', {
+                  required: 'メールアドレスは必須です',
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: '有効なメールアドレスを入力してください',
+                  },
+                })}
                 data-testid="email-field"
                 margin="normal"
                 required
@@ -131,23 +141,16 @@ const Login = () => {
                     <EmailIcon sx={{ color: 'action.active', mr: 1 }}/>
                   ),
                 }}
-                />
-              )}
               />
 
-              <Controller
-              name="password"
-              control={control}
-              rules={{
-                required: 'パスワードは必須です',
-                minLength: {
-                  value: 8,
-                  message: 'パスワードは8文字以上で入力してください',
-                },
-              }}
-              render={({ field }) => (
-                <TextField
-                {...field}
+              <TextField
+                {...register('password', {
+                  required: 'パスワードは必須です',
+                  minLength: {
+                    value: 8,
+                    message: 'パスワードは8文字以上で入力してください',
+                  },
+                })}
                 data-testid="password-field"
                 margin="normal"
                 required
@@ -168,8 +171,6 @@ const Login = () => {
                     </IconButton>
                   ),
                 }}
-                />
-              )}
               />
 
               <Button
