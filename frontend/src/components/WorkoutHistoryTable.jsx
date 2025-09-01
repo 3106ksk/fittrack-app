@@ -145,50 +145,7 @@ const WorkoutHistoryTable = ({
           </TableHead>
 
             {/* 第2段階: データセル */}
-            <TableHead>
-              {/* 第1段階: 種目名のヘッダー */}
-              <TableRow sx={{ bgcolor: theme.palette.grey[50] }}>
-                <TableCell sx={{ fontWeight: 'bold', borderRight: `1px solid ${theme.palette.divider}`, minWidth: 100 }}>
-                  日付
-                </TableCell>
-                
-                {workoutConfig.exercises.map(exerciseName => {
-                  const isCardio = isCardioExercise(exerciseName);
-                  const colSpan = isCardio ? 2 : workoutConfig.maxSets;
-                  return (
-                  <TableCell
-                  key={exerciseName}
-                  colSpan={colSpan}
-                  align="center"
-                  sx={{ 
-                    fontWeight: 'bold',
-                    borderRight: `1px solid ${theme.palette.divider}`,
-                    minWidth: isCardio ? 160 : colSpan * 80,
-                  }}
-                >
-                  {exerciseName}
-                  {isCardio && (
-                    <Typography variant="caption" display="block" color="text.secondary">
-                      (距離・時間)
-                      </Typography>
-                    )}
-                    </TableCell>
-                    );
-                    })}
-                    
-                    {/* 合計列のヘッダー */}
-                    {workoutConfig.displayColumns?.includes('totalReps') && (
-                      <TableCell align="center" sx={{ fontWeight: 'bold', borderRight: `1px solid ${theme.palette.divider}` }}>
-                        合計回数
-                        </TableCell>
-                      )}
-                      {workoutConfig.displayColumns?.includes('totalTime') && (
-                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>
-                          合計時間
-                        </TableCell>
-                      )}
-                    </TableRow>
-                    
+            <TableHead>   
                     {/* 第2段階: セット/詳細のヘッダー */}
                     <TableRow sx={{ bgcolor: theme.palette.grey[100] }}>
                       <TableCell sx={{ borderRight: `1px solid ${theme.palette.divider}` }} />
