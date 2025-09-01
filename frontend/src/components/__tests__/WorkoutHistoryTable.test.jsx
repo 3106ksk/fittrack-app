@@ -74,13 +74,6 @@ describe('WorkoutHistoryTable', () => {
   });
 
   it('🔴 完全なワークアウトデータの正常表示', () => {
-    console.log('Mock Test Results:');
-    console.log('ランニング → Cardio:', mockIsCardioExercise('ランニング'));
-    console.log('ベンチプレス → Cardio:', mockIsCardioExercise('ベンチプレス'));
-    console.log(
-      'ベンチプレス → Strength:',
-      mockIsStrengthExercise('ベンチプレス')
-    );
 
     render(
       <TestWrapper>
@@ -124,18 +117,96 @@ describe('WorkoutHistoryTable', () => {
         </TestWrapper>
       );
 
-      console.log('Header Elements:');
-      screen.getAllByRole('columnheader').forEach(header => {
-        console.log({
-          name: header.textContent,
-          colspan: header.getAttribute('colspan'),
-          html: header.outerHTML,
-        });
-      });
-
       expect(
         screen.getByRole('columnheader', { name: 'ランニング (距離・時間)' })
       ).toHaveAttribute('colSpan', '2');
+    });
+
+    it('🔴 Strength種目でcolSpan=maxSetsが正確に設定される', () => {
+      mockIsCardioExercise.mockImplementation(() => false);
+      mockIsStrengthExercise.mockImplementation(ex => ex === 'ベンチプレス');
+
+      const config = {
+        exercises: ['ベンチプレス'],
+        maxSets: 5,
+        displayColumns: [],
+      };
+
+      render(
+        <TestWrapper>
+          <WorkoutHistoryTable
+            workouts={[testDataStrategy.completeWorkout]}
+            workoutConfig={config}
+            loading={false}
+            isCardioExercise={mockIsCardioExercise}
+            isStrengthExercise={mockIsStrengthExercise}
+          />
+        </TestWrapper>
+      );
+
+      const strengthHeader = screen.getByRole('columnheader', {
+        name: 'ベンチプレス',
+      });
+      expect(strengthHeader).toHaveAttribute('colSpan', '5');
+
+      expect(screen.getByText('1セット')).toBeInTheDocument();
+      expect(screen.getByText('2セット')).toBeInTheDocument();
+      expect(screen.getByText('3セット')).toBeInTheDocument();
+      expect(screen.getByText('4セット')).toBeInTheDocument();
+      expect(screen.getByText('5セット')).toBeInTheDocument();
+    });
+
+    it('🔴 Mixed パターンでの正確なcolSpan計算', () => {
+      mockIsCardioExercise.mockImplementation(ex => ex === 'ランニング');
+      mockIsStrengthExercise.mockImplementation(ex => ex === 'ベンチプレス');
+
+      const config = {
+        exercises: ['ランニング', 'ベンチプレス'],
+        maxSets: 3,
+        displayColumns: [],
+      };
+
+      render(
+        <TestWrapper>
+          <WorkoutHistoryTable
+            workouts={[testDataStrategy.completeWorkout]}
+            workoutConfig={config}
+            loading={false}
+            isCardioExercise={mockIsCardioExercise}
+            isStrengthExercise={mockIsStrengthExercise}
+          />
+        </TestWrapper>
+      );
+
+      const cardioHeader = screen.getByRole('columnheader', {
+        name: 'ランニング (距離・時間)',
+      });
+
+            console.log('Header Elements:');
+            screen.getAllByRole('columnheader').forEach(header => {
+              console.log({
+                name: header.textContent,
+                colspan: header.getAttribute('colspan'),
+                html: header.outerHTML,
+              });
+            });
+
+      expect(cardioHeader).toHaveAttribute('colSpan', '2');
+
+      // Strength: colSpan=3
+      const strengthHeader = screen.getByRole('columnheader', {
+        name: 'ベンチプレス',
+      });
+      expect(strengthHeader).toHaveAttribute('colSpan', '3');
+
+      // Cardio詳細ヘッダー確認
+      expect(screen.getByText('距離(km)')).toBeInTheDocument();
+      expect(screen.getByText('時間(分)')).toBeInTheDocument();
+
+      // Strength詳細ヘッダー確認（3セット分）
+      expect(screen.getByText('1セット')).toBeInTheDocument();
+      expect(screen.getByText('2セット')).toBeInTheDocument();
+      expect(screen.getByText('3セット')).toBeInTheDocument();
     });
   });
 });
