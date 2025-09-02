@@ -18,7 +18,7 @@ const WorkoutHistoryTable = ({
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256, flexDirection: 'column', gap: 2 }}>
-          <CircularProgress size={32} />
+          <CircularProgress data-testid="loading-spinner" size={32} />
           <Typography variant="body2" color="text.secondary">
             読み込み中...
           </Typography>
