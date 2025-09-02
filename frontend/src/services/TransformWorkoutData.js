@@ -12,6 +12,7 @@ const transformWorkoutData = apiData => {
     if (!acc[dateKey]) {
       acc[dateKey] = {
         date: dateKey,
+        dateForSort: workout.date,
         exercises: {},
         totalReps: 0,
         totalTime: 0,
@@ -38,7 +39,7 @@ const transformWorkoutData = apiData => {
     return acc;
   }, {});
 
-  return Object.values(groupedByDate);
+  return Object.values(groupedByDate).sort((a, b) => new Date(b.dateForSort) - new Date(a.dateForSort));
 };
 
 export default transformWorkoutData;

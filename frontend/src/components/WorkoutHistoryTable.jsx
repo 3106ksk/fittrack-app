@@ -1,5 +1,6 @@
 import { Box, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from '@mui/material';
 import React from 'react';
+import { formatDuration, formatDistance } from '../utils/formatters';
 
 const WorkoutHistoryTable = ({
   workouts = [],
@@ -159,7 +160,7 @@ const WorkoutHistoryTable = ({
                               距離(km)
                               </TableCell>
                               <TableCell align="center" sx={{ fontSize: '0.75rem', color: theme.palette.text.secondary, borderRight: `1px solid ${theme.palette.divider}`, py: 1 }}>
-                                時間(分)
+                                時間
                               </TableCell>
                             </>
                           ) : (
@@ -216,10 +217,10 @@ const WorkoutHistoryTable = ({
                       {isCardio ? (
                         <>
                         <TableCell align="center" sx={{ borderRight: `1px solid ${theme.palette.divider}` }}>
-                          {exercise?.distance ? `${exercise.distance}km` : '-'}
+                          {formatDistance(exercise?.distance)}
                         </TableCell>
                         <TableCell align="center" sx={{ borderRight: `1px solid ${theme.palette.divider}` }}>
-                          {exercise?.duration ? `${exercise.duration}分` : '-'}
+                          {formatDuration(exercise?.duration)}
                         </TableCell>
                         </>
                       ) : (
