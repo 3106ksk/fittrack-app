@@ -1,6 +1,4 @@
-#
-
-この テスト実装仕様書 v3.0
+## テスト実装仕様書 v3.0
 
 **実装駆動型テスト設計 - Complete Implementation Guide**
 
