@@ -31,6 +31,7 @@ const useWorkoutConfig = () => {
       exerciseData.nameMapping.pushup || 'プッシュアップ',
       exerciseData.nameMapping.squat || 'スクワット',
       exerciseData.nameMapping.walking || 'ウォーキング',
+      exerciseData.nameMapping.running || 'ランニング',
       exerciseData.nameMapping.jumping_lunge || 'ジャンプランジ',
       exerciseData.nameMapping.jump_squat || 'ジャンプスクワット',
     ],

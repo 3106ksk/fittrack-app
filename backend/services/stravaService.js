@@ -132,10 +132,18 @@ class StravaService {
   }
 
   mapStravaToWorkout(stravaActivity, userId) {
-    const typeMapping = {
+    const exerciseNameMapping = {
       'Run': 'ランニング',
       'Walk': 'ウォーキング',
-      'WeightTraining': 'ウェイトトレーニング'
+    }
+
+    const exerciseTypeMapping = {
+      'Run': 'cardio',
+      'Walk': 'cardio',
+      'Ride': 'cardio',
+      'Swim': 'cardio',
+      'WeightTraining': 'strength',
+      'Workout': 'strength',
     }
 
     return {
@@ -143,8 +151,8 @@ class StravaService {
       external_id: stravaActivity.id.toString(),
       source: 'strava',
       date: stravaActivity.start_date.split('T')[0],
-      exercise: stravaActivity.name,
-      exerciseType: typeMapping[stravaActivity.sport_type] || '不明',
+      exercise: exerciseNameMapping[stravaActivity.sport_type] || stravaActivity.name,
+      exerciseType: exerciseTypeMapping[stravaActivity.sport_type] || 'cardio',
       distance: stravaActivity.distance ? stravaActivity.distance / 1000 : null,
       duration: stravaActivity.moving_time || stravaActivity.elapsed_time,
       raw_data: stravaActivity,  
