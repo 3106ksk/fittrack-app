@@ -1,6 +1,5 @@
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import './App.css';
 import { AuthContextProvider } from './components/AuthContext';
 import Login from './components/Login';
 import Logout from './components/Logout';
@@ -30,10 +29,6 @@ function App() {
           <Route
             path="/workout-form"
             element={<PrivateRoute element={<WorkoutFormPage />} />}
-          />
-          <Route
-            path="/workout-history"
-            element={<PrivateRoute element={<WorkoutHistory />} />}
           />
           <Route
             path="/workout-history"
