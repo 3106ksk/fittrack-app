@@ -45,7 +45,7 @@ const StravaConnect = ({ onStatusChange }) => {
       };
       setConnectionState(newState);
       
-      // 親コンポーネントに状態変更を通知
+
       if (onStatusChange) {
         onStatusChange({ connected: response.data.connected });
       }
@@ -59,7 +59,7 @@ const StravaConnect = ({ onStatusChange }) => {
       };
       setConnectionState(newState);
       
-      // 親コンポーネントに状態変更を通知
+
       if (onStatusChange) {
         onStatusChange({ connected: false });
       }
