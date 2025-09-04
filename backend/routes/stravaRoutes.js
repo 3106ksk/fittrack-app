@@ -60,7 +60,7 @@ router.get('/callback', async (req, res) => {
     stateStorage.delete(state);
     
     const tokenData = await stravaService.exchangeCodeForToken(code);
-    console.log('Token exchange successful:', { athlete_id: tokenData.athlete.id });
+    console.log('🔗 Stravaトークン交換成功:', { athlete_id: tokenData.athlete.id });
     
     await User.update({
       strava_athlete_id: tokenData.athlete.id.toString(),

@@ -47,12 +47,9 @@ app.use((err, req, res, next) => {
     }
   }
 
+  // その他の認証エラー
   return res.status(401).json({
     error: '認証エラー - 予期しないエラーが発生しました'
-  });
-
-  return res.status(500).json({
-    error: 'サーバーエラー - 予期しないエラーが発生しました'
   });
 });
 
