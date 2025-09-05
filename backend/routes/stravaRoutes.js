@@ -7,8 +7,7 @@ const { User } = require('../models');
 
 const stateStorage = new Map();
 
-router.post('/auth', authMiddleware, async (req, res) => {
-
+router.get('/auth', authMiddleware, async (req, res) => {
   try {
     const state = stravaService.generateState();
     const authUrl = stravaService.getAuthUrl(state);
@@ -20,27 +19,13 @@ router.post('/auth', authMiddleware, async (req, res) => {
       stateStorage.delete(state);
     }, 5 * 60 * 1000);
 
-
-    console.log('Generated OAuth state:', state);
-    console.log('Generated auth URL:', authUrl);
-    
-    if (process.env.NODE_ENV === 'development') {
-      res.json({ 
-        authUrl,
-        debug: {
-          state,
-          message: 'In development: redirect manually to authUrl'
-        }
-      });
-    } else {
-      res.redirect(authUrl);
-    }
+    // 本番・開発環境共に直接リダイレクト
+    res.redirect(authUrl);
 
   } catch (error) {
     console.error('Strava auth initiation error:', error);
     res.status(500).json({ error: 'Failed to initiate Strava authentication' });
   }
-  
 });
 
 
@@ -60,7 +45,6 @@ router.get('/callback', async (req, res) => {
     stateStorage.delete(state);
     
     const tokenData = await stravaService.exchangeCodeForToken(code);
-    console.log('🔗 Stravaトークン交換成功:', { athlete_id: tokenData.athlete.id });
     
     await User.update({
       strava_athlete_id: tokenData.athlete.id.toString(),
@@ -71,12 +55,31 @@ router.get('/callback', async (req, res) => {
       where: { id: stateData.userId } 
     });
 
-    const frontendUrl = process.env.FRONTEND_URL;
+    // 環境に応じた動的なフロントエンドURL設定
+    const getFrontendUrl = () => {
+      const currentEnv = process.env.NODE_ENV || 'development';
+      const isProduction = currentEnv === 'production';
+      return isProduction 
+        ? process.env.FRONTEND_URL_PROD || 'https://fitstart-frontend.vercel.app'
+        : process.env.FRONTEND_URL || 'http://localhost:5173';
+    };
+    
+    const frontendUrl = getFrontendUrl();
     res.redirect(`${frontendUrl}/dashboard?strava=connected`);
     
   } catch (error) {
     console.error('Strava callback error:', error);
-    const frontendUrl = process.env.FRONTEND_URL;
+    
+    // 環境に応じた動的なフロントエンドURL設定
+    const getFrontendUrl = () => {
+      const currentEnv = process.env.NODE_ENV || 'development';
+      const isProduction = currentEnv === 'production';
+      return isProduction 
+        ? process.env.FRONTEND_URL_PROD || 'https://fitstart-frontend.vercel.app'
+        : process.env.FRONTEND_URL || 'http://localhost:5173';
+    };
+    
+    const frontendUrl = getFrontendUrl();
     res.redirect(`${frontendUrl}/dashboard?strava=error&message=${encodeURIComponent(error.message)}`);
   }
 });
