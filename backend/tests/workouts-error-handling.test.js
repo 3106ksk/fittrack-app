@@ -18,7 +18,6 @@ describe('POST /workouts - エラーハンドリング', () => {
         password: 'password123'
       });
     authToken = loginResponse.body.token;
-    console.log(loginResponse.body.user.id);
   });
 
   test('存在しないユーザーの場合404エラー', async () => {
