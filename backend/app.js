@@ -12,7 +12,7 @@ const getCorsConfig = () => {
   const isProduction = currentEnv === 'production';
   if (isProduction) {
     return {
-      origin: process.env.CORS_ORIGIN_PROD || 'https://your-production-domain.com',
+      origin: process.env.CORS_ORIGIN_PROD,
       credentials: true,
     };
   } else {
