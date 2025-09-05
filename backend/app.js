@@ -1,24 +1,44 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const helmet = require('helmet'); // セキュリティヘッダー強化
 const authRouter = require("./routes/authRoutes");
 const workouts = require('./routes/workouts');
 const stravaRoutes = require('./routes/stravaRoutes');
 
-app.use(cors({
-  origin: [
-    process.env.CORS_ORIGIN,
-    'http://localhost:5173'
-  ],
-  credentials: true,
-}));
+// 環境に応じた動的なCORS設定の実装
+const getCorsConfig = () => {
+  const currentEnv = process.env.NODE_ENV || 'development';
+  const isProduction = currentEnv === 'production';
+  if (isProduction) {
+    return {
+      origin: process.env.CORS_ORIGIN_PROD || 'https://your-production-domain.com',
+      credentials: true,
+    };
+  } else {
+    return {
+      origin: [
+        process.env.CORS_ORIGIN_DEV || 'http://localhost:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000'
+      ],
+      credentials: true,
+    };
+  }
+};
 
-app.use(express.json());
+// セキュリティミドルウェアの設定
+app.use(helmet());
+app.use(cors(getCorsConfig()));
+app.get('/ok', (_req, res) => res.json({ ok: true })); 
+
+
 app.use("/authrouter", authRouter);
 app.use("/workouts", workouts);
 app.use("/api/strava", stravaRoutes);
 
-app.use((err, req, res, next) => {
+
+app.use((err, _req, res, _next) => {
 
   if (err.name === 'UnauthorizedError') {
 
