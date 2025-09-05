@@ -7,7 +7,7 @@ const { User } = require('../models');
 
 const stateStorage = new Map();
 
-router.get('/auth', authMiddleware, async (req, res) => {
+router.post('/auth', authMiddleware, async (req, res) => {
   try {
     const state = stravaService.generateState();
     const authUrl = stravaService.getAuthUrl(state);
@@ -19,8 +19,8 @@ router.get('/auth', authMiddleware, async (req, res) => {
       stateStorage.delete(state);
     }, 5 * 60 * 1000);
 
-    // 本番・開発環境共に直接リダイレクト
-    res.redirect(authUrl);
+    // JSON形式でauthUrlを返却（CORS対応）
+    res.json({ authUrl });
 
   } catch (error) {
     console.error('Strava auth initiation error:', error);
