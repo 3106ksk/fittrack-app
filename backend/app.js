@@ -1,18 +1,20 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const helmet = require('helmet'); // セキュリティヘッダー強化
+const helmet = require('helmet');
 const authRouter = require("./routes/authRoutes");
 const workouts = require('./routes/workouts');
 const stravaRoutes = require('./routes/stravaRoutes');
 
-// 環境に応じた動的なCORS設定の実装
+
 const getCorsConfig = () => {
   const currentEnv = process.env.NODE_ENV || 'development';
   const isProduction = currentEnv === 'production';
   if (isProduction) {
     return {
-      origin: process.env.CORS_ORIGIN_PROD,
+      origin: process.env.CORS_ORIGIN_PROD || 'https://fitstart-frontend.vercel.app',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
     };
   } else {
@@ -22,6 +24,8 @@ const getCorsConfig = () => {
         'http://localhost:3000',
         'http://127.0.0.1:3000'
       ],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
     };
   }

@@ -74,14 +74,18 @@ const StravaConnect = ({ onStatusChange }) => {
         error: null
        }));
       
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      window.location.href = `${API_BASE_URL}/api/strava/auth`;
+      const response = await apiClient.post('/api/strava/auth');
+      if (!response) {
+        throw new Error('Strava認証URLの取得に失敗しました');
+      }
+      const authUrl = response.data.authUrl;
+      window.location.href = authUrl;
       
     } catch (error) {
       setConnectionState(prev =>({
         ...prev,
         loading: false,
-        error: error.message || 'Strava接続に失敗しました'
+        error: error.response?.data?.error || error.message || 'Strava接続に失敗しました'
       }));
     }
   };
