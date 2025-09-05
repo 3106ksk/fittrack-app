@@ -30,6 +30,11 @@ const getCorsConfig = () => {
 // セキュリティミドルウェアの設定
 app.use(helmet());
 app.use(cors(getCorsConfig()));
+
+// JSONリクエストボディの解析を有効化
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/ok', (_req, res) => res.json({ ok: true })); 
 
 
