@@ -212,8 +212,8 @@ describe('StravaService', () => {
         external_id: '123456789',
         source: 'strava',
         date: '2024-01-15',
-        exercise: 'Morning Run',
-        exerciseType: 'ランニング',
+        exercise: 'ランニング',
+        exerciseType: 'cardio',
         distance: 5.0,
         duration: 1800,
         raw_data: stravaActivity,
@@ -241,7 +241,7 @@ describe('StravaService', () => {
         source: 'strava',
         date: '2024-01-16',
         exercise: 'Strength Training',
-        exerciseType: 'ウェイトトレーニング',
+        exerciseType: 'strength',
         distance: null,
         duration: 3600,
         raw_data: stravaActivity,
@@ -263,7 +263,7 @@ describe('StravaService', () => {
 
       const result = stravaService.mapStravaToWorkout(stravaActivity, userId);
 
-      expect(result.exerciseType).toBe('不明');
+      expect(result.exerciseType).toBe('cardio');
     });
 
     test('距離がない場合にnullを設定する', () => {
