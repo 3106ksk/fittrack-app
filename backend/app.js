@@ -41,6 +41,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/ok', (_req, res) => res.json({ ok: true })); 
 
+// ヘルスチェックエンドポイント（Docker用）
+app.get('/api/health', (_req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    service: 'FitTrack API',
+    version: '1.0.0'
+  });
+});
 
 app.use("/authrouter", authRouter);
 app.use("/workouts", workouts);

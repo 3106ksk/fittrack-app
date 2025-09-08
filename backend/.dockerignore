@@ -1,0 +1,33 @@
+# Node.js関連
+node_modules/
+npm-debug.log*
+
+# 環境変数
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# テスト・カバレッジ
+coverage/
+*.lcov
+
+# ログファイル
+logs/
+*.log
+
+# OS関連
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# その他
+*.md
