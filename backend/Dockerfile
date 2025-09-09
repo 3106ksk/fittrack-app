@@ -17,8 +17,8 @@ RUN apk add --no-cache \
 # package.jsonとpackage-lock.jsonをコピー
 COPY package*.json ./
 
-# 依存関係のインストール
-RUN npm ci --only=production && \
+# 依存関係のインストール（dotenvは本番でも必要）
+RUN npm ci && \
     npm cache clean --force
 
 # アプリケーションコードをコピー
