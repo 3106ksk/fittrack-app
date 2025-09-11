@@ -1,18 +1,84 @@
 version: '3.9'
 
+# Docker内部通信用ネットワーク
+networks:
+  fittrack-network:
+    driver: bridge
+
 services:
+  # PostgreSQL データベース（既存設定を維持）
   postgres:
     image: postgres:17
-    container_name: postgres_container
+    container_name: fittrack_postgres
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-fittrack_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_2024}
+      POSTGRES_DB: ${POSTGRES_DB:-fittrack_db}
     ports:
-      - '5433:5432'
+      - '5433:5432'  # 外部アクセス用（既存のまま）
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - fittrack-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fittrack_user} -d ${POSTGRES_DB:-fittrack_db}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # バックエンド API サーバー
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fittrack_backend
+    restart: always
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./backend/.env.docker
+    ports:
+      - '8000:8000'  # 外部アクセス用
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fittrack-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  # フロントエンド React アプリ
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fittrack_frontend
+    restart: always
+    env_file:
+      - ./frontend/.env.docker
+    ports:
+      - '3000:3000'  # 外部アクセス用
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - fittrack-network
+    volumes:
+      # Hot Reload用（開発環境のみ）
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
 
 volumes:
   postgres_data:
