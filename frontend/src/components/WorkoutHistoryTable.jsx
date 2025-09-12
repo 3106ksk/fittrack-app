@@ -71,9 +71,6 @@ const WorkoutHistoryTable = ({
     return description;
   };
 
-  console.log(workouts);
-  console.log(workoutConfig);
-  console.log(workoutConfig.displayColumns);
 
   return (
     <Box>

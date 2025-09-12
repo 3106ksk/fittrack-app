@@ -173,7 +173,6 @@ class StravaService {
     const { Workout } = require('../models');
     const results = { synced: 0, skipped: 0, errors: [] };
     
-    console.log('📊 既存のWorkoutを確認中...');
     
     let existingExternalIds;
     try {
@@ -193,13 +192,11 @@ class StravaService {
     let consecutiveErrors = 0;
     const maxConsecutiveErrors = 5;
 
-    console.log(`🔄 ${activities.length}件のアクティビティを処理開始`);
     
     for (const activity of activities) {
       try {
         const stravaId = activity.id.toString();
         if (existingExternalIds.has(stravaId)) {
-          console.log(`🔄 スキップ: ${stravaId} (既に同期済み)`);
           results.skipped++;
           consecutiveErrors = 0;
           continue;
@@ -207,7 +204,6 @@ class StravaService {
         
         const workoutData = this.mapStravaToWorkout(activity, userId);
         await Workout.create(workoutData);
-        console.log(`✅ 同期成功: ${activity.name}`);
         results.synced++;
         consecutiveErrors = 0;
         
@@ -221,17 +217,12 @@ class StravaService {
         });
 
         if (consecutiveErrors >= maxConsecutiveErrors) {
-          console.log(`❌ 連続エラーが${maxConsecutiveErrors}件に達したため、処理を中断します`);
           results.aborted = true;
           break;
         }
       }
     }
     
-    console.log('\n📈 同期結果:');
-    console.log(`  ✅ 新規保存: ${results.synced}件`);
-    console.log(`  ⏭️ スキップ: ${results.skipped}件`);
-    console.log(`  ❌ エラー: ${results.errors.length}件`);
     
     return results;
   }

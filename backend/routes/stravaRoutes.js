@@ -60,9 +60,6 @@ router.get('/callback', async (req, res) => {
       throw new Error('Failed to obtain access token from Strava');
     }
     
-    // デバッグ：トークンの型を確認
-    console.log('Token types - access:', typeof tokenData.access_token, 'refresh:', typeof tokenData.refresh_token);
-    console.log('ENCRYPTION_KEY exists:', !!process.env.ENCRYPTION_KEY);
     
     await User.update({
       strava_athlete_id: tokenData.athlete.id.toString(),
