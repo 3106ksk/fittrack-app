@@ -8,12 +8,6 @@ class StravaService {
     this.redirectUri = process.env.STRAVA_REDIRECT_URI;
     this.baseURL = 'https://www.strava.com/api/v3';
     this.authURL = 'https://www.strava.com/oauth';
-    
-    // デバッグログ：環境変数の値を確認
-    console.log('[Strava Service] 初期化時の設定:');
-    console.log('- NODE_ENV:', process.env.NODE_ENV);
-    console.log('- STRAVA_REDIRECT_URI:', this.redirectUri);
-    console.log('- API URL:', process.env.API_URL || 'not set');
   }
 
   getAuthUrl(state) {
@@ -26,27 +20,27 @@ class StravaService {
       state
     });
 
-    const authUrl = `${this.authURL}/authorize?${params}`;
-    
-    // デバッグログ：生成された認証URLを確認
-    console.log('[Strava Auth] 認証URL生成:');
-    console.log('- redirect_uri:', this.redirectUri);
-    console.log('- 完全なURL:', authUrl);
-    
-    return authUrl;
+    return `${this.authURL}/authorize?${params}`;
   }
 
   async exchangeCodeForToken(code) {
     try {
-      const response = await axios.post(`${this.authURL}/token`, {
+      const requestData = {
         client_id: this.clientId,
         client_secret: this.clientSecret,
         code,
-        grant_type: 'authorization_code'
-      });
+        grant_type: 'authorization_code',
+        redirect_uri: this.redirectUri
+      };
+      
+      const response = await axios.post(`${this.authURL}/token`, requestData);
+      
+      // レスポンスデータのログ（一時的）
+      console.log('Strava token response:', JSON.stringify(response.data, null, 2));
 
       return response.data;
     } catch (error) {
+      console.error('Token exchange error:', error.response?.data || error.message);
       throw new Error(`Token exchange failed: ${error.response?.data?.message || error.message}`);
     }
   }
