@@ -74,7 +74,7 @@ const WorkoutForm = () => {
               exercise,
               exerciseType: 'cardio',
               distance: parseFloat(distance),
-              duration: parseInt(duration, 10),
+              duration: parseInt(duration, 10) * 60,
               intensity: data.intensity
             };
             
