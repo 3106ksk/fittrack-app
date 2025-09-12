@@ -30,6 +30,12 @@ const getCorsConfig = () => {
 
   return {
     origin: (origin, callback) => {
+      // デバッグ用ログ
+      console.log(`[CORS Debug] Request origin: ${origin}`);
+      console.log(`[CORS Debug] Allowed origins: ${JSON.stringify(allowedOrigins)}`);
+      console.log(`[CORS Debug] NODE_ENV: ${currentEnv}`);
+      console.log(`[CORS Debug] isProduction: ${isProduction}`);
+      
       if (!origin) {
         return callback(null, true);
       }
