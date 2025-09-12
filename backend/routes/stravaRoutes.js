@@ -19,6 +19,7 @@ router.post('/auth', authMiddleware, async (req, res) => {
   try {
     const state = stravaService.generateState();
     const authUrl = stravaService.getAuthUrl(state);
+    
     stateStorage.set(state, {
       userId: req.user.id,
       timestamp: Date.now()
@@ -52,6 +53,12 @@ router.get('/callback', async (req, res) => {
     stateStorage.delete(state);
     
     const tokenData = await stravaService.exchangeCodeForToken(code);
+    
+    // トークンデータの検証
+    if (!tokenData || !tokenData.access_token) {
+      console.error('Invalid token data received:', tokenData);
+      throw new Error('Failed to obtain access token from Strava');
+    }
     
     await User.update({
       strava_athlete_id: tokenData.athlete.id.toString(),
