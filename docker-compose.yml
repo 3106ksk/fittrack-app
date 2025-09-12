@@ -32,7 +32,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: fittrack_backend
     restart: always
     environment:

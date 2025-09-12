@@ -36,7 +36,7 @@ Thumbs.db
 coverage/
 
 # NPM Package Lock files
-package-lock.json
+# package-lock.json  # コメントアウト: npm ciのために必要
 yarn.lock
 pnpm-lock.yaml
 
