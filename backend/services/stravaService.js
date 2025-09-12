@@ -34,13 +34,8 @@ class StravaService {
       };
       
       const response = await axios.post(`${this.authURL}/token`, requestData);
-      
-      // レスポンスデータのログ（一時的）
-      console.log('Strava token response:', JSON.stringify(response.data, null, 2));
-
       return response.data;
     } catch (error) {
-      console.error('Token exchange error:', error.response?.data || error.message);
       throw new Error(`Token exchange failed: ${error.response?.data?.message || error.message}`);
     }
   }
@@ -108,7 +103,14 @@ class StravaService {
 
   encryptToken(token) {
     if (!token) return null;
-    const key = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest();
+    
+    const encryptionKey = process.env.ENCRYPTION_KEY;
+    if (!encryptionKey) {
+      console.error('ENCRYPTION_KEY is not set in environment variables');
+      throw new Error('ENCRYPTION_KEY is required for token encryption');
+    }
+    
+    const key = crypto.createHash('sha256').update(encryptionKey).digest();
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
     let encrypted = cipher.update(token, 'utf8', 'hex');

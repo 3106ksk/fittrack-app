@@ -30,25 +30,15 @@ const getCorsConfig = () => {
 
   return {
     origin: (origin, callback) => {
-      // デバッグ用ログ
-      console.log(`[CORS Debug] Request origin: ${origin}`);
-      console.log(`[CORS Debug] Allowed origins: ${JSON.stringify(allowedOrigins)}`);
-      console.log(`[CORS Debug] NODE_ENV: ${currentEnv}`);
-      console.log(`[CORS Debug] isProduction: ${isProduction}`);
-      
       if (!origin) {
         return callback(null, true);
       }
 
       if (allowedOrigins.includes(origin)) {
-        // 許可されたoriginを単一で返却
-        console.log(`✅ CORS許可: ${origin}`);
         callback(null, origin);
       } else {
-        console.warn(`🚨 CORS拒否されたオリジン: ${origin}`);
-        console.warn(`🚨 現在許可されているオリジン: [${allowedOrigins.join(', ')}]`);
-        console.warn(`🚨 Docker環境: ${isDockerEnvironment ? '有効' : '無効'}`);
-        callback(new Error(`オリジン ${origin} はCORSポリシーにより許可されていません`));
+        console.warn(`CORS rejected origin: ${origin}`);
+        callback(new Error(`Origin ${origin} is not allowed by CORS policy`));
       }
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
