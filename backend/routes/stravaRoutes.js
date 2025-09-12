@@ -7,6 +7,14 @@ const { User } = require('../models');
 
 const stateStorage = new Map();
 
+const getFrontendUrl = () => {
+  const currentEnv = process.env.NODE_ENV || 'development';
+  const isProduction = currentEnv === 'production';
+  return isProduction 
+    ? process.env.FRONTEND_URL_PROD || 'https://fitstart-frontend.vercel.app'
+    : process.env.FRONTEND_URL || 'http://localhost:5173';
+};
+
 router.post('/auth', authMiddleware, async (req, res) => {
   try {
     const state = stravaService.generateState();
@@ -19,7 +27,6 @@ router.post('/auth', authMiddleware, async (req, res) => {
       stateStorage.delete(state);
     }, 5 * 60 * 1000);
 
-    // JSON形式でauthUrlを返却（CORS対応）
     res.json({ authUrl });
 
   } catch (error) {
@@ -54,30 +61,12 @@ router.get('/callback', async (req, res) => {
     }, { 
       where: { id: stateData.userId } 
     });
-
-    // 環境に応じた動的なフロントエンドURL設定
-    const getFrontendUrl = () => {
-      const currentEnv = process.env.NODE_ENV || 'development';
-      const isProduction = currentEnv === 'production';
-      return isProduction 
-        ? process.env.FRONTEND_URL_PROD || 'https://fitstart-frontend.vercel.app'
-        : process.env.FRONTEND_URL || 'http://localhost:5173';
-    };
     
     const frontendUrl = getFrontendUrl();
     res.redirect(`${frontendUrl}/dashboard?strava=connected`);
     
   } catch (error) {
     console.error('Strava callback error:', error);
-    
-    // 環境に応じた動的なフロントエンドURL設定
-    const getFrontendUrl = () => {
-      const currentEnv = process.env.NODE_ENV || 'development';
-      const isProduction = currentEnv === 'production';
-      return isProduction 
-        ? process.env.FRONTEND_URL_PROD || 'https://fitstart-frontend.vercel.app'
-        : process.env.FRONTEND_URL || 'http://localhost:5173';
-    };
     
     const frontendUrl = getFrontendUrl();
     res.redirect(`${frontendUrl}/dashboard?strava=error&message=${encodeURIComponent(error.message)}`);
