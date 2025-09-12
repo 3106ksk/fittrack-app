@@ -15,6 +15,7 @@ COPY package.json ./
 
 # 本番用依存関係のインストール
 # package-lock.jsonがない場合でも動作
+# dotenvは本番でも必要なのでdependenciesに含まれている
 RUN npm install --production && \
     npm cache clean --force
 
