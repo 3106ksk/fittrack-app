@@ -8,6 +8,12 @@ class StravaService {
     this.redirectUri = process.env.STRAVA_REDIRECT_URI;
     this.baseURL = 'https://www.strava.com/api/v3';
     this.authURL = 'https://www.strava.com/oauth';
+    
+    // デバッグログ：環境変数の値を確認
+    console.log('[Strava Service] 初期化時の設定:');
+    console.log('- NODE_ENV:', process.env.NODE_ENV);
+    console.log('- STRAVA_REDIRECT_URI:', this.redirectUri);
+    console.log('- API URL:', process.env.API_URL || 'not set');
   }
 
   getAuthUrl(state) {
@@ -20,7 +26,14 @@ class StravaService {
       state
     });
 
-    return `${this.authURL}/authorize?${params}`;
+    const authUrl = `${this.authURL}/authorize?${params}`;
+    
+    // デバッグログ：生成された認証URLを確認
+    console.log('[Strava Auth] 認証URL生成:');
+    console.log('- redirect_uri:', this.redirectUri);
+    console.log('- 完全なURL:', authUrl);
+    
+    return authUrl;
   }
 
   async exchangeCodeForToken(code) {
