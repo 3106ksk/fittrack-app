@@ -1,21 +1,31 @@
-# 🏋️‍♂️ **FitTrack** - 個人向けフィットネストラッキングアプリ
+# 🏋️‍♂️ **FitStart** - 運動習慣化支援フィットネストラッキングアプリ
 
-[![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org/)
-[![Material--UI](https://img.shields.io/badge/Material--UI-5.15.4-007FFF?style=for-the-badge&logo=mui&logoColor=white)](https://mui.com/)
-[![Vitest](https://img.shields.io/badge/Vitest-3.2.4-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
-[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com/)
-[![Jest](https://img.shields.io/badge/Jest-30.0.5-C21325?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE)
-
-> **現代人のフィットネス習慣を革新する、包括的なワークアウト管理システム**
-
-FitTrack は、ユーザーごとのトレーニングカスタマイズ性とトレーニング実施回数の数値化によってトレーニングの継続性サポートを目的とする Web アプリケーションです。運動初心者が直面する「**継続性という最大の障壁**」を、データ駆動型のユーザー体験設計と先月比較の数値化により解決します。
+運動の継続を「見える化」でサポートし、身体と精神の健康向上を実現を目指したWebアプリケーション。医療連携を視野に入れた拡張性を持つヘルスケアプラットフォームです。
 
 ---
 
+## 💡 **なぜ FitStart なのか？**
+背景
+私自身の3つの体験から、このアプリケーションの開発に至りました：
+
+### 🎯 **解決したい課題**
+
+- **健康リスクへの危機感**
+-祖父と父が生活習慣病で入院し苦しむ姿を目の当たりにし、予防医療の重要性を痛感
+- **高齢化による身体機能の低下**
+私を育ててくれた祖父母の足腰が弱り、日常生活に支障が出ている現実
+- **運動がもたらす精神的な効果**
+イギリスでのワーホリ生活での孤独な生活が、職場の仲間とのスポーツ活動によって充実したものに変化した経験
+
+これらの経験から、運動習慣の継続は身体的健康だけでなく、精神的な健康と社会的つながりにも寄与すると確信しています。
+
+### 🎯 **提供する価値**
+
+- ✅ **統合管理**: 筋力トレーニングと有酸素運動の一元管理
+- ✅ **データ可視化**: 進捗の可視化でモチベーション維持
+- ✅ **継続サポート**: 直感的な UI/UX で習慣化促進
+
+---
 ## 📸 **プロジェクトデモ**
 
 ### 🎯 **主要画面のスクリーンショット**
@@ -40,22 +50,7 @@ _ワークアウト記録フォーム - カスタマイズ可能な運動種目�
 ![ワークアウト履歴](./docs/images/workout-history.png)
 _詳細なワークアウト履歴と統計データの可視化_
 
----
 
-## 💡 **なぜ FitStart なのか？**
-
-### 🔍 **解決する課題**
-
-- **個人のニーズに応じたトレーニング作成ができない**:
-- **継続性の欠如**: 成長性と達成感の可視化不足
-
-### 🎯 **提供する価値**
-
-- ✅ **統合管理**: 筋力トレーニングと有酸素運動の一元管理
-- ✅ **データ可視化**: 進捗の可視化でモチベーション維持
-- ✅ **継続サポート**: 直感的な UI/UX で習慣化促進
-
----
 
 ## 🏗️ **技術アーキテクチャ**
 
