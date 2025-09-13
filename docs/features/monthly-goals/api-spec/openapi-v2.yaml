@@ -1,0 +1,416 @@
+openapi: 3.1.0
+info:
+  title: Goals API
+  version: 2.0.0
+  description: 月次目標管理機能（日次達成ベース）のAPI仕様書
+  contact:
+    name: FitStart Development Team
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://fitstart-backend.vercel.app/api/v1
+    description: Production server
+
+tags:
+  - name: Goals
+    description: 目標の管理（日次達成カウント、リワード機能付き）
+
+security:
+  - bearerAuth: []
+
+paths:
+  /goals:
+    post:
+      tags:
+        - Goals
+      summary: 目標の作成
+      description: 新しい目標を作成（期間重複チェックあり）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - targetCount
+              properties:
+                title:
+                  type: string
+                  example: "ワークアウト15回"
+                  description: 目標タイトル（省略時は自動生成）
+                targetCount:
+                  type: integer
+                  minimum: 1
+                  example: 15
+                  description: 目標回数
+                periodType:
+                  type: string
+                  enum: ['monthly', 'custom']
+                  default: 'monthly'
+                  description: 期間タイプ
+                startDate:
+                  type: string
+                  format: date-time
+                  description: 開始日時（monthlyの場合は省略可）
+                endDate:
+                  type: string
+                  format: date-time
+                  description: 終了日時（monthlyの場合は省略可）
+                rewardTitle:
+                  type: string
+                  example: "コーヒーミル購入"
+                  description: リワードタイトル
+                rewardNote:
+                  type: string
+                  example: "お気に入りのコーヒーミルを買う"
+                  description: リワードメモ
+      responses:
+        '201':
+          description: 目標作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: 期間重複エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "既存のアクティブな目標と期間が重複しています"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /goals/active:
+    get:
+      tags:
+        - Goals
+      summary: アクティブな目標の取得
+      description: 現在アクティブな目標と進捗を取得
+      responses:
+        '200':
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  goal:
+                    $ref: '#/components/schemas/Goal'
+                  progress:
+                    $ref: '#/components/schemas/Progress'
+        '404':
+          description: アクティブな目標なし
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  goal:
+                    type: null
+                  progress:
+                    type: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /goals/{id}:
+    get:
+      tags:
+        - Goals
+      summary: 特定の目標を取得
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 目標ID
+      responses:
+        '200':
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  goal:
+                    $ref: '#/components/schemas/Goal'
+                  progress:
+                    $ref: '#/components/schemas/Progress'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    patch:
+      tags:
+        - Goals
+      summary: 目標の更新
+      description: タイトル、リワード情報、目標回数、アクティブ状態を更新可能
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                targetCount:
+                  type: integer
+                  minimum: 1
+                rewardTitle:
+                  type: string
+                rewardNote:
+                  type: string
+                isActive:
+                  type: boolean
+                  description: falseでアーカイブ
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Goals
+      summary: 目標の削除
+      description: 目標を論理削除（isActive=false）
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 削除成功
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /goals/{id}/progress:
+    get:
+      tags:
+        - Goals
+      summary: 目標の進捗を取得
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /goals/{id}/reward/claim:
+    post:
+      tags:
+        - Goals
+      summary: リワードの受け取り
+      description: 目標達成後にリワードを受け取り済みにする
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: リワード受け取り成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "リワードを受け取りました！"
+                  goal:
+                    $ref: '#/components/schemas/Goal'
+        '422':
+          description: 目標未達成
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "目標がまだ達成されていません"
+                details:
+                  current: 5
+                  target: 15
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Goal:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          example: 123
+        title:
+          type: string
+          example: "ワークアウト15回"
+        targetCount:
+          type: integer
+          example: 15
+        periodType:
+          type: string
+          enum: ['monthly', 'custom']
+          example: 'monthly'
+        startDate:
+          type: string
+          format: date-time
+          example: "2025-09-01T00:00:00+09:00"
+        endDate:
+          type: string
+          format: date-time
+          example: "2025-09-30T23:59:59+09:00"
+        rewardTitle:
+          type: string
+          example: "コーヒーミル購入"
+        rewardNote:
+          type: string
+          example: "お気に入りのコーヒーミルを買う"
+        rewardClaimed:
+          type: boolean
+          example: false
+        rewardClaimedAt:
+          type: string
+          format: date-time
+          nullable: true
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Progress:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 2
+          description: 現在の達成回数（日次達成ベース）
+        target:
+          type: integer
+          example: 15
+          description: 目標回数
+        percent:
+          type: integer
+          example: 13
+          description: 達成率（%）
+
+    ProgressDetail:
+      allOf:
+        - $ref: '#/components/schemas/Progress'
+        - type: object
+          properties:
+            exampleLabel:
+              type: string
+              example: "ワークアウト15回 2/15 【コーヒーミル購入】"
+              description: 表示用ラベル例
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: エラーメッセージ
+        details:
+          type: array
+          items:
+            type: string
+          description: 詳細エラー情報
+
+  responses:
+    BadRequest:
+      description: 不正なリクエスト
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "入力データが無効です"
+            details:
+              - "targetCountは1以上の整数で指定してください"
+
+    Unauthorized:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "認証が必要です"
+
+    Forbidden:
+      description: アクセス権限なし
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "他のユーザーの目標にはアクセスできません"
+
+    NotFound:
+      description: リソースが見つからない
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "指定された目標が見つかりません"
