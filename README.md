@@ -159,78 +159,10 @@ _詳細なワークアウト履歴と統計データの可視化_
 PostgreSQLを選択した理由は、複雑なワークアウトデータ（配列型のレップ数など）をJSONB型で効率的に格納でき、将来的な**分析機能の拡張（時系列データ分析、パフォーマンストレンド）**にも対応できる拡張性を持つためです。
 
 <br>
-
 ---
 
 <br>
 
-## ✨ **実装機能とエンジニアリング**
-
-### **🔐 認証システム**
-
-```typescript
-// JWT + bcryptによるセキュアな認証実装
-// TypeScript型安全性とセッション管理、プライベートルート保護
-```
-
-- **技術的特徴**: JWT トークンベース認証、パスワードハッシュ化、TypeScript 型安全性
-- **セキュリティ**: bcrypt salt rounds、CORS 設定、入力検証強化
-
-<br>
-
-### **🧪 テスト戦略**
-
-```typescript
-// フロントエンド: Vitest + React Testing Library
-// バックエンド: Jest + Supertest
-// 包括的テストカバレッジ95%+達成
-```
-
-- **フロントエンドテスト**: コンポーネントテスト、ユーザーインタラクション、エラーハンドリング
-- **バックエンドテスト**: API エンドポイント、認証、バリデーション、エラーレスポンス
-
-<br>
-
-### **🎨 UI/UX デザイン**
-
-```typescript
-// Material-UI + TypeScript + カスタムテーマ
-// レスポンシブデザイン + アクセシビリティ対応
-```
-
-- **デザインシステム**: Material-UI による一貫性のある UI
-
-<br>
-
----
-
-<br>
-
-## 🚀 **セットアップ・起動手順**
-
-### **📋 必要な環境**
-
-- **Node.js**: 18.0.0 以上
-- **PostgreSQL**: 17（Docker で自動構築）
-
-<br>
-
-### **⚡ クイックスタート**
-
-```bash
-# リポジトリクローン
-git clone <repository-url>
-cd fittrack-app
-
-# フロントエンド起動
-cd frontend
-npm install
-npm run dev  # http://localhost:5173
-
-# バックエンド起動（別ターミナル）
-cd backend
-npm install
-npm run dev  # http://localhost:8000
 ```
 
 <br>
@@ -256,85 +188,71 @@ npm run test:coverage     # カバレッジ付きテスト
 
 <br>
 
-## 🔗 **API 仕様**
+## 🚀 **API 概要**
 
-### **認証エンドポイント**
+### **ベースURL**
+- **本番環境**: `https://fitstart-backend.vercel.app`
+- **開発環境**: `http://localhost:8000`
 
-```http
-POST /authrouter/register  # ユーザー登録
-POST /authrouter/login     # ログイン
-```
+### **認証方式**
+保護されたエンドポイントは **JWT Bearer Token** が必要です：
+1. `POST /authrouter/login` で `token` を取得
+2. リクエストヘッダーに `Authorization: Bearer <token>` を付与
 
-<br>
+### **コアエンドポイント**
 
-### **ワークアウト管理**
+#### 🔐 **認証 (Authentication)**
+| メソッド | パス | 認証 | 説明 |
+|--------|------|------|------|
+| POST | `/authrouter/register` | ❌ | 新規ユーザー登録 |
+| POST | `/authrouter/login` | ❌ | ログイン（トークン発行） |
+| GET | `/authrouter/me` | ✅ | 自分のプロフィール取得 |
+| POST | `/authrouter/refresh-token` | ✅ | トークン更新 |
 
-```http
-GET    /workouts           # ワークアウト一覧取得
-POST   /workouts           # 新規ワークアウト記録
+#### 💪 **ワークアウト (Workouts)**
+| メソッド | パス | 認証 | 説明 |
+|--------|------|------|------|
+| POST | `/workouts` | ✅ | ワークアウト記録作成 |
+| GET | `/workouts` | ✅ | 全ワークアウト取得 |
+| GET | `/workouts/monthly` | ✅ | 月間ワークアウト取得 |
+| GET | `/workouts/:workoutId` | ✅ | 特定ワークアウト詳細 |
+
+#### 🏃 **Strava 連携**
+| メソッド | パス | 認証 | 説明 |
+|--------|------|------|------|
+| POST | `/api/strava/auth` | ✅ | Strava認証URL生成（OAuth 2.0） |
+| POST | `/api/strava/sync` | ✅ | アクティビティ同期 |
+| GET | `/api/strava/status` | ✅ | 連携状態確認 |
+| DELETE | `/api/strava/disconnect` | ✅ | 連携解除 |
+| GET | `/api/strava/callback` | ❌ | OAuth コールバック（外部用） |
+
+### **クイックスタート（curl）**
+
+```bash
+# 1) ユーザー登録
+curl -X POST http://localhost:8000/authrouter/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"demo","email":"demo@example.com","password":"password123"}'
+
+# 2) ログイン → トークン取得
+TOKEN=$(curl -X POST http://localhost:8000/authrouter/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@example.com","password":"password123"}' | jq -r .token)
+
+# 3) 保護API呼び出し（例：ワークアウト作成）
+curl -X POST http://localhost:8000/workouts \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "exercise": "ランニング",
+    "exerciseType": "cardio",
+    "intensity": "中",
+    "duration": 30,
+    "distance": 5
+  }'
 ```
 
 <br>
 
 ---
 
-<br>
-
-## 🎓 **開発で学んだこと・工夫した点**
-
-### **🏗️ アーキテクチャ設計**
-
-- **関心の分離**: MVC+サービス層によるコード整理、TypeScript 型定義の活用
-- **スケーラビリティ**: 機能追加に耐えうる柔軟な設計、モジュラー構造
-- **保守性**: 明確なディレクトリ構造とネーミング規則、TSDoc コメント
-
-<br>
-
-### **🧪 テスト駆動開発（TDD）**
-
-- **包括的テスト**: フロント・バック両方で 95%+のカバレッジ達成
-- **テスト設計**: 正常系・異常系・境界値を網羅したテスト戦略
-- **品質保証**: CI/CD 対応、リグレッションテスト防止、型安全性確保
-
-<br>
-
-### **⚡ パフォーマンス最適化**
-
-- **Vite 活用**: 高速な HMR 開発体験、ESModules ネイティブサポート
-- **バンドル最適化**: Code Splitting 実装準備、Tree Shaking 対応
-- **データベース**: インデックス設計とクエリ最適化、コネクションプール管理
-
-<br>
-
-### **🔒 セキュリティ対策**
-
-- **認証強化**: JWT 有効期限管理、トークンリフレッシュ戦略
-- **入力検証**: TypeScript + Yup による型安全なバリデーション
-- **CORS 設定**: 適切なオリジン制限、セキュリティヘッダー設定
-
-<br>
-
-### **🎯 課題解決プロセス**
-
-1. **型安全性**: TypeScript 導入によるランタイムエラー削減
-2. **テスト戦略**: Vitest + Jest による高速テスト環境構築
-3. **状態管理**: React Context + TypeScript による型安全な状態管理
-4. **フォーム最適化**: React Hook Form + Yup + TypeScript による効率的なバリデーション
-
-<br>
-
----
-
-<br>
-
-<div align="center">
-
-**🎯 自分の限界を超えるために、今日も一歩前進しよう 🏋️‍♂️**
-
-### 📚 **専門テストドキュメント**
-
-[📝 Register Component Test Suite Documentation](./frontend/src/components/__tests__/README.md)
-
-_Made with ❤️ and lots of ☕ | TypeScript + React + Vitest_
-
-</div>
