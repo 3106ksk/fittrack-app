@@ -1,0 +1,268 @@
+openapi: 3.1.0
+info:
+  title: Goals API
+  version: 2.0.0
+  description: 月次目標管理機能（日次達成ベース）のAPI仕様書
+  contact:
+    name: FitStart Development Team
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://fitstart-backend.vercel.app/api/v1
+    description: Production server
+
+tags:
+  - name: Goals
+    description: 目標の管理（日次達成カウント、リワード機能付き）
+
+paths:
+  /goals:
+    post:
+      tags:
+        - Monthly Goals
+      summary: 月次目標の作成/更新
+      description: 指定月の目標を作成または更新（Upsert）
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - targetSessions
+                - targetDurationMin
+              properties:
+                yearMonth:
+                  type: string
+                  pattern: '^\d{4}-\d{2}$'
+                  example: "2025-09"
+                  description: 対象年月（省略時は当月）
+                targetSessions:
+                  type: integer
+                  minimum: 1
+                  maximum: 999
+                  example: 12
+                  description: 目標セッション数
+                targetDurationMin:
+                  type: integer
+                  minimum: 1
+                  maximum: 99999
+                  example: 360
+                  description: 目標総運動時間（分）
+      responses:
+        '201':
+          description: 新規作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyGoal'
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyGoal'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+      tags:
+        - Monthly Goals
+      summary: 当月の目標取得
+      description: 現在月の目標と進捗を取得
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyGoalWithProgress'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/goals/monthly/{yearMonth}:
+    get:
+      tags:
+        - Monthly Goals
+      summary: 指定月の目標取得
+      description: 指定された月の目標と進捗を取得
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: yearMonth
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+          example: "2025-09"
+          description: 対象年月（YYYY-MM形式）
+      responses:
+        '200':
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyGoalWithProgress'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Monthly Goals
+      summary: 指定月の目標削除
+      description: 指定された月の目標を削除
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: yearMonth
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+          example: "2025-09"
+          description: 対象年月（YYYY-MM形式）
+      responses:
+        '204':
+          description: 削除成功
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    MonthlyGoal:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          example: 123
+        yearMonth:
+          type: string
+          example: "2025-09"
+        targetSessions:
+          type: integer
+          example: 12
+        targetDurationMin:
+          type: integer
+          example: 360
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-09-13T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-09-13T10:00:00Z"
+
+    MonthlyGoalWithProgress:
+      allOf:
+        - $ref: '#/components/schemas/MonthlyGoal'
+        - type: object
+          properties:
+            progress:
+              type: object
+              properties:
+                currentSessions:
+                  type: integer
+                  example: 8
+                  description: 現在のセッション数
+                currentDurationMin:
+                  type: integer
+                  example: 240
+                  description: 現在の総運動時間（分）
+                sessionProgress:
+                  type: number
+                  format: float
+                  example: 0.67
+                  description: セッション達成率（0-1）
+                durationProgress:
+                  type: number
+                  format: float
+                  example: 0.67
+                  description: 運動時間達成率（0-1）
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: エラーメッセージ
+        details:
+          type: array
+          items:
+            type: string
+          description: 詳細エラー情報
+
+  responses:
+    BadRequest:
+      description: 不正なリクエスト
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "入力データが無効です"
+            details:
+              - "yearMonthは YYYY-MM 形式で指定してください"
+
+    Unauthorized:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "認証が必要です"
+
+    NotFound:
+      description: リソースが見つからない
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "指定された月の目標が見つかりません"
+
+    InternalServerError:
+      description: サーバーエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "サーバーエラーが発生しました"
