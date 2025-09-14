@@ -65,6 +65,9 @@ learning/daily/
 learning/**/*.private.md
 learning/**/*.draft.md
 learning/**/.DS_Store
+docs/analysis
+docs/platform
+
 
 # 以下のみコミット対象:
 # - learning/templates/  (テンプレート)
@@ -84,6 +87,7 @@ career/
 progress/
 interview/
 FITTRACK_LLM_DEVELOPMENT_GUIDELINES.md
+
 
 
 

@@ -160,8 +160,177 @@ PostgreSQLを選択した理由は、複雑なワークアウトデータ（配�
 
 <br>
 ---
+### **【インフラ構成図】**
+### **【ER図】**
+### ER Diagram
+
+```mermaid
+erDiagram
+  USERS ||--o{ WORKOUTS : logs
+  EXERCISES ||--o{ WORKOUTS : specified_in
+  WORKOUTS ||--o{ SETS : contains
+  USERS ||--o| STRAVA_ACCOUNTS : connects
+  STRAVA_ACCOUNTS ||--o{ STRAVA_ACTIVITIES : imports
+  WORKOUTS ||--o| STRAVA_ACTIVITIES : mapped_from
+
+  USERS {
+    int id PK
+    string username
+    string email UNIQUE
+    string password_hash
+    datetime last_login_at
+    datetime created_at
+    datetime updated_at
+  }
+
+  EXERCISES {
+    int id PK
+    string name UNIQUE
+    string category "strength|cardio|mobility"
+    string muscle_groups "comma-separated or array"
+    numeric mets
+    boolean is_active
+    datetime created_at
+    datetime updated_at
+  }
+
+  WORKOUTS {
+    int id PK
+    int user_id FK
+    int exercise_id FK
+    string exercise_name "free-text fallback"
+    string exercise_type "strength|cardio"
+    string intensity "low|medium|high"
+    timestamp started_at
+    timestamp ended_at
+    int duration_min
+    numeric distance_km
+    decimal perceived_exertion
+    jsonb metrics "avg_hr, calories, pace, elevation..."
+    string source "manual|strava"
+    text note
+    datetime created_at
+    datetime updated_at
+  }
+
+  SETS {
+    int id PK
+    int workout_id FK
+    int set_index
+    int reps
+    numeric weight_kg
+    decimal rpe
+    int time_seconds
+  }
+
+  STRAVA_ACCOUNTS {
+    int id PK
+    int user_id FK UNIQUE
+    bigint strava_athlete_id UNIQUE
+    text access_token
+    text refresh_token
+    int expires_at_epoch
+    datetime linked_at
+  }
+
+  STRAVA_ACTIVITIES {
+    int id PK
+    bigint strava_activity_id UNIQUE
+    int user_id FK
+    int workout_id FK UNIQUE
+    string type
+    numeric distance_km
+    int moving_time_sec
+    timestamp start_date
+    jsonb raw_payload
+    datetime imported_at
+  }
+
 
 <br>
+### ER Diagram
+
+```mermaid
+erDiagram
+  USERS ||--o{ WORKOUTS : logs
+  EXERCISES ||--o{ WORKOUTS : specified_in
+  WORKOUTS ||--o{ SETS : contains
+  USERS ||--o| STRAVA_ACCOUNTS : connects
+  STRAVA_ACCOUNTS ||--o{ STRAVA_ACTIVITIES : imports
+  WORKOUTS ||--o| STRAVA_ACTIVITIES : mapped_from
+
+  USERS {
+    int id PK
+    string username
+    string email UNIQUE
+    string password_hash
+    datetime last_login_at
+    datetime created_at
+    datetime updated_at
+  }
+
+  EXERCISES {
+    int id PK
+    string name UNIQUE
+    string category "strength|cardio|mobility"
+    string muscle_groups "comma-separated or array"
+    numeric mets
+    boolean is_active
+    datetime created_at
+    datetime updated_at
+  }
+
+  WORKOUTS {
+    int id PK
+    int user_id FK
+    int exercise_id FK
+    string exercise_name "free-text fallback"
+    string exercise_type "strength|cardio"
+    string intensity "low|medium|high"
+    timestamp started_at
+    timestamp ended_at
+    int duration_min
+    numeric distance_km
+    decimal perceived_exertion
+    jsonb metrics "avg_hr, calories, pace, elevation..."
+    string source "manual|strava"
+    text note
+    datetime created_at
+    datetime updated_at
+  }
+
+  SETS {
+    int id PK
+    int workout_id FK
+    int set_index
+    int reps
+    numeric weight_kg
+    decimal rpe
+    int time_seconds
+  }
+
+  STRAVA_ACCOUNTS {
+    int id PK
+    int user_id FK UNIQUE
+    bigint strava_athlete_id UNIQUE
+    text access_token
+    text refresh_token
+    int expires_at_epoch
+    datetime linked_at
+  }
+
+  STRAVA_ACTIVITIES {
+    int id PK
+    bigint strava_activity_id UNIQUE
+    int user_id FK
+    int workout_id FK UNIQUE
+    string type
+    numeric distance_km
+    int moving_time_sec
+    timestamp start_date
+    jsonb raw_payload
+    datetime imported_at
+  }
 
 ```
 
