@@ -51,8 +51,29 @@ pnpm-lock.yaml
 .claude/
 images/
 
-# 学習関連
-learning/
+# 学習関連（最小限のコミット）
+# 学習記録は全て除外、ツールのみ公開
+learning/private/
+learning/public/daily/
+learning/public/weekly/
+learning/public/debugging/
+learning/public/technical/
+learning/public/articles/
+learning/drafts/
+learning/published/
+learning/daily/
+learning/**/*.private.md
+learning/**/*.draft.md
+learning/**/.DS_Store
+
+# 以下のみコミット対象:
+# - learning/templates/  (テンプレート)
+# - learning/scripts/    (自動化スクリプト)
+# - learning/WORKFLOW.md (ドキュメント)
+# - learning/public/debugging/ (デバッグ事例)
+# - learning/public/technical/ (技術記事)
+
+# 他のフォルダ
 daily/
 sharing/
 schedule/
