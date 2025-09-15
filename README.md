@@ -162,92 +162,9 @@ PostgreSQL を選択した理由は、複雑なワークアウトデータ（配
 
 ### **【インフラ構成図】**
 
-#### ER Diagram
-
-```mermaid
-erDiagram
-  USERS ||--o{ WORKOUTS : logs
-  EXERCISES ||--o{ WORKOUTS : used_in
-  WORKOUTS ||--o{ SETS : contains
-  USERS ||--o| STRAVA_ACCOUNTS : links
-  USERS ||--o{ STRAVA_ACTIVITIES : imports
-  WORKOUTS ||--o| STRAVA_ACTIVITIES : mapped_from
-
-  USERS {
-    int id PK
-    string username
-    string email UNIQUE
-    string password_hash
-    datetime last_login_at
-    datetime created_at
-    datetime updated_at
-  }
-
-  EXERCISES {
-    int id PK
-    string name UNIQUE
-    string category "strength|cardio|mobility"
-    string muscle_groups "array/text"
-    numeric mets
-    boolean is_active
-    datetime created_at
-    datetime updated_at
-  }
-
-  WORKOUTS {
-    int id PK
-    int user_id FK
-    int exercise_id FK "nullable for cardio/free-text"
-    string exercise_name "fallback when exercise_id null"
-    string exercise_type "strength|cardio"
-    string intensity "low|medium|high"
-    timestamp started_at
-    timestamp ended_at
-    int duration_min
-    numeric distance_km
-    decimal perceived_exertion
-    jsonb metrics "avg_hr, calories, pace..."
-    string source "manual|strava"
-    text note
-    datetime created_at
-    datetime updated_at
-  }
-
-  SETS {
-    int id PK
-    int workout_id FK
-    int set_index
-    int reps
-    numeric weight_kg
-    decimal rpe
-    int time_seconds
-  }
-
-  STRAVA_ACCOUNTS {
-    int id PK
-    int user_id FK UNIQUE
-    bigint strava_athlete_id UNIQUE
-    text access_token
-    text refresh_token
-    int expires_at_epoch
-    datetime linked_at
-  }
-
-  STRAVA_ACTIVITIES {
-    int id PK
-    bigint strava_activity_id UNIQUE
-    int user_id FK
-    int workout_id FK UNIQUE
-    string type
-    numeric distance_km
-    int moving_time_sec
-    timestamp start_date
-    jsonb raw_payload
-    datetime imported_at
-  }
-
-
-```
+### **【ER 図】**
+![ER Diagram](docs/erd.svg)
+````
 
 <br>
 
@@ -264,7 +181,7 @@ npm run test:coverage     # カバレッジ付きテスト
 cd backend
 npm run test              # 基本テスト実行
 npm run test:coverage     # カバレッジ付きテスト
-```
+````
 
 <br>
 
