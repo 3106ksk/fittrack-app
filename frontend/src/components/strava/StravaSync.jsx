@@ -140,7 +140,7 @@ const StravaSync = () => {
         </Collapse>
         
         {/* 成功表示 */}
-        <Collapse in={syncState.status === 'completed' && syncState.result}>
+        <Collapse in={syncState.status === 'completed' && !!syncState.result}>
           <Alert 
             severity="success" 
             icon={<CheckCircleIcon />}
@@ -170,7 +170,7 @@ const StravaSync = () => {
         </Collapse>
         
         {/* エラー表示 */}
-        <Collapse in={syncState.status === 'failed' && syncState.error}>
+        <Collapse in={syncState.status === 'failed' && !!syncState.error}>
           <Alert 
             severity="error" 
             icon={<ErrorIcon />}
