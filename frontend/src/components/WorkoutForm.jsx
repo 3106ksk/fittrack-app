@@ -1,24 +1,48 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Alert, Box, Button, Card, CardContent, Chip, Divider, Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { Settings as SettingsIcon } from '@mui/icons-material';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Grid,
+  IconButton,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import useFormConfig from '../hooks/useFormConfig';
 import useFormValidation from '../hooks/useFormValidation';
-import useWorkoutConfig from '../hooks/useWorkoutConfig';
+import useFormWorkoutConfig from '../hooks/useFormWorkoutConfig';
 import apiClient from '../services/api';
 import { generateDefaultValues } from '../utils/formDefaults';
+import FormConfigDrawer from './FormConfigDrawer';
 
 const WorkoutForm = () => {
   const formConfig = useFormConfig();
   const validationSchema = useFormValidation(formConfig);
-  const { isCardioExercise } = useWorkoutConfig();
-  
+
+  // フォーム専用の設定フックを使用
+  const {
+    workoutConfig,
+    availableExercises,
+    isCardioExercise,
+    updateExercises,
+  } = useFormWorkoutConfig();
+
+  // 設定ドロワーの開閉状態
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   const [feedback, setFeedback] = useState({
     message: '',
     type: '',
     visible: false,
   });
-
 
   const {
     control,
@@ -28,10 +52,10 @@ const WorkoutForm = () => {
     setValue,
   } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: generateDefaultValues(formConfig)
+    defaultValues: generateDefaultValues(formConfig),
   });
 
-    useEffect(() => {
+  useEffect(() => {
     // フォームのデフォルト値を更新
     const newDefaults = generateDefaultValues(formConfig);
     Object.keys(newDefaults).forEach(key => {
@@ -47,7 +71,6 @@ const WorkoutForm = () => {
     });
   };
 
-
   // フィードバック表示時のタイマー管理
   useEffect(() => {
     if (feedback.visible) {
@@ -59,29 +82,25 @@ const WorkoutForm = () => {
   }, [feedback.visible]);
 
   // フォーム送信処理
-  const onSubmit = async (data) => {
+  const onSubmit = async data => {
     try {
-      console.log('💪 ワークアウトデータを保存中...');
-
       for (const exercise of formConfig.exercises) {
         if (isCardioExercise(exercise)) {
-
           const distance = data[`${exercise}_distance`];
           const duration = data[`${exercise}_duration`];
-          
+
           if (distance && duration) {
             const submitData = {
               exercise,
               exerciseType: 'cardio',
               distance: parseFloat(distance),
               duration: parseInt(duration, 10) * 60,
-              intensity: data.intensity
+              intensity: data.intensity,
             };
-            
+
             await apiClient.post('/workouts', submitData);
           }
         } else {
-
           const repsData = [];
           for (let i = 1; i <= formConfig.maxSets; i++) {
             const reps = data[`${exercise}_set${i}`];
@@ -89,42 +108,55 @@ const WorkoutForm = () => {
               repsData.push({ id: String(i), reps: parseInt(reps, 10) });
             }
           }
-          
+
           if (repsData.length > 0) {
             const submitData = {
               exercise,
               exerciseType: 'strength',
               setNumber: repsData.length,
               repsNumber: repsData,
-              intensity: data.intensity
+              intensity: data.intensity,
             };
-            
+
             await apiClient.post('/workouts', submitData);
           }
         }
       }
-      
+
       showFeedback('ワークアウトが保存されました', 'success');
       reset(generateDefaultValues(formConfig));
     } catch (error) {
       console.error('エラー発生:', error.response?.data || error.message);
-      const errorMessage = error.response?.data?.error || 'エラーが発生しました';
+      const errorMessage =
+        error.response?.data?.error || 'エラーが発生しました';
       showFeedback(errorMessage, 'error');
     }
   };
-  const DISTANCE_OPTIONS = Array.from({ length: 21 }, (_, i) => (i * 0.5).toFixed(1));
-  const DURATION_OPTIONS = Array.from({ length: 25 }, (_, i) => i * 5).filter(d => d > 0);
+  const DISTANCE_OPTIONS = Array.from({ length: 21 }, (_, i) =>
+    (i * 0.5).toFixed(1)
+  );
+  const DURATION_OPTIONS = Array.from({ length: 25 }, (_, i) => i * 5).filter(
+    d => d > 0
+  );
   const REPS_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
-  
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
       <Card>
         <CardContent>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
-            ワークアウト記録
-          </Typography>
-          
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
+            }}
+          >
+            <Typography variant="h4" component="h1">
+              ワークアウト記録
+            </Typography>
+          </Box>
+
           {/* 現在の設定表示 */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom>
@@ -132,7 +164,7 @@ const WorkoutForm = () => {
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               {formConfig.exercises.map(exercise => (
-                <Chip 
+                <Chip
                   key={exercise}
                   label={exercise}
                   color={isCardioExercise(exercise) ? 'primary' : 'secondary'}
@@ -140,8 +172,21 @@ const WorkoutForm = () => {
                 />
               ))}
             </Box>
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-              履歴ページで種目設定を変更できます
+            <IconButton
+              onClick={() => setDrawerOpen(true)}
+              color="primary"
+              sx={{ ml: 2 }}
+              title="表示種目を設定"
+            >
+              <SettingsIcon />
+              入力フォーム変更
+            </IconButton>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 1, display: 'block' }}
+            >
+              設定アイコンから表示種目を変更できます
             </Typography>
           </Box>
 
@@ -154,14 +199,18 @@ const WorkoutForm = () => {
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
                         {exercise}
-                        <Chip 
-                          label={isCardioExercise(exercise) ? 'カーディオ' : '筋トレ'}
+                        <Chip
+                          label={
+                            isCardioExercise(exercise) ? 'カーディオ' : '筋トレ'
+                          }
                           size="small"
-                          color={isCardioExercise(exercise) ? 'primary' : 'secondary'}
+                          color={
+                            isCardioExercise(exercise) ? 'primary' : 'secondary'
+                          }
                           sx={{ ml: 1 }}
                         />
                       </Typography>
-                      
+
                       {isCardioExercise(exercise) ? (
                         // カーディオ用フィールド
                         <Grid container spacing={2}>
@@ -176,7 +225,9 @@ const WorkoutForm = () => {
                                   select
                                   fullWidth
                                   error={!!errors[`${exercise}_distance`]}
-                                  helperText={errors[`${exercise}_distance`]?.message}
+                                  helperText={
+                                    errors[`${exercise}_distance`]?.message
+                                  }
                                 >
                                   {DISTANCE_OPTIONS.map(distance => (
                                     <MenuItem key={distance} value={distance}>
@@ -198,7 +249,9 @@ const WorkoutForm = () => {
                                   select
                                   fullWidth
                                   error={!!errors[`${exercise}_duration`]}
-                                  helperText={errors[`${exercise}_duration`]?.message}
+                                  helperText={
+                                    errors[`${exercise}_duration`]?.message
+                                  }
                                 >
                                   {DURATION_OPTIONS.map(duration => (
                                     <MenuItem key={duration} value={duration}>
@@ -213,31 +266,39 @@ const WorkoutForm = () => {
                       ) : (
                         // 筋トレ用フィールド
                         <Grid container spacing={2}>
-                          {Array.from({ length: formConfig.maxSets }, (_, i) => (
-                            <Grid item xs={12/formConfig.maxSets} key={i}>
-                              <Controller
-                                name={`${exercise}_set${i + 1}`}
-                                control={control}
-                                render={({ field }) => (
-                                  <TextField
-                                    {...field}
-                                    label={`${i + 1}セット目`}
-                                    select
-                                    fullWidth
-                                    error={!!errors[`${exercise}_set${i + 1}`]}
-                                    helperText={errors[`${exercise}_set${i + 1}`]?.message}
-                                  >
-                                    <MenuItem value="">なし</MenuItem>
-                                    {REPS_OPTIONS.map(reps => (
-                                      <MenuItem key={reps} value={reps}>
-                                        {reps} 回
-                                      </MenuItem>
-                                    ))}
-                                  </TextField>
-                                )}
-                              />
-                            </Grid>
-                          ))}
+                          {Array.from(
+                            { length: formConfig.maxSets },
+                            (_, i) => (
+                              <Grid item xs={12 / formConfig.maxSets} key={i}>
+                                <Controller
+                                  name={`${exercise}_set${i + 1}`}
+                                  control={control}
+                                  render={({ field }) => (
+                                    <TextField
+                                      {...field}
+                                      label={`${i + 1}セット目`}
+                                      select
+                                      fullWidth
+                                      error={
+                                        !!errors[`${exercise}_set${i + 1}`]
+                                      }
+                                      helperText={
+                                        errors[`${exercise}_set${i + 1}`]
+                                          ?.message
+                                      }
+                                    >
+                                      <MenuItem value="">なし</MenuItem>
+                                      {REPS_OPTIONS.map(reps => (
+                                        <MenuItem key={reps} value={reps}>
+                                          {reps} 回
+                                        </MenuItem>
+                                      ))}
+                                    </TextField>
+                                  )}
+                                />
+                              </Grid>
+                            )
+                          )}
                         </Grid>
                       )}
                     </CardContent>
@@ -260,9 +321,15 @@ const WorkoutForm = () => {
                       error={!!errors.intensity}
                       helperText={errors.intensity?.message}
                     >
-                      <MenuItem value="低">楽に感じる（軽い息切れ程度）</MenuItem>
-                      <MenuItem value="中">少しきつい（会話しながらできる程度）</MenuItem>
-                      <MenuItem value="高">かなりきつい（会話が難しい程度）</MenuItem>
+                      <MenuItem value="低">
+                        楽に感じる（軽い息切れ程度）
+                      </MenuItem>
+                      <MenuItem value="中">
+                        少しきつい（会話しながらできる程度）
+                      </MenuItem>
+                      <MenuItem value="高">
+                        かなりきつい（会話が難しい程度）
+                      </MenuItem>
                     </TextField>
                   )}
                 />
@@ -270,10 +337,10 @@ const WorkoutForm = () => {
 
               {/* 送信ボタン */}
               <Grid item xs={12}>
-                <Button 
-                  type="submit" 
-                  variant="contained" 
-                  fullWidth 
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
                   size="large"
                   sx={{ mt: 2 }}
                 >
@@ -285,8 +352,8 @@ const WorkoutForm = () => {
 
           {/* フィードバック表示 */}
           {feedback.visible && (
-            <Alert 
-              severity={feedback.type === 'success' ? 'success' : 'error'} 
+            <Alert
+              severity={feedback.type === 'success' ? 'success' : 'error'}
               sx={{ mt: 2 }}
             >
               {feedback.message}
@@ -294,6 +361,16 @@ const WorkoutForm = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* 設定ドロワー */}
+      <FormConfigDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        workoutConfig={workoutConfig}
+        availableExercises={availableExercises}
+        isCardioExercise={isCardioExercise}
+        updateExercises={updateExercises}
+      />
     </Box>
   );
 };

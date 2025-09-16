@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import useWorkoutConfig from './useWorkoutConfig';
+// フォーム専用の設定を使用するように変更
+import useFormWorkoutConfig from './useFormWorkoutConfig';
 
 const useFormConfig = () => {
-  const { workoutConfig } = useWorkoutConfig();
-  
+  const { workoutConfig } = useFormWorkoutConfig();
+
   return useMemo(() => ({
     exercises: workoutConfig.exercises,
     maxSets: workoutConfig.maxSets
