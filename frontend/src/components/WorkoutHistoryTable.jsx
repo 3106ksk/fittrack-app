@@ -157,7 +157,7 @@ const WorkoutHistoryTable = ({
                               距離(km)
                               </TableCell>
                               <TableCell align="center" sx={{ fontSize: '0.75rem', color: theme.palette.text.secondary, borderRight: `1px solid ${theme.palette.divider}`, py: 1 }}>
-                                時間
+                                時間(分)
                               </TableCell>
                             </>
                           ) : (
