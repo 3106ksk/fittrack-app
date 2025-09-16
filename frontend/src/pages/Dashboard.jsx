@@ -3,7 +3,6 @@ import {
   FitnessCenter as FitnessCenterIcon,
   History as HistoryIcon,
   DirectionsRun as RunIcon,
-  Settings as SettingsIcon,
   EmojiEvents as TrophyIcon
 } from '@mui/icons-material';
 
@@ -15,9 +14,7 @@ import {
   CardContent,
   Chip,
   Container,
-  Divider,
   Grid,
-  IconButton,
   Paper,
   Typography
 } from '@mui/material';
@@ -150,68 +147,61 @@ const DashboardPage = () => {
                 </Box>
               </Box>
             </Box>
-            
+
+          </Box>
+
+          {/* 今日のヒント */}
+          <Box
+            sx={{
+              mt: 3,
+              p: 2.5,
+              bgcolor: 'rgba(255,255,255,0.15)',
+              borderRadius: 2,
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+              💡 今日のヒント
+            </Typography>
+            <Typography variant="body1" sx={{ lineHeight: 1.6, opacity: 0.95 }}>
+              継続は力なり。小さな運動でも毎日続けることで大きな変化を実感できます！
+            </Typography>
           </Box>
         </CardContent>
       </Paper>
 
-      <Grid container spacing={1}>
-        {/* 統計カード群 - 継続性の視覚化 */}
-          {/* メイン統計コンポーネント */}
-          <WorkoutStatistics workouts={workouts} loading={loading} />
-        {/* アクションパネル - カスタマイズ性の表現 */}
-        <Grid item xs={12} md={4}>
-          <Card 
-            elevation={3} 
-            sx={{ 
-              borderRadius: 3,
-              background: 'linear-gradient(145deg, #f5f5f5 0%, #ffffff 100%)',
-              border: '1px solid rgba(46, 125, 50, 0.1)'
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: 'primary.main' }}>
-                🎯 今日のアクション
-              </Typography>
-
-              {/* Strava関連コンポーネント */}
-              <Box sx={{ mb: 3 }}>
-                <StravaConnect onStatusChange={handleStravaStatusChange} />
-                
-                {/* Strava接続済みの場合のみ同期UIを表示 */}
-                {stravaStatus.connected && !stravaStatus.loading && (
-                  <Box sx={{ mt: 2 }}>
-                    <StravaSync />
-                  </Box>
-                )}
-              </Box>
-              
-              <Box sx={{ mb: 3 }}>
-                <Button
-                  component={Link}
-                  to="/workout-form"
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  size="large"
-                  startIcon={<FitnessCenterIcon />}
-                  sx={{ 
-                    py: 1.5,
-                    borderRadius: 2,
-                    fontSize: '1.1rem',
-                    fontWeight: 'bold',
-                    boxShadow: '0 4px 12px rgba(46, 125, 50, 0.3)',
-                    '&:hover': {
-                      boxShadow: '0 6px 16px rgba(46, 125, 50, 0.4)',
-                      transform: 'translateY(-2px)'
-                    },
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  ワークアウトを記録する
-                </Button>
-              </Box>
-
+      {/* アクションセクション */}
+      <Box sx={{ mb: 4, display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+        {/* アクションボタン - 左側 */}
+        <Box sx={{ flex: '1 1 auto', minWidth: 0 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Button
+                component={Link}
+                to="/workout-form"
+                variant="contained"
+                color="primary"
+                fullWidth
+                size="large"
+                startIcon={<FitnessCenterIcon />}
+                sx={{
+                  py: 2.5,
+                  borderRadius: 2,
+                  fontSize: '1.2rem',
+                  fontWeight: 'bold',
+                  boxShadow: '0 4px 12px rgba(46, 125, 50, 0.3)',
+                  '&:hover': {
+                    boxShadow: '0 6px 16px rgba(46, 125, 50, 0.4)',
+                    transform: 'translateY(-2px)'
+                  },
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                ワークアウトを記録する
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
               <Button
                 component={Link}
                 to="/workout-history"
@@ -220,10 +210,10 @@ const DashboardPage = () => {
                 fullWidth
                 size="large"
                 startIcon={<HistoryIcon />}
-                sx={{ 
-                  py: 1.5,
+                sx={{
+                  py: 2,
                   borderRadius: 2,
-                  fontSize: '1rem',
+                  fontSize: '1.1rem',
                   fontWeight: 'bold',
                   borderWidth: 2,
                   '&:hover': {
@@ -236,43 +226,30 @@ const DashboardPage = () => {
               >
                 ワークアウト詳細を確認
               </Button>
+            </Grid>
+          </Grid>
+        </Box>
 
-              <Divider sx={{ my: 3 }} />
-
-              {/* カスタマイズヒント */}
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2,
-                  bgcolor: 'rgba(46, 125, 50, 0.05)',
-                  borderRadius: 2,
-                  border: '1px solid rgba(46, 125, 50, 0.1)'
-                }}
-              >
-                <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  💡 今日のヒント
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                  継続は力なり。小さな運動でも毎日続けることで大きな変化を実感できます！
-                </Typography>
-                
-                {/* パーソナライゼーション要素 */}
-                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Chip 
-                    label="あなた専用"
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                  />
-                  <IconButton size="small" color="primary">
-                    <SettingsIcon fontSize="small" />
-                  </IconButton>
+        {/* Strava連携パネル - 右側固定 */}
+        <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '300px' } }}>
+          <Card elevation={2} sx={{ borderRadius: 2, height: '100%' }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                🌐 連携サービス
+              </Typography>
+              <StravaConnect onStatusChange={handleStravaStatusChange} />
+              {stravaStatus.connected && !stravaStatus.loading && (
+                <Box sx={{ mt: 2 }}>
+                  <StravaSync />
                 </Box>
-              </Paper>
+              )}
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
+
+      {/* 統計カード - 分析情報を下部に配置 */}
+      <WorkoutStatistics workouts={workouts} loading={loading} />
     </Container>
   );
 };
