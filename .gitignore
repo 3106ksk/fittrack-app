@@ -67,6 +67,8 @@ learning/**/*.draft.md
 learning/**/.DS_Store
 docs/analysis
 docs/platform
+drafts/
+published/
 
 
 # 以下のみコミット対象:
