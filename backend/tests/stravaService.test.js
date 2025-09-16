@@ -60,15 +60,13 @@ describe('StravaService', () => {
       mockedAxios.post.mockResolvedValue({ data: mockTokenResponse });
       const result = await stravaService.exchangeCodeForToken(mockCode);
 
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        'https://www.strava.com/oauth/token',
-        {
-          client_id: 'test_client_id',
-          client_secret: 'test_client_secret',
-          code: mockCode,
-          grant_type: 'authorization_code'
-        }
-      )
+      expect(mockedAxios.post).toHaveBeenCalledWith('https://www.strava.com/oauth/token', {
+        client_id: 'test_client_id',
+        client_secret: 'test_client_secret',
+        code: mockCode,
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://localhost:3000/auth/strava/callback',
+      });
       expect(result).toEqual(mockTokenResponse);
     });
 
