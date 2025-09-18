@@ -20,7 +20,7 @@ import { Controller, useForm } from 'react-hook-form';
 import useFeedback from '../hooks/useFeedback';
 import useFormConfig from '../hooks/useFormConfig';
 import useFormValidation from '../hooks/useFormValidation';
-import apiClient from '../services/api';
+import useWorkoutSubmit from '../hooks/useWorkoutSubmit';
 import { generateDefaultValues } from '../utils/formDefaults';
 import FormConfigDrawer from './FormConfigDrawer';
 import {
@@ -67,58 +67,14 @@ const WorkoutForm = () => {
     });
   }, [workoutConfig, setValue]);
 
-  // フォーム送信処理
-  const onSubmit = async data => {
-    try {
-      for (const exercise of workoutConfig.exercises) {
-        if (isCardioExercise(exercise)) {
-          const distance = data[`${exercise}_distance`];
-          const duration = data[`${exercise}_duration`];
-
-          if (distance && duration) {
-            const submitData = {
-              exercise,
-              exerciseType: 'cardio',
-              distance: parseFloat(distance),
-              duration: parseInt(duration, 10) * 60,
-              intensity: data.intensity,
-            };
-
-            await apiClient.post('/workouts', submitData);
-          }
-        } else {
-          const repsData = [];
-          for (let i = 1; i <= workoutConfig.maxSets; i++) {
-            const reps = data[`${exercise}_set${i}`];
-            if (reps && reps > 0) {
-              repsData.push({ id: String(i), reps: parseInt(reps, 10) });
-            }
-          }
-
-          if (repsData.length > 0) {
-            const submitData = {
-              exercise,
-              exerciseType: 'strength',
-              setNumber: repsData.length,
-              repsNumber: repsData,
-              intensity: data.intensity,
-            };
-
-            await apiClient.post('/workouts', submitData);
-          }
-        }
-      }
-
-      showFeedback('ワークアウトが保存されました', 'success');
-      reset(generateDefaultValues(workoutConfig));
-    } catch (error) {
-      // エラーのログはデバッグ時のみ必要（本番環境では削除）
-      // console.error('エラー発生:', error.response?.data || error.message);
-      const errorMessage =
-        error.response?.data?.error || 'エラーが発生しました';
-      showFeedback(errorMessage, 'error');
-    }
-  };
+  // 送信ロジックをカスタムフックに委譲
+  const { handleSubmit: submitWorkout } = useWorkoutSubmit({
+    workoutConfig,
+    isCardioExercise,
+    showFeedback,
+    reset,
+    generateDefaultValues
+  });
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
@@ -170,7 +126,7 @@ const WorkoutForm = () => {
             </Typography>
           </Box>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(submitWorkout)}>
             <Grid container spacing={3}>
               {/* 各種目の入力フィールド */}
               {workoutConfig.exercises.map(exercise => (
