@@ -21,6 +21,12 @@ import useFormConfig from '../hooks/useFormConfig';
 import apiClient from '../services/api';
 import { generateDefaultValues } from '../utils/formDefaults';
 import FormConfigDrawer from './FormConfigDrawer';
+import {
+  DISTANCE_OPTIONS,
+  DURATION_OPTIONS,
+  REPS_OPTIONS,
+  FEEDBACK_DISPLAY_DURATION
+} from './WorkoutForm/constants';
 
 const WorkoutForm = () => {
   // フォーム専用の設定フックを使用（統一化）
@@ -76,7 +82,7 @@ const WorkoutForm = () => {
     if (feedback.visible) {
       const timer = setTimeout(() => {
         setFeedback(prev => ({ ...prev, visible: false }));
-      }, 3000);
+      }, FEEDBACK_DISPLAY_DURATION);
       return () => clearTimeout(timer);
     }
   }, [feedback.visible]);
@@ -133,13 +139,7 @@ const WorkoutForm = () => {
       showFeedback(errorMessage, 'error');
     }
   };
-  const DISTANCE_OPTIONS = Array.from({ length: 21 }, (_, i) =>
-    (i * 0.5).toFixed(1)
-  );
-  const DURATION_OPTIONS = Array.from({ length: 25 }, (_, i) => i * 5).filter(
-    d => d > 0
-  );
-  const REPS_OPTIONS = [5, 10, 15, 20, 25, 30];
+  // 定数はconstants.jsから取得
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
