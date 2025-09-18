@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import useFormValidation from '../hooks/useFormValidation';
 import useFormConfig from '../hooks/useFormConfig';
+import useFeedback from '../hooks/useFeedback';
 import apiClient from '../services/api';
 import { generateDefaultValues } from '../utils/formDefaults';
 import FormConfigDrawer from './FormConfigDrawer';
@@ -44,11 +45,8 @@ const WorkoutForm = () => {
   // 設定ドロワーの開閉状態
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const [feedback, setFeedback] = useState({
-    message: '',
-    type: '',
-    visible: false,
-  });
+  // フィードバック管理用カスタムフック
+  const { feedback, showFeedback } = useFeedback();
 
   const {
     control,
@@ -69,23 +67,6 @@ const WorkoutForm = () => {
     });
   }, [workoutConfig, setValue]);
 
-  const showFeedback = (message, type) => {
-    setFeedback({
-      message,
-      type,
-      visible: true,
-    });
-  };
-
-  // フィードバック表示時のタイマー管理
-  useEffect(() => {
-    if (feedback.visible) {
-      const timer = setTimeout(() => {
-        setFeedback(prev => ({ ...prev, visible: false }));
-      }, FEEDBACK_DISPLAY_DURATION);
-      return () => clearTimeout(timer);
-    }
-  }, [feedback.visible]);
 
   // フォーム送信処理
   const onSubmit = async data => {
@@ -139,7 +120,6 @@ const WorkoutForm = () => {
       showFeedback(errorMessage, 'error');
     }
   };
-  // 定数はconstants.jsから取得
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
