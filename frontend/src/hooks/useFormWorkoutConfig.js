@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { EXERCISE_DATABASE, WORKOUT_TYPES } from '../data/exercises';
 
 const useFormWorkoutConfig = () => {
-  // 既存のuseWorkoutConfigと同じ構造でexerciseDataを作成
+
   const exerciseData = useMemo(() => {
     const cardio = [];
     const strength = [];
@@ -27,14 +27,14 @@ const useFormWorkoutConfig = () => {
     };
   }, []);
 
-  // フォーム専用の設定（formConfigキーを使用）
+  // 初期化フェーズ
   const [workoutConfig, setWorkoutConfig] = useState({
     exercises: [
       exerciseData.nameMapping.pushup || 'プッシュアップ',
       exerciseData.nameMapping.squat || 'スクワット',
       exerciseData.nameMapping.walking || 'ウォーキング',
     ],
-    maxSets: 3,
+    maxSets: 5,
   });
 
   // カーディオ判定用のユーティリティ関数
@@ -45,7 +45,7 @@ const useFormWorkoutConfig = () => {
     [exerciseData.cardio]
   );
 
-  // LocalStorageから設定を読み込み（formConfigキーを使用）
+  // LocalStorageから設定を読み込み
   useEffect(() => {
     const savedConfig = localStorage.getItem('formConfig');
     if (savedConfig) {
@@ -64,20 +64,14 @@ const useFormWorkoutConfig = () => {
               ? validExercises
               : workoutConfig.exercises,
         });
-
       } catch (error) {
         console.error('フォーム設定読み込み失敗:', error);
       }
     }
   }, [exerciseData.all]);
 
-  // 設定を保存
-  const saveConfig = useCallback(newConfig => {
-    setWorkoutConfig(newConfig);
-    localStorage.setItem('formConfig', JSON.stringify(newConfig));
-  }, []);
 
-  // 種目リストを更新（まとめて更新用）
+  // 種目リスト更新
   const updateExercises = useCallback(
     exercises => {
       if (!exercises || exercises.length === 0) {
@@ -94,26 +88,30 @@ const useFormWorkoutConfig = () => {
         return;
       }
 
-      const newConfig = {
-        ...workoutConfig,
-        exercises: validExercises,
-      };
-      saveConfig(newConfig);
+      setWorkoutConfig(prevConfig => {
+        const newConfig = {
+          ...prevConfig,
+          exercises: validExercises,
+        };
+        localStorage.setItem('formConfig', JSON.stringify(newConfig));
+        console.log(newConfig);
+        return newConfig;
+      });
     },
-    [workoutConfig, saveConfig, exerciseData.all]
+    [exerciseData.all]
   );
 
   // 最大セット数を更新
-  const updateMaxSets = useCallback(
-    sets => {
+  const updateMaxSets = useCallback(sets => {
+    setWorkoutConfig(prevConfig => {
       const newConfig = {
-        ...workoutConfig,
+        ...prevConfig,
         maxSets: sets,
       };
-      saveConfig(newConfig);
-    },
-    [workoutConfig, saveConfig]
-  );
+      localStorage.setItem('formConfig', JSON.stringify(newConfig));
+      return newConfig;
+    });
+  }, []);
 
   return {
     // 状態
