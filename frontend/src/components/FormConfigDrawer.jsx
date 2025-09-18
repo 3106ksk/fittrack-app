@@ -35,7 +35,6 @@ const FormConfigDrawer = ({
     maxSets: workoutConfig.maxSets || 5,
   });
 
-  // ドロワーが開いた時に親の状態を同期
   useEffect(() => {
     if (open) {
       setLocalConfig({
@@ -94,7 +93,6 @@ const FormConfigDrawer = ({
       }}
     >
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        {/* ヘッダー */}
         <Box
           sx={{
             p: 2,
@@ -111,7 +109,6 @@ const FormConfigDrawer = ({
 
         <Divider />
 
-        {/* 説明文 */}
         <Box sx={{ px: 2, pt: 2 }}>
           <Typography variant="body2" color="text.secondary">
             ワークアウトフォームに表示する種目を選択してください。
@@ -126,7 +123,6 @@ const FormConfigDrawer = ({
           </Typography>
         </Box>
 
-        {/* 種目リスト */}
         <Box sx={{ flex: 1, overflow: 'auto', px: 2, py: 1 }}>
           <List dense>
             {availableExercises.map(exercise => (
@@ -162,7 +158,6 @@ const FormConfigDrawer = ({
 
         <Divider />
         
-        {/* セット数変更セクション */}
         <Box sx={{ mb: 3 }}>
           <Typography variant="subtitle1" gutterBottom>
             筋トレ設定
@@ -199,7 +194,6 @@ const FormConfigDrawer = ({
 
         <Divider sx={{ my: 2 }} />
 
-        {/* アクションボタン */}
         <Box sx={{ p: 2, display: 'flex', gap: 1 }}>
           <Button variant="outlined" onClick={handleCancel} fullWidth>
             キャンセル

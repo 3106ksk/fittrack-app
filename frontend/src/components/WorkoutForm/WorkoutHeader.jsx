@@ -5,11 +5,8 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
+import { memo } from 'react';
 
-/**
- * ワークアウトフォームのヘッダー部分
- * タイトル表示と設定中の種目表示を担当
- */
 const WorkoutHeader = ({
   workoutConfig,
   isCardioExercise,
@@ -30,7 +27,6 @@ const WorkoutHeader = ({
         </Typography>
       </Box>
 
-      {/* 現在の設定表示 */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           設定中の種目:
@@ -66,4 +62,4 @@ const WorkoutHeader = ({
   );
 };
 
-export default WorkoutHeader;
+export default memo(WorkoutHeader);
