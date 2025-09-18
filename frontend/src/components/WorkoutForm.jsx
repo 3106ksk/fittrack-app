@@ -1,19 +1,15 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Settings as SettingsIcon } from '@mui/icons-material';
 import {
   Alert,
   Box,
   Button,
   Card,
   CardContent,
-  Chip,
   Divider,
   Grid,
-  IconButton,
   MenuItem,
   Snackbar,
   TextField,
-  Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -23,11 +19,8 @@ import useFormValidation from '../hooks/useFormValidation';
 import useWorkoutSubmit from '../hooks/useWorkoutSubmit';
 import { generateDefaultValues } from '../utils/formDefaults';
 import FormConfigDrawer from './FormConfigDrawer';
-import {
-  DISTANCE_OPTIONS,
-  DURATION_OPTIONS,
-  REPS_OPTIONS,
-} from './WorkoutForm/constants';
+import WorkoutHeader from './WorkoutForm/WorkoutHeader';
+import ExerciseCard from './WorkoutForm/ExerciseCard';
 
 const WorkoutForm = () => {
   // フォーム専用の設定フックを使用（統一化）
@@ -80,169 +73,24 @@ const WorkoutForm = () => {
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
       <Card>
         <CardContent>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mb: 2,
-            }}
-          >
-            <Typography variant="h4" component="h1">
-              ワークアウト記録
-            </Typography>
-          </Box>
-
-          {/* 現在の設定表示 */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              設定中の種目:
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {workoutConfig.exercises.map(exercise => (
-                <Chip
-                  key={exercise}
-                  label={exercise}
-                  color={isCardioExercise(exercise) ? 'primary' : 'secondary'}
-                  variant="outlined"
-                />
-              ))}
-            </Box>
-            <IconButton
-              onClick={() => setDrawerOpen(true)}
-              color="primary"
-              sx={{ ml: 2 }}
-              title="表示種目を設定"
-            >
-              <SettingsIcon />
-              入力フォーム変更
-            </IconButton>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ mt: 1, display: 'block' }}
-            >
-              設定アイコンから表示種目を変更できます
-            </Typography>
-          </Box>
+          <WorkoutHeader
+            workoutConfig={workoutConfig}
+            isCardioExercise={isCardioExercise}
+            onOpenDrawer={() => setDrawerOpen(true)}
+          />
 
           <form onSubmit={handleSubmit(submitWorkout)}>
             <Grid container spacing={3}>
               {/* 各種目の入力フィールド */}
               {workoutConfig.exercises.map(exercise => (
                 <Grid item xs={12} key={exercise}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {exercise}
-                        <Chip
-                          label={
-                            isCardioExercise(exercise) ? 'カーディオ' : '筋トレ'
-                          }
-                          size="small"
-                          color={
-                            isCardioExercise(exercise) ? 'primary' : 'secondary'
-                          }
-                          sx={{ ml: 1 }}
-                        />
-                      </Typography>
-
-                      {isCardioExercise(exercise) ? (
-                        // カーディオ用フィールド
-                        <Grid container spacing={2}>
-                          <Grid item xs={6}>
-                            <Controller
-                              name={`${exercise}_distance`}
-                              control={control}
-                              render={({ field }) => (
-                                <TextField
-                                  {...field}
-                                  label="距離 (km)"
-                                  select
-                                  fullWidth
-                                  error={!!errors[`${exercise}_distance`]}
-                                  helperText={
-                                    errors[`${exercise}_distance`]?.message
-                                  }
-                                >
-                                  {DISTANCE_OPTIONS.map(distance => (
-                                    <MenuItem key={distance} value={distance}>
-                                      {distance} km
-                                    </MenuItem>
-                                  ))}
-                                </TextField>
-                              )}
-                            />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Controller
-                              name={`${exercise}_duration`}
-                              control={control}
-                              render={({ field }) => (
-                                <TextField
-                                  {...field}
-                                  label="時間 (分)"
-                                  select
-                                  fullWidth
-                                  error={!!errors[`${exercise}_duration`]}
-                                  helperText={
-                                    errors[`${exercise}_duration`]?.message
-                                  }
-                                >
-                                  {DURATION_OPTIONS.map(duration => (
-                                    <MenuItem key={duration} value={duration}>
-                                      {duration} 分
-                                    </MenuItem>
-                                  ))}
-                                </TextField>
-                              )}
-                            />
-                          </Grid>
-                        </Grid>
-                      ) : (
-                        // 筋トレ用フィールド
-                        <Grid container spacing={2}>
-                          {Array.from(
-                            { length: workoutConfig.maxSets },
-                            (_, i) => (
-                              <Grid
-                                item
-                                xs={12 / workoutConfig.maxSets}
-                                key={i}
-                              >
-                                <Controller
-                                  name={`${exercise}_set${i + 1}`}
-                                  control={control}
-                                  render={({ field }) => (
-                                    <TextField
-                                      {...field}
-                                      label={`${i + 1}セット目`}
-                                      select
-                                      fullWidth
-                                      error={
-                                        !!errors[`${exercise}_set${i + 1}`]
-                                      }
-                                      helperText={
-                                        errors[`${exercise}_set${i + 1}`]
-                                          ?.message
-                                      }
-                                    >
-                                      <MenuItem value="">なし</MenuItem>
-                                      {REPS_OPTIONS.map(reps => (
-                                        <MenuItem key={reps} value={reps}>
-                                          {reps} 回
-                                        </MenuItem>
-                                      ))}
-                                    </TextField>
-                                  )}
-                                />
-                              </Grid>
-                            )
-                          )}
-                        </Grid>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <ExerciseCard
+                    exercise={exercise}
+                    isCardio={isCardioExercise(exercise)}
+                    control={control}
+                    errors={errors}
+                    maxSets={workoutConfig.maxSets}
+                  />
                 </Grid>
               ))}
 
