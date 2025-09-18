@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import useFormConfig from '../hooks/useFormConfig';
 import useFormValidation from '../hooks/useFormValidation';
 import useFormWorkoutConfig from '../hooks/useFormWorkoutConfig';
 import apiClient from '../services/api';
@@ -24,10 +23,7 @@ import { generateDefaultValues } from '../utils/formDefaults';
 import FormConfigDrawer from './FormConfigDrawer';
 
 const WorkoutForm = () => {
-  const formConfig = useFormConfig();
-  const validationSchema = useFormValidation(formConfig);
-
-  // フォーム専用の設定フックを使用
+  // フォーム専用の設定フックを使用（統一化）
   const {
     workoutConfig,
     availableExercises,
@@ -35,6 +31,9 @@ const WorkoutForm = () => {
     updateExercises,
     updateMaxSets,
   } = useFormWorkoutConfig();
+
+  // バリデーションにもworkoutConfigを使用
+  const validationSchema = useFormValidation(workoutConfig);
 
   // 設定ドロワーの開閉状態
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -53,16 +52,16 @@ const WorkoutForm = () => {
     setValue,
   } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: generateDefaultValues(formConfig),
+    defaultValues: generateDefaultValues(workoutConfig),
   });
 
   useEffect(() => {
     // フォームのデフォルト値を更新
-    const newDefaults = generateDefaultValues(formConfig);
+    const newDefaults = generateDefaultValues(workoutConfig);
     Object.keys(newDefaults).forEach(key => {
       setValue(key, newDefaults[key]);
     });
-  }, [formConfig, setValue]);
+  }, [workoutConfig, setValue]);
 
   const showFeedback = (message, type) => {
     setFeedback({
@@ -85,7 +84,7 @@ const WorkoutForm = () => {
   // フォーム送信処理
   const onSubmit = async data => {
     try {
-      for (const exercise of formConfig.exercises) {
+      for (const exercise of workoutConfig.exercises) {
         if (isCardioExercise(exercise)) {
           const distance = data[`${exercise}_distance`];
           const duration = data[`${exercise}_duration`];
@@ -103,7 +102,7 @@ const WorkoutForm = () => {
           }
         } else {
           const repsData = [];
-          for (let i = 1; i <= formConfig.maxSets; i++) {
+          for (let i = 1; i <= workoutConfig.maxSets; i++) {
             const reps = data[`${exercise}_set${i}`];
             if (reps && reps > 0) {
               repsData.push({ id: String(i), reps: parseInt(reps, 10) });
@@ -125,9 +124,10 @@ const WorkoutForm = () => {
       }
 
       showFeedback('ワークアウトが保存されました', 'success');
-      reset(generateDefaultValues(formConfig));
+      reset(generateDefaultValues(workoutConfig));
     } catch (error) {
-      console.error('エラー発生:', error.response?.data || error.message);
+      // エラーのログはデバッグ時のみ必要（本番環境では削除）
+      // console.error('エラー発生:', error.response?.data || error.message);
       const errorMessage =
         error.response?.data?.error || 'エラーが発生しました';
       showFeedback(errorMessage, 'error');
@@ -139,7 +139,7 @@ const WorkoutForm = () => {
   const DURATION_OPTIONS = Array.from({ length: 25 }, (_, i) => i * 5).filter(
     d => d > 0
   );
-  const REPS_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+  const REPS_OPTIONS = [5, 10, 15, 20, 25, 30];
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
@@ -164,7 +164,7 @@ const WorkoutForm = () => {
               設定中の種目:
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {formConfig.exercises.map(exercise => (
+              {workoutConfig.exercises.map(exercise => (
                 <Chip
                   key={exercise}
                   label={exercise}
@@ -194,8 +194,8 @@ const WorkoutForm = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={3}>
               {/* 各種目の入力フィールド */}
-              {formConfig.exercises.map((exercise, index) => (
-                <Grid item xs={12} key={index}>
+              {workoutConfig.exercises.map(exercise => (
+                <Grid item xs={12} key={exercise}>
                   <Card variant="outlined">
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
@@ -268,9 +268,9 @@ const WorkoutForm = () => {
                         // 筋トレ用フィールド
                         <Grid container spacing={2}>
                           {Array.from(
-                            { length: formConfig.maxSets },
+                            { length: workoutConfig.maxSets },
                             (_, i) => (
-                              <Grid item xs={12 / formConfig.maxSets} key={i}>
+                              <Grid item xs={12 / workoutConfig.maxSets} key={i}>
                                 <Controller
                                   name={`${exercise}_set${i + 1}`}
                                   control={control}
