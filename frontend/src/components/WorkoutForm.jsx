@@ -17,7 +17,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import useFormValidation from '../hooks/useFormValidation';
-import useFormWorkoutConfig from '../hooks/useFormWorkoutConfig';
+import useFormConfig from '../hooks/useFormConfig';
 import apiClient from '../services/api';
 import { generateDefaultValues } from '../utils/formDefaults';
 import FormConfigDrawer from './FormConfigDrawer';
@@ -30,7 +30,7 @@ const WorkoutForm = () => {
     isCardioExercise,
     updateExercises,
     updateMaxSets,
-  } = useFormWorkoutConfig();
+  } = useFormConfig();
 
   // バリデーションにもworkoutConfigを使用
   const validationSchema = useFormValidation(workoutConfig);
