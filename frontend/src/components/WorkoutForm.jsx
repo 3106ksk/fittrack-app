@@ -33,6 +33,7 @@ const WorkoutForm = () => {
     availableExercises,
     isCardioExercise,
     updateExercises,
+    updateMaxSets,
   } = useFormWorkoutConfig();
 
   // 設定ドロワーの開閉状態
@@ -370,6 +371,7 @@ const WorkoutForm = () => {
         availableExercises={availableExercises}
         isCardioExercise={isCardioExercise}
         updateExercises={updateExercises}
+        updateMaxSets={updateMaxSets}
       />
     </Box>
   );

@@ -15,6 +15,8 @@ import {
   ListItem,
   ListItemText,
   Typography,
+  Slider,
+
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 
@@ -25,41 +27,57 @@ const FormConfigDrawer = ({
   availableExercises,
   isCardioExercise,
   updateExercises,
+  updateMaxSets,
 }) => {
-  const [selectedExercises, setSelectedExercises] = useState(
-    workoutConfig.exercises
-  );
 
-  // 設定が変更されたら選択状態を更新
+  const [localConfig, setLocalConfig] = useState({
+    exercises: workoutConfig.exercises || [],
+    maxSets: workoutConfig.maxSets || 5,
+  });
+
+  // ドロワーが開いた時に親の状態を同期
   useEffect(() => {
-    setSelectedExercises(workoutConfig.exercises);
-  }, [workoutConfig.exercises]);
+    if (open) {
+      setLocalConfig({
+        exercises: workoutConfig.exercises,
+        maxSets: workoutConfig.maxSets,
+      });
+    }
+  }, [open, workoutConfig.exercises, workoutConfig.maxSets]);
 
   const handleToggle = exercise => {
-    const currentIndex = selectedExercises.indexOf(exercise);
-    const newSelected = [...selectedExercises];
+    setLocalConfig(currentConfig => {
+      const currentIndex = currentConfig.exercises.indexOf(exercise);
+      const newExercises = [...currentConfig.exercises];
 
-    if (currentIndex === -1) {
-      newSelected.push(exercise);
-    } else {
-      newSelected.splice(currentIndex, 1);
-    }
+      if (currentIndex === -1) {
+        newExercises.push(exercise);
+      } else {
+        newExercises.splice(currentIndex, 1);
+      }
 
-    setSelectedExercises(newSelected);
+      return {
+        ...currentConfig,
+        exercises: newExercises
+      };
+    });
   };
 
   const handleSave = () => {
-    if (selectedExercises.length === 0) {
+    if (localConfig.exercises.length === 0) {
       alert('最低1つの種目を選択してください');
       return;
     }
-    updateExercises(selectedExercises);
+    updateExercises(localConfig.exercises);
+    updateMaxSets(localConfig.maxSets);
     onClose();
   };
 
   const handleCancel = () => {
-    // キャンセル時は元の設定に戻す
-    setSelectedExercises(workoutConfig.exercises);
+    setLocalConfig({
+      exercises:workoutConfig.exercises,
+      maxSets:workoutConfig.maxSets
+    })
     onClose();
   };
 
@@ -104,7 +122,7 @@ const FormConfigDrawer = ({
             color="text.secondary"
             sx={{ mt: 1, display: 'block' }}
           >
-            選択中: {selectedExercises.length}種目 / 最大10種目
+            選択中: {localConfig.exercises.length}種目 / 最大10種目
           </Typography>
         </Box>
 
@@ -120,7 +138,7 @@ const FormConfigDrawer = ({
               >
                 <Checkbox
                   edge="start"
-                  checked={selectedExercises.includes(exercise)}
+                  checked={localConfig.exercises.includes(exercise)}
                   tabIndex={-1}
                   disableRipple
                 />
@@ -143,6 +161,41 @@ const FormConfigDrawer = ({
         </Box>
 
         <Divider />
+        
+        {/* セット数変更セクション */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle1" gutterBottom>
+            筋トレ設定
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            筋トレ種目の最大セット数を設定
+          </Typography>
+
+          <Box sx={{ px: 2 }}>
+            <Typography variant="body2" gutterBottom>
+              最大セット数: {localConfig.maxSets}
+            </Typography>
+            <Slider
+              value={localConfig.maxSets}
+              onChange={(event, value) => setLocalConfig(prev => ({
+                ...prev,
+                maxSets: value
+              }))}
+              min={1}
+              max={5}
+              step={1}
+              marks={[
+                { value: 1, label: '1' },
+                { value: 2, label: '2' },
+                { value: 3, label: '3' },
+                { value: 4, label: '4' },
+                { value: 5, label: '5' },
+              ]}
+              valueLabelDisplay="auto"
+              sx={{ mb: 2 }}
+            />
+          </Box>
+        </Box>
 
         <Divider sx={{ my: 2 }} />
 
@@ -155,7 +208,7 @@ const FormConfigDrawer = ({
             variant="contained"
             onClick={handleSave}
             fullWidth
-            disabled={selectedExercises.length === 0}
+            disabled={localConfig.exercises.length === 0}
           >
             保存
           </Button>
