@@ -11,14 +11,15 @@ import {
   Grid,
   IconButton,
   MenuItem,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import useFormValidation from '../hooks/useFormValidation';
-import useFormConfig from '../hooks/useFormConfig';
 import useFeedback from '../hooks/useFeedback';
+import useFormConfig from '../hooks/useFormConfig';
+import useFormValidation from '../hooks/useFormValidation';
 import apiClient from '../services/api';
 import { generateDefaultValues } from '../utils/formDefaults';
 import FormConfigDrawer from './FormConfigDrawer';
@@ -26,7 +27,6 @@ import {
   DISTANCE_OPTIONS,
   DURATION_OPTIONS,
   REPS_OPTIONS,
-  FEEDBACK_DISPLAY_DURATION
 } from './WorkoutForm/constants';
 
 const WorkoutForm = () => {
@@ -46,7 +46,7 @@ const WorkoutForm = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   // フィードバック管理用カスタムフック
-  const { feedback, showFeedback } = useFeedback();
+  const { feedback, showFeedback, hideFeedback } = useFeedback();
 
   const {
     control,
@@ -66,7 +66,6 @@ const WorkoutForm = () => {
       setValue(key, newDefaults[key]);
     });
   }, [workoutConfig, setValue]);
-
 
   // フォーム送信処理
   const onSubmit = async data => {
@@ -250,7 +249,11 @@ const WorkoutForm = () => {
                           {Array.from(
                             { length: workoutConfig.maxSets },
                             (_, i) => (
-                              <Grid item xs={12 / workoutConfig.maxSets} key={i}>
+                              <Grid
+                                item
+                                xs={12 / workoutConfig.maxSets}
+                                key={i}
+                              >
                                 <Controller
                                   name={`${exercise}_set${i + 1}`}
                                   control={control}
@@ -330,18 +333,32 @@ const WorkoutForm = () => {
               </Grid>
             </Grid>
           </form>
-
-          {/* フィードバック表示 */}
-          {feedback.visible && (
-            <Alert
-              severity={feedback.type === 'success' ? 'success' : 'error'}
-              sx={{ mt: 2 }}
-            >
-              {feedback.message}
-            </Alert>
-          )}
         </CardContent>
       </Card>
+
+      {/* フィードバック表示 */}
+      <Snackbar
+        open={feedback.visible}
+        autoHideDuration={3000}
+        onClose={hideFeedback}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ mt: 8 }}
+      >
+        <Alert
+          onClose={hideFeedback}
+          severity={feedback.type === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{
+            color: 'white',
+            width: '100%',
+            fontSize: '1rem',
+            fontWeight: 'bold',
+            boxShadow: 3,
+          }}
+        >
+          {feedback.message}
+        </Alert>
+      </Snackbar>
 
       {/* 設定ドロワー */}
       <FormConfigDrawer
