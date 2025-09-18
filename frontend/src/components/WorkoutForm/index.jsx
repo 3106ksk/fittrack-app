@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Alert,
-  Box,
   Button,
   Card,
   CardContent,
@@ -13,17 +12,16 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import useFeedback from '../hooks/useFeedback';
-import useFormConfig from '../hooks/useFormConfig';
-import useFormValidation from '../hooks/useFormValidation';
-import useWorkoutSubmit from '../hooks/useWorkoutSubmit';
-import { generateDefaultValues } from '../utils/formDefaults';
-import FormConfigDrawer from './FormConfigDrawer';
-import WorkoutHeader from './WorkoutForm/WorkoutHeader';
-import ExerciseCard from './WorkoutForm/ExerciseCard';
+import useFeedback from '../../hooks/useFeedback';
+import useFormConfig from '../../hooks/useFormConfig';
+import useFormValidation from '../../hooks/useFormValidation';
+import useWorkoutSubmit from '../../hooks/useWorkoutSubmit';
+import { generateDefaultValues } from '../../utils/formDefaults';
+import FormConfigDrawer from '../FormConfigDrawer';
+import WorkoutHeader from './WorkoutHeader';
+import ExerciseCard from './ExerciseCard';
 
 const WorkoutForm = () => {
-  // フォーム専用の設定フックを使用（統一化）
   const {
     workoutConfig,
     availableExercises,
@@ -32,13 +30,10 @@ const WorkoutForm = () => {
     updateMaxSets,
   } = useFormConfig();
 
-  // バリデーションにもworkoutConfigを使用
   const validationSchema = useFormValidation(workoutConfig);
 
-  // 設定ドロワーの開閉状態
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // フィードバック管理用カスタムフック
   const { feedback, showFeedback, hideFeedback } = useFeedback();
 
   const {
@@ -53,14 +48,12 @@ const WorkoutForm = () => {
   });
 
   useEffect(() => {
-    // フォームのデフォルト値を更新
     const newDefaults = generateDefaultValues(workoutConfig);
     Object.keys(newDefaults).forEach(key => {
       setValue(key, newDefaults[key]);
     });
   }, [workoutConfig, setValue]);
 
-  // 送信ロジックをカスタムフックに委譲
   const { handleSubmit: submitWorkout } = useWorkoutSubmit({
     workoutConfig,
     isCardioExercise,
@@ -70,7 +63,7 @@ const WorkoutForm = () => {
   });
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
+    <>
       <Card>
         <CardContent>
           <WorkoutHeader
@@ -81,7 +74,6 @@ const WorkoutForm = () => {
 
           <form onSubmit={handleSubmit(submitWorkout)}>
             <Grid container spacing={3}>
-              {/* 各種目の入力フィールド */}
               {workoutConfig.exercises.map(exercise => (
                 <Grid item xs={12} key={exercise}>
                   <ExerciseCard
@@ -94,7 +86,6 @@ const WorkoutForm = () => {
                 </Grid>
               ))}
 
-              {/* 強度選択 */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 2 }} />
                 <Controller
@@ -123,7 +114,6 @@ const WorkoutForm = () => {
                 />
               </Grid>
 
-              {/* 送信ボタン */}
               <Grid item xs={12}>
                 <Button
                   type="submit"
@@ -140,7 +130,6 @@ const WorkoutForm = () => {
         </CardContent>
       </Card>
 
-      {/* フィードバック表示 */}
       <Snackbar
         open={feedback.visible}
         autoHideDuration={3000}
@@ -164,7 +153,6 @@ const WorkoutForm = () => {
         </Alert>
       </Snackbar>
 
-      {/* 設定ドロワー */}
       <FormConfigDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
@@ -174,7 +162,7 @@ const WorkoutForm = () => {
         updateExercises={updateExercises}
         updateMaxSets={updateMaxSets}
       />
-    </Box>
+    </>
   );
 };
 

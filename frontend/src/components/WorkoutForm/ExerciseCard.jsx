@@ -7,6 +7,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { memo } from 'react';
 import { Controller } from 'react-hook-form';
 import {
   DISTANCE_OPTIONS,
@@ -14,10 +15,6 @@ import {
   REPS_OPTIONS
 } from './constants';
 
-/**
- * 個別の種目入力カード
- * カーディオと筋トレの表示を切り替え
- */
 const ExerciseCard = ({
   exercise,
   isCardio,
@@ -39,7 +36,6 @@ const ExerciseCard = ({
         </Typography>
 
         {isCardio ? (
-          // カーディオ用フィールド
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Controller
@@ -87,7 +83,6 @@ const ExerciseCard = ({
             </Grid>
           </Grid>
         ) : (
-          // 筋トレ用フィールド
           <Grid container spacing={2}>
             {Array.from({ length: maxSets }, (_, i) => (
               <Grid item xs={12 / maxSets} key={i}>
@@ -121,4 +116,4 @@ const ExerciseCard = ({
   );
 };
 
-export default ExerciseCard;
+export default memo(ExerciseCard);
