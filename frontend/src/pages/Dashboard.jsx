@@ -2,14 +2,14 @@ import {
   AutoAwesome as AutoAwesomeIcon,
   CalendarMonth as CalendarIcon,
   LightMode as DayIcon,
-  LocalFireDepartment as FireIcon,
   FitnessCenter as FitnessCenterIcon,
   HelpOutline as HelpOutlineIcon,
   History as HistoryIcon,
   WbSunny as MorningIcon,
   NightsStay as NightIcon,
-  Schedule as ScheduleIcon,
   TrendingUp as TrendingUpIcon,
+  DirectionsRun as DirectionsRunIcon,
+  CloudSync as CloudSyncIcon,
 } from '@mui/icons-material';
 
 import {
@@ -79,26 +79,26 @@ const DashboardPage = () => {
     if (hour < 12) {
       return {
         text: 'おはようございます',
-        icon: <MorningIcon sx={{ fontSize: 28 }} />,
+        icon: <MorningIcon sx={{ fontSize: 14 }} />,
         message:
           'たった1～3分のストレッチや階段でも代謝は上がります。小さく始めて、しっかり健康投資。',
-        gradient: 'linear-gradient(135deg, #FFE082 0%, #FB8C00 100%)',
+        backgroundColor: '#388E3C',
       };
     } else if (hour < 18) {
       return {
         text: 'こんにちは',
-        icon: <DayIcon sx={{ fontSize: 28 }} />,
+        icon: <DayIcon sx={{ fontSize: 14 }} />,
         message:
           '短い歩き・軽いスクワット1セットでOK。小さな積み重ねが、体力と気分に大きなリターン。',
-        gradient: 'linear-gradient(135deg, #4FC3F7 0%, #1976D2 100%)',
+        backgroundColor: '#388E3C',
       };
     } else {
       return {
         text: 'お疲れ様でした',
-        icon: <NightIcon sx={{ fontSize: 28 }} />,
+        icon: <NightIcon sx={{ fontSize: 14 }} />,
         message:
-          '1分のケアでも睡眠の質は変わります。今日の“ちょい運動”を記録して、明日の自分を軽くしよう。',
-        gradient: 'linear-gradient(135deg, #9575CD 0%, #512DA8 100%)',
+          '1分のケアでも睡眠の質は変わります。今日の"ちょい運動"を記録して、明日の自分を軽くしよう。',
+        backgroundColor: '#388E3C',
       };
     }
   };
@@ -135,21 +135,21 @@ const DashboardPage = () => {
       label: '今週のワークアウト',
       value: continuityData.weeklyWorkouts,
       unit: '回',
-      icon: <CalendarIcon sx={{ fontSize: 20 }} />,
+      icon: <CalendarIcon sx={{ fontSize: 17 }} />,
       color: '#4CAF50',
     },
     {
       label: '今週のレップス回数',
       value: Math.floor(continuityData.totalMinutes / 60),
       unit: '回',
-      icon: <ScheduleIcon sx={{ fontSize: 20 }} />,
+      icon: <FitnessCenterIcon sx={{ fontSize: 17 }} />,
       color: '#2196F3',
     },
     {
       label: '今週の距離',
       value: continuityData.currentStreak,
       unit: 'km',
-      icon: <FireIcon sx={{ fontSize: 20 }} />,
+      icon: <DirectionsRunIcon sx={{ fontSize: 17 }} />,
       color: '#FF5722',
     },
   ];
@@ -169,8 +169,8 @@ const DashboardPage = () => {
         <Paper
           elevation={0}
           sx={{
-            mb: 3,
-            background: greeting.gradient,
+            mb: 2,
+            backgroundColor: greeting.backgroundColor,
             borderRadius: { xs: 2, sm: 3 },
             overflow: 'hidden',
             position: 'relative',
@@ -182,8 +182,8 @@ const DashboardPage = () => {
             },
           }}
         >
-          <CardContent sx={{ p: { xs: 2, sm: 3 }, color: 'white' }}>
-            <Grid container spacing={3}>
+          <CardContent sx={{ p: { xs: 1, sm: 1.5 } }}>
+            <Grid container spacing={1}>
               {/* パーソナライズド挨拶 */}
               <Grid item xs={12}>
                 <Box
@@ -196,15 +196,15 @@ const DashboardPage = () => {
                   <Grow in={true} timeout={800}>
                     <Avatar
                       sx={{
-                        width: { xs: 60, sm: 80 },
-                        height: { xs: 60, sm: 80 },
-                        fontSize: { xs: '1.5rem', sm: '2rem' },
+                        width: { xs: 30, sm: 40 },
+                        height: { xs: 30, sm: 40 },
+                        fontSize: { xs: '0.8rem', sm: '1rem' },
                         bgcolor: 'rgba(255,255,255,0.25)',
                         backdropFilter: 'blur(10px)',
-                        mr: { xs: 2, sm: 3 },
-                        mb: { xs: 2, sm: 0 },
-                        border: '3px solid rgba(255,255,255,0.3)',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                        mr: { xs: 1, sm: 1.5 },
+                        mb: { xs: 1, sm: 0 },
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
                       }}
                     >
                       {user?.username
@@ -214,29 +214,71 @@ const DashboardPage = () => {
                   </Grow>
                   <Box sx={{ flex: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      {greeting.icon}
+                      <Box sx={{ color: 'white' }}>{greeting.icon}</Box>
                       <Typography
-                        variant="h4"
+                        variant="h6"
                         fontWeight="bold"
                         sx={{
-                          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.2rem' },
-                          ml: 1,
-                          textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                          fontSize: { xs: '0.96rem', sm: '1.2rem', md: '1.32rem' },
+                          ml: 0.75,
+                          color: 'white',
+                          textShadow: '0 1px 3px rgba(0,0,0,0.2)',
                         }}
                       >
                         {greeting.text}、{user?.username || 'testuser'}さん!
                       </Typography>
                     </Box>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        opacity: 0.95,
-                        fontSize: { xs: '0.9rem', sm: '1.1rem' },
-                        mb: 2,
-                      }}
-                    >
-                      {greeting.message}
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                      <Avatar
+                        src="/doctor-icon.png"
+                        alt="医療アドバイザー"
+                        sx={{
+                          width: { xs: 36, sm: 40 },
+                          height: { xs: 36, sm: 40 },
+                          bgcolor: 'white',
+                          border: '2px solid rgba(255,255,255,0.5)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                          '& img': {
+                            objectFit: 'contain',
+                            padding: '4px',
+                          }
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          flex: 1,
+                          position: 'relative',
+                          bgcolor: 'rgba(255,255,255,0.15)',
+                          borderRadius: 2,
+                          p: { xs: 1, sm: 1.5 },
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            left: -8,
+                            top: 10,
+                            width: 0,
+                            height: 0,
+                            borderStyle: 'solid',
+                            borderWidth: '8px 8px 8px 0',
+                            borderColor: 'transparent rgba(255,255,255,0.15) transparent transparent',
+                          },
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'rgba(255,255,255,0.95)',
+                            fontSize: { xs: '0.78rem', sm: '0.84rem' },
+                            lineHeight: 1.4,
+                            fontWeight: 500,
+                          }}
+                        >
+                          {greeting.message}
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Box>
                 </Box>
               </Grid>
@@ -251,7 +293,7 @@ const DashboardPage = () => {
                           sx={{
                             bgcolor: 'rgba(255,255,255,0.15)',
                             borderRadius: 2,
-                            p: { xs: 1.5, sm: 2 },
+                            p: { xs: 0.75, sm: 1 },
                             textAlign: 'center',
                             backdropFilter: 'blur(10px)',
                             border: '1px solid rgba(255,255,255,0.2)',
@@ -267,16 +309,18 @@ const DashboardPage = () => {
                               display: 'flex',
                               justifyContent: 'center',
                               mb: 1,
+                              color: 'white',
                             }}
                           >
                             {stat.icon}
                           </Box>
                           <Typography
-                            variant="h4"
+                            variant="h6"
                             fontWeight="bold"
                             sx={{
-                              fontSize: { xs: '1.5rem', sm: '2rem' },
-                              mb: 0.5,
+                              fontSize: { xs: '1.08rem', sm: '1.32rem' },
+                              mb: 0.2,
+                              color: 'white',
                             }}
                           >
                             {stat.value}
@@ -285,7 +329,8 @@ const DashboardPage = () => {
                               variant="body2"
                               sx={{
                                 ml: 0.5,
-                                fontSize: { xs: '0.8rem', sm: '1rem' },
+                                fontSize: { xs: '0.72rem', sm: '0.84rem' },
+                                color: 'white',
                               }}
                             >
                               {stat.unit}
@@ -294,8 +339,8 @@ const DashboardPage = () => {
                           <Typography
                             variant="caption"
                             sx={{
-                              opacity: 0.9,
-                              fontSize: { xs: '0.7rem', sm: '0.875rem' },
+                              color: 'rgba(255,255,255,0.9)',
+                              fontSize: { xs: '0.66rem', sm: '0.78rem' },
                             }}
                           >
                             {stat.label}
@@ -314,19 +359,25 @@ const DashboardPage = () => {
                     sx={{
                       bgcolor: 'rgba(255,255,255,0.15)',
                       borderRadius: 2,
-                      p: 2,
+                      p: 1,
                       backdropFilter: 'blur(10px)',
                       border: '1px solid rgba(255,255,255,0.2)',
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <AutoAwesomeIcon sx={{ fontSize: 20, mr: 1 }} />
-                      <Typography variant="body2" fontWeight="bold">
+                      <AutoAwesomeIcon
+                        sx={{ fontSize: 14, mr: 0.5, color: 'white' }}
+                      />
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        sx={{ color: 'white' }}
+                      >
                         設定目標(🛠️👷開発中)
                       </Typography>
                       <Typography
                         variant="body2"
-                        sx={{ ml: 'auto', fontWeight: 'bold' }}
+                        sx={{ ml: 'auto', fontWeight: 'bold', color: 'white' }}
                       >
                         {Math.round(continuityData.weeklyGoalProgress)}%
                       </Typography>
@@ -335,7 +386,7 @@ const DashboardPage = () => {
                       variant="determinate"
                       value={continuityData.weeklyGoalProgress}
                       sx={{
-                        height: 8,
+                        height: 6,
                         borderRadius: 4,
                         bgcolor: 'rgba(255,255,255,0.2)',
                         '& .MuiLinearProgress-bar': {
@@ -346,7 +397,11 @@ const DashboardPage = () => {
                     />
                     <Typography
                       variant="caption"
-                      sx={{ opacity: 0.9, mt: 1, display: 'block' }}
+                      sx={{
+                        color: 'rgba(255,255,255,0.9)',
+                        mt: 1,
+                        display: 'block',
+                      }}
                     >
                       あと{Math.max(5 - continuityData.weeklyWorkouts, 0)}
                       回で次のマイルストーン達成！
@@ -441,12 +496,19 @@ const DashboardPage = () => {
               <CardContent sx={{ p: 2 }}>
                 {/* タイトル */}
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <CloudSyncIcon
+                    sx={{
+                      fontSize: 20,
+                      color: 'text.secondary',
+                      mr: 0.5
+                    }}
+                  />
                   <Typography
                     variant="subtitle2"
                     fontWeight="600"
                     sx={{ color: 'text.secondary' }}
                   >
-                    Strava連携
+                    外部連携
                   </Typography>
                   <Box
                     sx={{
