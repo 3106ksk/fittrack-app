@@ -8,7 +8,7 @@ import MonthSelector from './MonthSelector';
 const WorkoutStatistics = ({ workouts, loading }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
 
-  // 月別統計計算（MVP実装）
+  // 月別統計計算
   const stats = calculateMonthlyStats(workouts, selectedMonth);
 
   if (loading) {
