@@ -7,7 +7,20 @@ import {
   DirectionsRun as RunIcon,
 } from '@mui/icons-material';
 
-import { AppBar, Avatar, Box, Button, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
+import {
+  AppBar,
+  Avatar,
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from './Hook';
@@ -17,7 +30,7 @@ const Navbar = () => {
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleMenuOpen = (event) => {
+  const handleMenuOpen = event => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -25,17 +38,17 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-
-  const isActive = (path) => {
+  const isActive = path => {
     return location.pathname === path;
   };
-  
-  if(loading) {
-    return(
+
+  if (loading) {
+    return (
       <AppBar>
         <Toolbar>
           <Typography variant="h6" color="div" sx={{ flexGrow: 1 }}>
-            <RunIcon/>Loading...
+            <RunIcon />
+            Loading...
           </Typography>
         </Toolbar>
       </AppBar>
@@ -47,18 +60,20 @@ const Navbar = () => {
       <Toolbar>
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
           <FitnessCenterIcon
-          sx={{ mr: 1, color: 'primary.main', fontSize: 40 }}
+            sx={{ mr: 1, color: 'primary.main', fontSize: 40 }}
           />
-          <Typography v
-          ariant="h6" 
-          componet="div" 
-          sx={{ 
-            fontWeight: 'bold',
-            color: 'primary.main',
-            textDecoration: 'none',
-          }}
-          component={Link}
-          to={user ? "/" : "/login"}>
+          <Typography
+            v
+            ariant="h6"
+            componet="div"
+            sx={{
+              fontWeight: 'bold',
+              color: 'primary.main',
+              textDecoration: 'none',
+            }}
+            component={Link}
+            to={user ? '/' : '/login'}
+          >
             FitStart
           </Typography>
         </Box>
@@ -69,121 +84,139 @@ const Navbar = () => {
             <>
               {/* デスクトップナビゲーション */}
               <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
-                <Button 
-                component={Link}
-                to="/dashboard"
-                startIcon={<DashboardIcon/>}
-                color={isActive('/dashboard') ? 'primary' : 'inherit'}
-                sx={{ 
-                  fontWeight: isActive('/dashboard') ? 500 : 300,
-                  backgroundColor: isActive('/dashboard') ? 'primary.50' : 'transparent',
-                  '&:hover': {
-                    backgroundColor: isActive('/dashboard') ? 'primary.100' : 'transparent',
-                  },
-                }}>
-                ダッシュボード
-              </Button>
+                <Button
+                  component={Link}
+                  to="/dashboard"
+                  startIcon={<DashboardIcon />}
+                  color={isActive('/dashboard') ? 'primary' : 'inherit'}
+                  sx={{
+                    fontWeight: isActive('/dashboard') ? 500 : 300,
+                    backgroundColor: isActive('/dashboard')
+                      ? 'primary.50'
+                      : 'transparent',
+                    '&:hover': {
+                      backgroundColor: isActive('/dashboard')
+                        ? 'primary.100'
+                        : 'transparent',
+                    },
+                  }}
+                >
+                  ダッシュボード
+                </Button>
 
-              {/* ワークアウトフォーム */}
-              <Button 
-              component={Link}
-              to="/workout-form"
-              startIcon={<FitnessCenterIcon/>}
-              color={isActive('/workout-form') ? 'primary' : 'inherit'}
-              sx={{ 
-                fontWeight: isActive('/workout-form') ? 700 : 300,
-                backgroundColor: isActive('/workout-form') ? 'primary.50' : 'transparent',
-              }}>
-                ワークアウトフォーム
-              </Button>
+                {/* ワークアウトフォーム */}
+                <Button
+                  component={Link}
+                  to="/workout-form"
+                  startIcon={<FitnessCenterIcon />}
+                  color={isActive('/workout-form') ? 'primary' : 'inherit'}
+                  sx={{
+                    fontWeight: isActive('/workout-form') ? 700 : 300,
+                    backgroundColor: isActive('/workout-form')
+                      ? 'primary.50'
+                      : 'transparent',
+                  }}
+                >
+                  ワークアウトフォーム
+                </Button>
 
-              {/* ワークアウト履歴 */}
-              <Button 
-              component={Link}
-              to="/workout-history"
-              startIcon={<HistoryIcon/>}
-              color={isActive('/workout-history') ? 'primary' : 'inherit'}
-              sx={{ 
-                fontWeight: isActive('/workout-history') ? 700 : 300,
-                backgroundColor: isActive('/workout-history') ? 'primary.50' : 'transparent',
-              }}>
-                ワークアウト履歴
-              </Button>
+                {/* ワークアウト履歴 */}
+                <Button
+                  component={Link}
+                  to="/workout-history"
+                  startIcon={<HistoryIcon />}
+                  color={isActive('/workout-history') ? 'primary' : 'inherit'}
+                  sx={{
+                    fontWeight: isActive('/workout-history') ? 700 : 300,
+                    backgroundColor: isActive('/workout-history')
+                      ? 'primary.50'
+                      : 'transparent',
+                  }}
+                >
+                  ワークアウト履歴
+                </Button>
               </Box>
 
               {/* モバイルナビゲーション */}
               <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                 <IconButton
-                size="large"
-                onClick={handleMenuOpen}
-                color="inherit">
-                  <MoreVertIcon/>
+                  size="large"
+                  onClick={handleMenuOpen}
+                  color="inherit"
+                >
+                  <MoreVertIcon />
                 </IconButton>
               </Box>
             </>
-          ) :  null}
+          ) : null}
         </Box>
 
         {/* ユーザーエリア */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {user ? (
             <>
-            {/* デスクトップユーザーメニュー */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-              <Avatar
-              sx={{
-                width: 32,
-                height: 32,
-                backgroundColor: 'primary.main',
-                color: 'white',
-                fontSize: 16,
-                fontWeight: 'bold',
-              }}
+              {/* デスクトップユーザーメニュー */}
+              <Box
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  alignItems: 'center',
+                }}
               >
-                {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
-              </Avatar>
-              <Typography
-              variant="body2" color="text.secondary">
-                {user.username}
-              </Typography>
-              <Button
-              component={Link}
-              to="/logout"
-              startIcon={<LogoutIcon/>}
-              size="small"
-              variant="outlined"
-              color="error">
-                ログアウト
-              </Button>
-            </Box>
+                <Avatar
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    backgroundColor: 'primary.main',
+                    color: 'white',
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                </Avatar>
+                <Typography variant="body2" color="text.secondary">
+                  {user.username}
+                </Typography>
+                <Button
+                  component={Link}
+                  to="/logout"
+                  startIcon={<LogoutIcon />}
+                  size="small"
+                  variant="outlined"
+                  color="error"
+                >
+                  ログアウト
+                </Button>
+              </Box>
 
-            {/* モバイルユーザーメニュー */}
-            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-              <Avatar
-              sx={{
-                width: 32,
-                height: 32,
-                backgroundColor: 'primary.main',
-                color: 'white',
-                fontSize: 16,
-                fontWeight: 'bold',
-              }}>
-                {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
-              </Avatar>
+              {/* モバイルユーザーメニュー */}
+              <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                <Avatar
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    backgroundColor: 'primary.main',
+                    color: 'white',
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                </Avatar>
               </Box>
             </>
-          ): (
+          ) : (
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button 
-                component={Link} 
+              <Button
+                component={Link}
                 to="/login"
                 variant="outlined"
                 size="small"
               >
                 ログイン
               </Button>
-              <Button 
-                component={Link} 
+              <Button
+                component={Link}
                 to="/signup"
                 variant="contained"
                 size="small"
@@ -193,13 +226,13 @@ const Navbar = () => {
             </Box>
           )}
         </Box>
-         {/* モバイルメニュー */}
+        {/* モバイルメニュー */}
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
           PaperProps={{
-            sx: { width: 200, mt: 1 }
+            sx: { width: 200, mt: 1 },
           }}
         >
           <MenuItem component={Link} to="/dashboard" onClick={handleMenuClose}>
@@ -208,13 +241,21 @@ const Navbar = () => {
             </ListItemIcon>
             <ListItemText>ダッシュボード</ListItemText>
           </MenuItem>
-          <MenuItem component={Link} to="/" onClick={handleMenuClose}>
+          <MenuItem
+            component={Link}
+            to="/workout-form"
+            onClick={handleMenuClose}
+          >
             <ListItemIcon>
               <FitnessCenterIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>ワークアウト記録</ListItemText>
           </MenuItem>
-          <MenuItem component={Link} to="/workout-history" onClick={handleMenuClose}>
+          <MenuItem
+            component={Link}
+            to="/workout-history"
+            onClick={handleMenuClose}
+          >
             <ListItemIcon>
               <HistoryIcon fontSize="small" />
             </ListItemIcon>
@@ -230,7 +271,6 @@ const Navbar = () => {
             </ListItemText>
           </MenuItem>
         </Menu>
-
       </Toolbar>
     </AppBar>
   );
