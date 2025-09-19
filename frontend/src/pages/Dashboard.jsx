@@ -3,7 +3,7 @@ import {
   FitnessCenter as FitnessCenterIcon,
   History as HistoryIcon,
   DirectionsRun as RunIcon,
-  EmojiEvents as TrophyIcon
+  EmojiEvents as TrophyIcon,
 } from '@mui/icons-material';
 
 import {
@@ -16,7 +16,7 @@ import {
   Container,
   Grid,
   Paper,
-  Typography
+  Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -25,38 +25,41 @@ import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import StravaConnect from '../components/strava/StravaConnect';
 import StravaSync from '../components/strava/StravaSync';
 import apiClient from '../services/api';
-import transformWorkoutData from '../services/TransformWorkoutData';
-
 
 const DashboardPage = () => {
   const { user } = useAuth();
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [stravaStatus, setStravaStatus] = useState({ connected: false, loading: true });
+  const [stravaStatus, setStravaStatus] = useState({
+    connected: false,
+    loading: true,
+  });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        console.log('📊 ダッシュボードデータを取得中...');
-        
         // 並行してワークアウトデータとStrava状態を取得
         const [workoutResponse, stravaResponse] = await Promise.all([
           apiClient.get('/workouts'),
-          apiClient.get('/api/strava/status').catch(() => ({ data: { connected: false } }))
+          apiClient
+            .get('/api/strava/status')
+            .catch(() => ({ data: { connected: false } })),
         ]);
-        
-        const transformedData = transformWorkoutData(workoutResponse.data);
-        setWorkouts(transformedData);
-        setStravaStatus({ connected: stravaResponse.data.connected, loading: false });
-        setLoading(false);
-      } catch (error) {
-        console.error('📈ダッシュボードデータ取得エラー📊:', error);
+
+        // 統計計算用に生データをそのまま使用（単一責任の原則）
+        setWorkouts(workoutResponse.data);
+        setStravaStatus({
+          connected: stravaResponse.data.connected,
+          loading: false,
+        });
+      } catch {
+        // エラーハンドリングはfinallyブロックで処理
       } finally {
         setLoading(false);
         setStravaStatus(prev => ({ ...prev, loading: false }));
       }
     };
-    
+
     fetchDashboardData();
   }, []);
 
@@ -76,11 +79,11 @@ const DashboardPage = () => {
     currentStreak: 4,
     totalWorkouts: 905,
     totalMinutes: 90,
-    weeklyGoalProgress: 75
+    weeklyGoalProgress: 75,
   };
 
   // Strava接続状態更新用のコールバック
-  const handleStravaStatusChange = (newStatus) => {
+  const handleStravaStatusChange = newStatus => {
     setStravaStatus(prev => ({ ...prev, connected: newStatus.connected }));
   };
 
@@ -94,11 +97,17 @@ const DashboardPage = () => {
           background: 'linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%)',
           borderRadius: 3,
           overflow: 'hidden',
-          position: 'relative'
+          position: 'relative',
         }}
       >
         <CardContent sx={{ p: 4, color: 'white' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
               <Avatar
                 sx={{
@@ -108,7 +117,7 @@ const DashboardPage = () => {
                   bgcolor: 'rgba(255,255,255,0.2)',
                   backdropFilter: 'blur(10px)',
                   mr: 3,
-                  border: '3px solid rgba(255,255,255,0.3)'
+                  border: '3px solid rgba(255,255,255,0.3)',
                 }}
               >
                 {user?.username ? user.username.charAt(0).toUpperCase() : 'T'}
@@ -123,31 +132,30 @@ const DashboardPage = () => {
                     今日も健康的な1日を始めましょう!
                   </Typography>
                 </Box>
-                
+
                 {/* 継続性バッジ */}
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   <Chip
                     icon={<FireIcon />}
                     label={`${continuityData.currentStreak}日連続`}
-                    sx={{ 
-                      bgcolor: 'rgba(255,255,255,0.2)', 
+                    sx={{
+                      bgcolor: 'rgba(255,255,255,0.2)',
                       color: 'white',
-                      fontWeight: 'bold'
+                      fontWeight: 'bold',
                     }}
                   />
                   <Chip
                     icon={<TrophyIcon />}
                     label="継続チャンピオン"
-                    sx={{ 
-                      bgcolor: 'rgba(255,193,7,0.9)', 
+                    sx={{
+                      bgcolor: 'rgba(255,193,7,0.9)',
                       color: 'white',
-                      fontWeight: 'bold'
+                      fontWeight: 'bold',
                     }}
                   />
                 </Box>
               </Box>
             </Box>
-
           </Box>
 
           {/* 今日のヒント */}
@@ -158,10 +166,15 @@ const DashboardPage = () => {
               bgcolor: 'rgba(255,255,255,0.15)',
               borderRadius: 2,
               backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.2)'
+              border: '1px solid rgba(255,255,255,0.2)',
             }}
           >
-            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              gutterBottom
+              sx={{ display: 'flex', alignItems: 'center' }}
+            >
               💡 今日のヒント
             </Typography>
             <Typography variant="body1" sx={{ lineHeight: 1.6, opacity: 0.95 }}>
@@ -172,7 +185,14 @@ const DashboardPage = () => {
       </Paper>
 
       {/* アクションセクション */}
-      <Box sx={{ mb: 4, display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+      <Box
+        sx={{
+          mb: 4,
+          display: 'flex',
+          gap: 3,
+          flexDirection: { xs: 'column', md: 'row' },
+        }}
+      >
         {/* アクションボタン - 左側 */}
         <Box sx={{ flex: '1 1 auto', minWidth: 0 }}>
           <Grid container spacing={2}>
@@ -193,9 +213,9 @@ const DashboardPage = () => {
                   boxShadow: '0 4px 12px rgba(46, 125, 50, 0.3)',
                   '&:hover': {
                     boxShadow: '0 6px 16px rgba(46, 125, 50, 0.4)',
-                    transform: 'translateY(-2px)'
+                    transform: 'translateY(-2px)',
                   },
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
                 }}
               >
                 ワークアウトを記録する
@@ -219,9 +239,9 @@ const DashboardPage = () => {
                   '&:hover': {
                     borderWidth: 2,
                     transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 8px rgba(46, 125, 50, 0.2)'
+                    boxShadow: '0 4px 8px rgba(46, 125, 50, 0.2)',
                   },
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
                 }}
               >
                 ワークアウト詳細を確認
@@ -234,7 +254,12 @@ const DashboardPage = () => {
         <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '300px' } }}>
           <Card elevation={2} sx={{ borderRadius: 2, height: '100%' }}>
             <CardContent sx={{ p: 2.5 }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                gutterBottom
+                sx={{ color: 'primary.main', mb: 2 }}
+              >
                 🌐 連携サービス
               </Typography>
               <StravaConnect onStatusChange={handleStravaStatusChange} />

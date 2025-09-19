@@ -1,7 +1,6 @@
 import { Settings as SettingsIcon } from '@mui/icons-material';
 import { Button, Container, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import WorkoutCustomizationDrawer from '../components/WorkoutCustomizationDrawer';
 import WorkoutHistoryTable from '../components/WorkoutHistoryTable';
 import useWorkoutConfig from '../hooks/useWorkoutConfig';
@@ -95,8 +94,6 @@ const WorkoutHistory = () => {
     );
   }
 
-
-
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Typography variant="h6">ワークアウト履歴</Typography>
@@ -124,9 +121,6 @@ const WorkoutHistory = () => {
         applyPreset={applyPreset}
         updateMaxSets={updateMaxSets}
       />
-
-      {/* 統計情報 */}
-      <WorkoutStatistics workouts={workouts} loading={loading} />
 
       {/* ワークアウト履歴テーブル */}
       <WorkoutHistoryTable
