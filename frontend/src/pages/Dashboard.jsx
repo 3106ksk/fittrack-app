@@ -1,15 +1,15 @@
 import {
   AutoAwesome as AutoAwesomeIcon,
   CalendarMonth as CalendarIcon,
+  CloudSync as CloudSyncIcon,
   LightMode as DayIcon,
+  DirectionsRun as DirectionsRunIcon,
   FitnessCenter as FitnessCenterIcon,
   HelpOutline as HelpOutlineIcon,
   History as HistoryIcon,
   WbSunny as MorningIcon,
   NightsStay as NightIcon,
   TrendingUp as TrendingUpIcon,
-  DirectionsRun as DirectionsRunIcon,
-  CloudSync as CloudSyncIcon,
 } from '@mui/icons-material';
 
 import {
@@ -22,7 +22,6 @@ import {
   Container,
   Fade,
   Grid,
-  Grow,
   LinearProgress,
   Paper,
   Typography,
@@ -193,25 +192,6 @@ const DashboardPage = () => {
                     flexWrap: { xs: 'wrap', sm: 'nowrap' },
                   }}
                 >
-                  <Grow in={true} timeout={800}>
-                    <Avatar
-                      sx={{
-                        width: { xs: 30, sm: 40 },
-                        height: { xs: 30, sm: 40 },
-                        fontSize: { xs: '0.8rem', sm: '1rem' },
-                        bgcolor: 'rgba(255,255,255,0.25)',
-                        backdropFilter: 'blur(10px)',
-                        mr: { xs: 1, sm: 1.5 },
-                        mb: { xs: 1, sm: 0 },
-                        border: '1px solid rgba(255,255,255,0.3)',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                      }}
-                    >
-                      {user?.username
-                        ? user.username.charAt(0).toUpperCase()
-                        : 'T'}
-                    </Avatar>
-                  </Grow>
                   <Box sx={{ flex: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                       <Box sx={{ color: 'white' }}>{greeting.icon}</Box>
@@ -219,7 +199,11 @@ const DashboardPage = () => {
                         variant="h6"
                         fontWeight="bold"
                         sx={{
-                          fontSize: { xs: '0.96rem', sm: '1.2rem', md: '1.32rem' },
+                          fontSize: {
+                            xs: '0.96rem',
+                            sm: '1.2rem',
+                            md: '1.32rem',
+                          },
                           ml: 0.75,
                           color: 'white',
                           textShadow: '0 1px 3px rgba(0,0,0,0.2)',
@@ -228,7 +212,13 @@ const DashboardPage = () => {
                         {greeting.text}、{user?.username || 'testuser'}さん!
                       </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 1.5,
+                      }}
+                    >
                       <Avatar
                         src="/doctor-icon.png"
                         alt="医療アドバイザー"
@@ -241,7 +231,7 @@ const DashboardPage = () => {
                           '& img': {
                             objectFit: 'contain',
                             padding: '4px',
-                          }
+                          },
                         }}
                       />
                       <Box
@@ -262,7 +252,8 @@ const DashboardPage = () => {
                             height: 0,
                             borderStyle: 'solid',
                             borderWidth: '8px 8px 8px 0',
-                            borderColor: 'transparent rgba(255,255,255,0.15) transparent transparent',
+                            borderColor:
+                              'transparent rgba(255,255,255,0.15) transparent transparent',
                           },
                         }}
                       >
@@ -500,7 +491,7 @@ const DashboardPage = () => {
                     sx={{
                       fontSize: 20,
                       color: 'text.secondary',
-                      mr: 0.5
+                      mr: 0.5,
                     }}
                   />
                   <Typography
