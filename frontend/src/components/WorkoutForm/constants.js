@@ -3,19 +3,16 @@
  * UIで使用する選択肢や設定値を一元管理
  */
 
-// 距離オプション（0.0km〜10.0km、0.5km刻み）
-export const DISTANCE_OPTIONS = Array.from({ length: 11 }, (_, i) =>
-  (i * 0.5).toFixed(1)
+// 距離オプション（0.0km〜5.0km、0.1km刻み）
+export const DISTANCE_OPTIONS = Array.from({ length: 50 }, (_, i) =>
+  ((i + 1) * 0.1).toFixed(1)
 );
 
-// 時間オプション（5分〜120分、5分刻み）
-export const DURATION_OPTIONS = Array.from(
-  { length: 11 },
-  (_, i) => i * 5
-).filter(d => d > 0);
+// 時間オプション（1分〜60分、1分刻み）
+export const DURATION_OPTIONS = Array.from({ length: 60 }, (_, i) => i + 1);
 
-// レップ数オプション
-export const REPS_OPTIONS = [5, 10, 15, 20, 25, 30];
+// レップ数オプション（1〜40まで選択可能）
+export const REPS_OPTIONS = Array.from({ length: 40 }, (_, i) => i + 1);
 
 // 運動強度レベル
 export const INTENSITY_LEVELS = [
