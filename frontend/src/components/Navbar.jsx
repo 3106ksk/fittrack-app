@@ -259,7 +259,7 @@ const Navbar = () => {
             <ListItemIcon>
               <HistoryIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText>履歴</ListItemText>
+            <ListItemText>ワークアウト履歴</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem component={Link} to="/logout" onClick={handleMenuClose}>
