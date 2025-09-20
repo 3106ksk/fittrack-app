@@ -1,6 +1,17 @@
-import { Box, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import React from 'react';
-import { formatDuration, formatDistance } from '../utils/formatters';
+import { formatDistance, formatDuration } from '../utils/formatters';
 
 const WorkoutHistoryTable = ({
   workouts = [],
@@ -13,12 +24,16 @@ const WorkoutHistoryTable = ({
   if (loading) {
     return (
       <Box>
-        <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-            詳細履歴
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256, flexDirection: 'column', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: 256,
+            flexDirection: 'column',
+            gap: 2,
+          }}
+        >
           <CircularProgress data-testid="loading-spinner" size={32} />
           <Typography variant="body2" color="text.secondary">
             読み込み中...
@@ -31,13 +46,20 @@ const WorkoutHistoryTable = ({
   if (workouts.length === 0) {
     return (
       <Box>
-        <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-            詳細履歴
-          </Typography>
-        </Box>
-        <Box sx={{ p: 6, textAlign: 'center', bgcolor: theme.palette.info.light + '20', borderRadius: 2, m: 3 }}>
-          <Typography variant="h6" color="info.main" sx={{ fontWeight: 'bold', mb: 1 }}>
+        <Box
+          sx={{
+            p: 6,
+            textAlign: 'center',
+            bgcolor: theme.palette.info.light + '20',
+            borderRadius: 2,
+            m: 3,
+          }}
+        >
+          <Typography
+            variant="h6"
+            color="info.main"
+            sx={{ fontWeight: 'bold', mb: 1 }}
+          >
             ワークアウト履歴がありません
           </Typography>
           <Typography variant="body2" color="info.main">
@@ -71,36 +93,42 @@ const WorkoutHistoryTable = ({
     return description;
   };
 
-
   return (
     <Box>
       {/* ヘッダー */}
       <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
-        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-          詳細履歴
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body1" color="text.secondary">
           {getDisplayDescription()}
         </Typography>
       </Box>
 
       {/* テーブル */}
-      <TableContainer sx={{ 
-        width: '100%',
-        maxWidth: '1700px',
-        margin: '0 auto',
-        boxShadow: 3,
-        }}>
-        <Table sx={{ 
-          minWidth: 750,
+      <TableContainer
+        sx={{
           width: '100%',
-          }} aria-label="workout history table">
-
-            {/* テーブルヘッダー */}
+          maxWidth: '1700px',
+          margin: '0 auto',
+          boxShadow: 3,
+        }}
+      >
+        <Table
+          sx={{
+            minWidth: 750,
+            width: '100%',
+          }}
+          aria-label="workout history table"
+        >
+          {/* テーブルヘッダー */}
           <TableHead>
             {/* 第1段階: 種目名のヘッダー */}
             <TableRow sx={{ bgcolor: theme.palette.grey[50] }}>
-              <TableCell sx={{ fontWeight: 'bold', borderRight: `1px solid ${theme.palette.divider}`, minWidth: 100 }}>
+              <TableCell
+                sx={{
+                  fontWeight: 'bold',
+                  borderRight: `1px solid ${theme.palette.divider}`,
+                  minWidth: 100,
+                }}
+              >
                 日付
               </TableCell>
               {workoutConfig.exercises.map(exerciseName => {
@@ -109,18 +137,22 @@ const WorkoutHistoryTable = ({
 
                 return (
                   <TableCell
-                  key={exerciseName}
-                  colSpan={colSpan}
-                  align="center"
-                  sx={{
-                    borderRight: `1px solid ${theme.palette.divider}`,
-                    fontWeight: 'bold',
-                    minWidth: isCardio ? 160 : colSpan * 80,
-                  }}
+                    key={exerciseName}
+                    colSpan={colSpan}
+                    align="center"
+                    sx={{
+                      borderRight: `1px solid ${theme.palette.divider}`,
+                      fontWeight: 'bold',
+                      minWidth: isCardio ? 160 : colSpan * 80,
+                    }}
                   >
                     {exerciseName}
                     {isCardio && (
-                      <Typography variant="caption" display="block" color="text.secondary">
+                      <Typography
+                        variant="caption"
+                        display="block"
+                        color="text.secondary"
+                      >
                         (距離・時間)
                       </Typography>
                     )}
@@ -130,7 +162,13 @@ const WorkoutHistoryTable = ({
 
               {/* 合計列のヘッダー */}
               {workoutConfig.displayColumns?.includes('totalReps') && (
-                <TableCell align="center" sx={{ fontWeight: 'bold', borderRight: `1px solid ${theme.palette.divider}` }}>
+                <TableCell
+                  align="center"
+                  sx={{
+                    fontWeight: 'bold',
+                    borderRight: `1px solid ${theme.palette.divider}`,
+                  }}
+                >
                   合計回数
                 </TableCell>
               )}
@@ -142,65 +180,92 @@ const WorkoutHistoryTable = ({
             </TableRow>
           </TableHead>
 
-            {/* 第2段階: データセル */}
-            <TableHead>   
-                    {/* 第2段階: セット/詳細のヘッダー */}
-                    <TableRow sx={{ bgcolor: theme.palette.grey[100] }}>
-                      <TableCell sx={{ borderRight: `1px solid ${theme.palette.divider}` }} />
-                      {workoutConfig.exercises.map(exerciseName => {
-                        const isCardio = isCardioExercise(exerciseName);
-                        return (
-                        <React.Fragment key={`${exerciseName}-headers`}>
-                          {isCardio ? (
-                            <>
-                            <TableCell align="center" sx={{ fontSize: '0.75rem', color: theme.palette.text.secondary, borderRight: `1px solid ${theme.palette.divider}`, py: 1 }}>
-                              距離(km)
-                              </TableCell>
-                              <TableCell align="center" sx={{ fontSize: '0.75rem', color: theme.palette.text.secondary, borderRight: `1px solid ${theme.palette.divider}`, py: 1 }}>
-                                時間(分)
-                              </TableCell>
-                            </>
-                          ) : (
-                            Array.from({ length: workoutConfig.maxSets }, (_, i) => (
-                            <TableCell
-                            key={i}
-                            align="center"
-                            sx={{ fontSize: '0.75rem', color: theme.palette.text.secondary, borderRight: `1px solid ${theme.palette.divider}`, py: 1 }}
-                            >
-                            {i + 1}セット
-                            </TableCell>
-                          ))
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                  
-                  {/* 合計列の空セル */}
-                  {workoutConfig.displayColumns?.includes('totalReps') && (
-                    <TableCell sx={{ borderRight: `1px solid ${theme.palette.divider}` }} />
-                  )}
-                  {workoutConfig.displayColumns?.includes('totalTime') && (
-                    <TableCell />
-                  )}
-                </TableRow>
-              </TableHead>
+          {/* 第2段階: データセル */}
+          <TableHead>
+            {/* 第2段階: セット/詳細のヘッダー */}
+            <TableRow sx={{ bgcolor: theme.palette.grey[100] }}>
+              <TableCell
+                sx={{ borderRight: `1px solid ${theme.palette.divider}` }}
+              />
+              {workoutConfig.exercises.map(exerciseName => {
+                const isCardio = isCardioExercise(exerciseName);
+                return (
+                  <React.Fragment key={`${exerciseName}-headers`}>
+                    {isCardio ? (
+                      <>
+                        <TableCell
+                          align="center"
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: theme.palette.text.secondary,
+                            borderRight: `1px solid ${theme.palette.divider}`,
+                            py: 1,
+                          }}
+                        >
+                          距離(km)
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: theme.palette.text.secondary,
+                            borderRight: `1px solid ${theme.palette.divider}`,
+                            py: 1,
+                          }}
+                        >
+                          時間(分)
+                        </TableCell>
+                      </>
+                    ) : (
+                      Array.from({ length: workoutConfig.maxSets }, (_, i) => (
+                        <TableCell
+                          key={i}
+                          align="center"
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: theme.palette.text.secondary,
+                            borderRight: `1px solid ${theme.palette.divider}`,
+                            py: 1,
+                          }}
+                        >
+                          {i + 1}セット
+                        </TableCell>
+                      ))
+                    )}
+                  </React.Fragment>
+                );
+              })}
+
+              {/* 合計列の空セル */}
+              {workoutConfig.displayColumns?.includes('totalReps') && (
+                <TableCell
+                  sx={{ borderRight: `1px solid ${theme.palette.divider}` }}
+                />
+              )}
+              {workoutConfig.displayColumns?.includes('totalTime') && (
+                <TableCell />
+              )}
+            </TableRow>
+          </TableHead>
 
           <TableBody>
-            {workouts.map((workout) => (
-              <TableRow 
-              key={workout.date}
-              sx={{
-                '&:nth-of-type(odd)': { bgcolor: theme.palette.action.hover },
-                '&:hover': { bgcolor: theme.palette.action.selected },
-              }}>
+            {workouts.map(workout => (
+              <TableRow
+                key={workout.date}
+                sx={{
+                  '&:nth-of-type(odd)': { bgcolor: theme.palette.action.hover },
+                  '&:hover': { bgcolor: theme.palette.action.selected },
+                }}
+              >
                 {/* 日付セル */}
                 <TableCell
-                component="th"
-                scope="row"
-                sx={{
-                  fontWeight: 'bold',
-                  borderRight: `1px solid ${theme.palette.divider}`,
-                }}>
+                  component="th"
+                  scope="row"
+                  sx={{
+                    fontWeight: 'bold',
+                    borderRight: `1px solid ${theme.palette.divider}`,
+                  }}
+                >
                   {workout.date}
                 </TableCell>
 
@@ -213,50 +278,74 @@ const WorkoutHistoryTable = ({
                     <React.Fragment key={`${workout.date}-${exerciseName}`}>
                       {isCardio ? (
                         <>
-                        <TableCell align="center" sx={{ borderRight: `1px solid ${theme.palette.divider}` }}>
-                          {formatDistance(exercise?.distance)}
-                        </TableCell>
-                        <TableCell align="center" sx={{ borderRight: `1px solid ${theme.palette.divider}` }}>
-                          {formatDuration(exercise?.duration)}
-                        </TableCell>
+                          <TableCell
+                            align="center"
+                            sx={{
+                              borderRight: `1px solid ${theme.palette.divider}`,
+                            }}
+                          >
+                            {formatDistance(exercise?.distance)}
+                          </TableCell>
+                          <TableCell
+                            align="center"
+                            sx={{
+                              borderRight: `1px solid ${theme.palette.divider}`,
+                            }}
+                          >
+                            {formatDuration(exercise?.duration)}
+                          </TableCell>
                         </>
                       ) : (
-                        Array.from({ length: workoutConfig.maxSets }, (_, i) => {
-                          const setKey = `set${i + 1}`;
-                          return (
-                            <TableCell
-                            key={setKey}
-                            align="center"
-                            sx={{ borderRight: `1px solid ${theme.palette.divider}` }}>
-                              {exercise?.[setKey] || '-'}
-                            </TableCell>
-                          );
-                        })
+                        Array.from(
+                          { length: workoutConfig.maxSets },
+                          (_, i) => {
+                            const setKey = `set${i + 1}`;
+                            return (
+                              <TableCell
+                                key={setKey}
+                                align="center"
+                                sx={{
+                                  borderRight: `1px solid ${theme.palette.divider}`,
+                                }}
+                              >
+                                {exercise?.[setKey] || '-'}
+                              </TableCell>
+                            );
+                          }
+                        )
                       )}
                     </React.Fragment>
                   );
                 })}
 
-
-            {/* 合計値セル */}
-            {workoutConfig.displayColumns?.includes('totalReps') && (
-              <TableCell
-              align="center"
-              sx={{ fontWeight: 'bold', color: theme.palette.text.primary.main, borderRight: `1px solid ${theme.palette.divider}` }}>
-                {workout.totalReps}
-              </TableCell>
-            )}
-            {workoutConfig.displayColumns?.includes('totalTime') && (
-              <TableCell
-              align="center"
-              sx={{ fontWeight: 'bold', color: theme.palette.secondary.main, borderRight: `1px solid ${theme.palette.divider}` }}>
-                {workout.totalTime}分
-              </TableCell>
-            )}
-            </TableRow>
+                {/* 合計値セル */}
+                {workoutConfig.displayColumns?.includes('totalReps') && (
+                  <TableCell
+                    align="center"
+                    sx={{
+                      fontWeight: 'bold',
+                      color: theme.palette.text.primary.main,
+                      borderRight: `1px solid ${theme.palette.divider}`,
+                    }}
+                  >
+                    {workout.totalReps}
+                  </TableCell>
+                )}
+                {workoutConfig.displayColumns?.includes('totalTime') && (
+                  <TableCell
+                    align="center"
+                    sx={{
+                      fontWeight: 'bold',
+                      color: theme.palette.secondary.main,
+                      borderRight: `1px solid ${theme.palette.divider}`,
+                    }}
+                  >
+                    {workout.totalTime}分
+                  </TableCell>
+                )}
+              </TableRow>
             ))}
           </TableBody>
-
         </Table>
       </TableContainer>
     </Box>
