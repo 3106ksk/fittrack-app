@@ -9,9 +9,9 @@ import {
   History as HistoryIcon,
   WbSunny as MorningIcon,
   NightsStay as NightIcon,
+  TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
   TrendingFlat as TrendingFlatIcon,
-  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 
 import {
@@ -28,7 +28,7 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../components/Hook';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
@@ -83,7 +83,7 @@ const DashboardPage = () => {
         text: 'おはようございます',
         icon: <MorningIcon sx={{ fontSize: 14 }} />,
         message:
-          'たった1～3分のストレッチや階段でも代謝は上がります。小さく始めて、しっかり健康投資をスタートしましょう。',
+          'たった1～3分のストレッチや階段でも代謝は上がります。小さく始めて、しっかり健康投資。',
         backgroundColor: '#388E3C',
       };
     } else if (hour < 18) {
@@ -91,7 +91,7 @@ const DashboardPage = () => {
         text: 'こんにちは',
         icon: <DayIcon sx={{ fontSize: 14 }} />,
         message:
-          '短い歩き・軽いスクワット1セットでOK。小さな積み重ねが、体力と気分に大きなリターンを得ることができます。',
+          '短い歩き・軽いスクワット1セットでOK。小さな積み重ねが、体力と気分に大きなリターン。',
         backgroundColor: '#388E3C',
       };
     } else {
@@ -99,7 +99,7 @@ const DashboardPage = () => {
         text: 'お疲れ様でした',
         icon: <NightIcon sx={{ fontSize: 14 }} />,
         message:
-          '1分のケアでも睡眠の質は変わります。今日の"ちょい運動"を記録して、明日の自分を軽くしましょう。',
+          '1分のケアでも睡眠の質は変わります。今日の"ちょい運動"を記録して、明日の自分を軽くしよう。',
         backgroundColor: '#388E3C',
       };
     }
@@ -231,12 +231,11 @@ const DashboardPage = () => {
                         sx={{
                           flex: 1,
                           position: 'relative',
-                          bgcolor: 'rgba(255,255,255,0.95)',
+                          bgcolor: 'rgba(255,255,255,0.15)',
                           borderRadius: 2,
                           p: { xs: 1, sm: 1.5 },
                           backdropFilter: 'blur(10px)',
-                          border: '1px solid rgba(255,255,255,0.5)',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                          border: '1px solid rgba(255,255,255,0.2)',
                           '&::before': {
                             content: '""',
                             position: 'absolute',
@@ -247,14 +246,14 @@ const DashboardPage = () => {
                             borderStyle: 'solid',
                             borderWidth: '8px 8px 8px 0',
                             borderColor:
-                              'transparent rgba(255,255,255,0.95) transparent transparent',
+                              'transparent rgba(255,255,255,0.15) transparent transparent',
                           },
                         }}
                       >
                         <Typography
                           variant="body2"
                           sx={{
-                            color: '#2e7d32',
+                            color: 'rgba(255,255,255,0.95)',
                             fontSize: { xs: '0.78rem', sm: '0.84rem' },
                             lineHeight: 1.4,
                             fontWeight: 500,
@@ -276,18 +275,16 @@ const DashboardPage = () => {
                       <Fade in={true} timeout={1000 + index * 200}>
                         <Box
                           sx={{
-                            bgcolor: 'rgba(255,255,255,0.95)',
+                            bgcolor: 'rgba(255,255,255,0.15)',
                             borderRadius: 2,
                             p: { xs: 0.75, sm: 1 },
                             textAlign: 'center',
                             backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(255,255,255,0.5)',
+                            border: '1px solid rgba(255,255,255,0.2)',
                             transition: 'all 0.3s ease',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                             '&:hover': {
-                              bgcolor: 'white',
+                              bgcolor: 'rgba(255,255,255,0.25)',
                               transform: 'translateY(-2px)',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                             },
                           }}
                         >
@@ -296,7 +293,7 @@ const DashboardPage = () => {
                               display: 'flex',
                               justifyContent: 'center',
                               mb: 1,
-                              color: stat.color || '#388E3C',
+                              color: 'white',
                             }}
                           >
                             {stat.icon}
@@ -307,7 +304,7 @@ const DashboardPage = () => {
                             sx={{
                               fontSize: { xs: '1.08rem', sm: '1.32rem' },
                               mb: 0.2,
-                              color: '#1a1a1a',
+                              color: 'white',
                             }}
                           >
                             {stat.value}
@@ -317,7 +314,7 @@ const DashboardPage = () => {
                               sx={{
                                 ml: 0.5,
                                 fontSize: { xs: '0.72rem', sm: '0.84rem' },
-                                color: '#666',
+                                color: 'white',
                               }}
                             >
                               {stat.unit}
@@ -326,7 +323,7 @@ const DashboardPage = () => {
                           <Typography
                             variant="caption"
                             sx={{
-                              color: '#666',
+                              color: 'rgba(255,255,255,0.9)',
                               fontSize: { xs: '0.66rem', sm: '0.78rem' },
                               mb: 0.5,
                             }}
@@ -339,7 +336,7 @@ const DashboardPage = () => {
                             <Typography
                               variant="caption"
                               sx={{
-                                color: '#999',
+                                color: 'rgba(255,255,255,0.7)',
                                 fontSize: { xs: '0.6rem', sm: '0.7rem' },
                                 display: 'block',
                               }}
@@ -363,14 +360,14 @@ const DashboardPage = () => {
                                 <TrendingDownIcon sx={{ fontSize: 14, color: '#f44336', mr: 0.5 }} />
                               )}
                               {stat.changeRate === 0 && (
-                                <TrendingFlatIcon sx={{ fontSize: 14, color: '#999', mr: 0.5 }} />
+                                <TrendingFlatIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', mr: 0.5 }} />
                               )}
                               <Typography
                                 variant="caption"
                                 sx={{
                                   color: stat.changeRate > 0 ? '#4CAF50' :
                                          stat.changeRate < 0 ? '#f44336' :
-                                         '#999',
+                                         'rgba(255,255,255,0.7)',
                                   fontSize: { xs: '0.65rem', sm: '0.75rem' },
                                   fontWeight: 'bold',
                                 }}
@@ -407,7 +404,7 @@ const DashboardPage = () => {
                         fontWeight="bold"
                         sx={{ color: 'white' }}
                       >
-                        設定目標(🛠️Coming Soon👷)
+                        設定目標(🛠️👷開発中)
                       </Typography>
                       <Typography
                         variant="body2"

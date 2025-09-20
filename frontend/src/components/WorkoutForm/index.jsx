@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Alert,
+  Avatar,
   Button,
   Card,
   CardContent,
@@ -18,8 +19,8 @@ import useFormValidation from '../../hooks/useFormValidation';
 import useWorkoutSubmit from '../../hooks/useWorkoutSubmit';
 import { generateDefaultValues } from '../../utils/formDefaults';
 import FormConfigDrawer from '../FormConfigDrawer';
-import WorkoutHeader from './WorkoutHeader';
 import ExerciseCard from './ExerciseCard';
+import WorkoutHeader from './WorkoutHeader';
 
 const WorkoutForm = () => {
   const {
@@ -59,7 +60,7 @@ const WorkoutForm = () => {
     isCardioExercise,
     showFeedback,
     reset,
-    generateDefaultValues
+    generateDefaultValues,
   });
 
   return (
@@ -149,6 +150,21 @@ const WorkoutForm = () => {
             boxShadow: 3,
           }}
         >
+          <Avatar
+            src="/doctor-icon.png"
+            alt="医療アドバイザー"
+            sx={{
+              width: { xs: 36, sm: 40 },
+              height: { xs: 36, sm: 40 },
+              bgcolor: 'white',
+              border: '2px solid rgba(255,255,255,0.5)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              '& img': {
+                objectFit: 'contain',
+                padding: '4px',
+              },
+            }}
+          />
           {feedback.message}
         </Alert>
       </Snackbar>

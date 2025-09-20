@@ -249,7 +249,7 @@ const Navbar = () => {
             <ListItemIcon>
               <FitnessCenterIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText>ワークアウト記録</ListItemText>
+            <ListItemText>ワークアウト入力</ListItemText>
           </MenuItem>
           <MenuItem
             component={Link}
@@ -259,7 +259,7 @@ const Navbar = () => {
             <ListItemIcon>
               <HistoryIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText>ワークアウト履歴</ListItemText>
+            <ListItemText>トレーニング履歴</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem component={Link} to="/logout" onClick={handleMenuClose}>
