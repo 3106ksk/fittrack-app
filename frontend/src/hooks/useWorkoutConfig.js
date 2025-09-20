@@ -26,17 +26,14 @@ const useWorkoutConfig = () => {
     };
   }, []);
 
+  // 初期状態（種目数を5個以内に制限）
   const [workoutConfig, setWorkoutConfig] = useState({
     exercises: [
       exerciseData.nameMapping.pushup || 'プッシュアップ',
       exerciseData.nameMapping.squat || 'スクワット',
       exerciseData.nameMapping.walking || 'ウォーキング',
-      exerciseData.nameMapping.running || 'ランニング',
-      exerciseData.nameMapping.jumping_lunge || 'ジャンプランジ',
-      exerciseData.nameMapping.jump_squat || 'ジャンプスクワット',
     ],
-    maxSets: 5,
-    displayColumns: ['totalReps', 'totalTime'],
+    maxSets: 3,
   });
 
   const isCardioExercise = useCallback(
@@ -53,185 +50,86 @@ const useWorkoutConfig = () => {
     [exerciseData.strength]
   );
 
-  const getExerciseInfo = useCallback(exerciseName => {
-    return Object.values(EXERCISE_DATABASE).find(
-      exercise => exercise.name === exerciseName
-    );
-  }, []);
-
-  const updateDisplayColumns = columns => {
-    setWorkoutConfig(prev => ({
-      ...prev,
-      displayColumns: columns,
-    }));
-  };
-
-  const presets = useMemo(
-    () => ({
-      strength_basic: {
-        name: '筋トレ基本',
-        exercises: [
-          exerciseData.nameMapping.pushup,
-          exerciseData.nameMapping.squat,
-          exerciseData.nameMapping.crunch,
-        ].filter(Boolean), // undefined除外
-        maxSets: 3,
-      },
-      cardio_basic: {
-        name: 'カーディオ基本',
-        exercises: [
-          exerciseData.nameMapping.walking,
-          exerciseData.nameMapping.jogging,
-        ].filter(Boolean),
-        maxSets: 1,
-      },
-      mixed_beginner: {
-        name: '初心者ミックス',
-        exercises: [
-          exerciseData.nameMapping.walking,
-          exerciseData.nameMapping.pushup,
-          exerciseData.nameMapping.squat,
-        ].filter(Boolean),
-        maxSets: 2,
-      },
-      advanced_strength: {
-        name: '上級筋トレ',
-        exercises: [
-          exerciseData.nameMapping.deadlift,
-          exerciseData.nameMapping.pullup,
-          exerciseData.nameMapping.benchpress,
-        ].filter(Boolean),
-        maxSets: 3,
-      },
-    }),
-    [exerciseData.nameMapping]
-  );
-
+  // LocalStorageから読込
   useEffect(() => {
     const savedConfig = localStorage.getItem('workoutConfig');
     if (savedConfig) {
       try {
         const parsed = JSON.parse(savedConfig);
-        // バリデーション：exercises.tsに存在する種目のみ許可
+
+        // バリデーション
         const validExercises =
           parsed.exercises?.filter(exercise =>
             exerciseData.all.includes(exercise)
           ) || [];
 
         setWorkoutConfig({
-          ...parsed,
           exercises:
             validExercises.length > 0
-              ? validExercises
+              ? validExercises.slice(0, 5) // 最大5個に制限
               : workoutConfig.exercises,
+          maxSets: parsed.maxSets || 3,
         });
-
       } catch (error) {
-        console.error('❌ 設定読み込み失敗:', error);
+        console.error('設定読み込み失敗:', error);
       }
     }
   }, [exerciseData.all]);
 
-  const saveConfig = useCallback(newConfig => {
-    setWorkoutConfig(newConfig);
-    localStorage.setItem('workoutConfig', JSON.stringify(newConfig));
-  }, []);
 
-  const addExercise = useCallback(
-    exercise => {
-      if (!exerciseData.all.includes(exercise)) {
-        console.error('❌ 未定義の種目:', exercise);
-        alert(`「${exercise}」は利用できません`);
-        return;
-      }
+  const updateExercises = useCallback(exercises => {
+    if (!exercises || exercises.length === 0) {
+      alert('最低1つの運動は必要です');
+      return;
+    }
 
-      if (workoutConfig.exercises.length >= 5) {
-        alert('種目は最大5つまでです');
-        return;
-      }
+    if (exercises.length > 5) {
+      alert('種目は最大5つまでです');
+      return;
+    }
 
-      if (workoutConfig.exercises.includes(exercise)) {
-        alert('すでに選択済みの種目です');
-        return;
-      }
+    const validExercises = exercises.filter(exercise =>
+      exerciseData.all.includes(exercise)
+    );
 
+    if (validExercises.length === 0) {
+      alert('有効な種目を選択してください');
+      return;
+    }
+
+    setWorkoutConfig(prevConfig => {
       const newConfig = {
-        ...workoutConfig,
-        exercises: [...workoutConfig.exercises, exercise],
+        ...prevConfig,
+        exercises: validExercises,
       };
-      saveConfig(newConfig);
-    },
-    [workoutConfig, saveConfig, exerciseData.all]
-  );
+      localStorage.setItem('workoutConfig', JSON.stringify(newConfig));
+      return newConfig;
+    });
+  }, []); // 空の依存配列（クロージャー問題回避）
 
-  const removeExercise = useCallback(
-    exercise => {
-      if (workoutConfig.exercises.length <= 1) {
-        alert('最低1つの運動は必要です');
-        return;
-      }
+  // 最大セット数更新 - 関数型アップデートでクロージャー問題回避
+  const updateMaxSets = useCallback(sets => {
+    setWorkoutConfig(prevConfig => {
       const newConfig = {
-        ...workoutConfig,
-        exercises: workoutConfig.exercises.filter(ex => ex !== exercise),
-      };
-      saveConfig(newConfig);
-    },
-    [workoutConfig, saveConfig]
-  );
-
-  const applyPreset = useCallback(
-    presetKey => {
-      const preset = presets[presetKey];
-
-      if (!preset) {
-        console.error('❌ 存在しないプリセット:', presetKey);
-        return;
-      }
-
-      if (!preset.exercises || !Array.isArray(preset.exercises)) {
-        console.error('❌ プリセットの運動リストが無効:', preset);
-        return;
-      }
-
-      const newConfig = {
-        ...workoutConfig,
-        exercises: preset.exercises,
-        maxSets: preset.maxSets,
-      };
-      saveConfig(newConfig);
-    },
-    [workoutConfig, saveConfig, presets]
-  );
-
-  const updateMaxSets = useCallback(
-    sets => {
-      const newConfig = {
-        ...workoutConfig,
+        ...prevConfig,
         maxSets: sets,
       };
-      saveConfig(newConfig);
-    },
-    [workoutConfig, saveConfig]
-  );
+      localStorage.setItem('workoutConfig', JSON.stringify(newConfig));
+      return newConfig;
+    });
+  }, []); // 空の依存配列（クロージャー問題回避）
 
   return {
     // 状態
     workoutConfig,
     availableExercises: exerciseData.all,
-    cardioExercises: exerciseData.cardio,
-    strengthExercises: exerciseData.strength,
-    presets,
+
     // ユーティリティ
     isCardioExercise,
     isStrengthExercise,
-    getExerciseInfo,
-    updateDisplayColumns,
 
-    // アクション関数
-    saveConfig,
-    addExercise,
-    removeExercise,
-    applyPreset,
+    // アクション関数（FormConfig同一パターン）
+    updateExercises,
     updateMaxSets,
   };
 };
