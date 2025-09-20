@@ -1,13 +1,3 @@
-/**
- * 週間統計計算モジュール - 学習用骨格
- *
- * 🎯 学習目標:
- * 1. day.jsのISO週間処理を理解する
- * 2. データ集計パターンを習得する
- * 3. 単一責任原則に基づいたモジュール設計を理解する
- * - Day.js公式: https://day.js.org/docs/en/plugin/iso-week
- */
-
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
@@ -36,64 +26,111 @@ export const calculateDashboardWeeklyStats = workouts => {
       },
     };
   }
+  const filterThisWeekWorkouts = workouts => {
+    const now = dayjs();
+    const weekStart = now.startOf('isoWeek'); // 月曜日 00:00:00
+    const weekEnd = now.endOf('isoWeek'); // 日曜日 23:59:59
 
-  // 📝 Step 2-4: TODO(human): 以下の処理を実装
-  // - 週間データのフィルタリング
-  // - 統計値の計算
-  // - 変化率の計算
-  // 一時的にデフォルト値を返す
-  return {
-    weeklyWorkouts: 0,
-    weeklyReps: 0,
-    weeklyDistance: 0,
-    previousWeek: {
-      weeklyWorkouts: 0,
-      weeklyReps: 0,
-      weeklyDistance: 0,
-    },
-    changeRates: {
-      workouts: 0,
-      reps: 0,
-      distance: 0,
-    },
+    return filterWorkoutsByDateRange(workouts, weekStart, weekEnd);
   };
-};
 
-const filterThisWeekWorkouts = workouts => {
-  const now = dayjs();
-  const weekStart = now.startOf('isoWeek'); // 月曜日 00:00:00
-  const weekEnd = now.endOf('isoWeek');     // 日曜日 23:59:59
+  const filterPreviousWeekWorkouts = workouts => {
+    const now = dayjs();
+    const previousWeek = now.subtract(1, 'week');
+    const weekStart = previousWeek.startOf('isoWeek');
+    const weekEnd = previousWeek.endOf('isoWeek');
 
-  return filterWorkoutsByDateRange(workouts, weekStart, weekEnd);
-};
+    return filterWorkoutsByDateRange(workouts, weekStart, weekEnd);
+  };
 
-const filterPreviousWeekWorkouts = workouts => {
-  const now = dayjs();
-  const previousWeek = now.subtract(1, 'week');
-  const weekStart = previousWeek.startOf('isoWeek');
-  const weekEnd = previousWeek.endOf('isoWeek');
-
-  return filterWorkoutsByDateRange(workouts, weekStart, weekEnd);
-};
-
-const filterWorkoutsByDateRange = (workouts, startDate, endDate) => {
-
-  if (!startDate || !endDate) {
-    return [];
-  }
-
-  return workouts.filter(workout => {
-
-    const dateString = workout.dateForSort || workout.date;
-    const workoutDate = dayjs(dateString);
-
-    if (!workoutDate.isValid()) {
-      return false;
+  const filterWorkoutsByDateRange = (workouts, startDate, endDate) => {
+    if (!startDate || !endDate) {
+      return [];
     }
-    
-    return (
-      workoutDate.isSameOrAfter(startDate) &&
-      workoutDate.isSameOrBefore(endDate)
-    );
-  });
+
+    return workouts.filter(workout => {
+      const dateString = workout.dateForSort || workout.date;
+      const workoutDate = dayjs(dateString);
+
+      if (!workoutDate.isValid()) {
+        return false;
+      }
+
+      return (
+        workoutDate.isSameOrAfter(startDate) &&
+        workoutDate.isSameOrBefore(endDate)
+      );
+    });
+  };
+
+  const calculateWeeklyReps = weeklyWorkouts => {
+    let totalReps = 0;
+
+    weeklyWorkouts.forEach(workout => {
+      if (workout.exerciseType === 'strength' && workout.reps) {
+        totalReps += Number(workout.reps) || 0;
+      }
+    });
+
+    return totalReps;
+  };
+
+  const calculateWeeklyDistance = weeklyWorkouts => {
+    let totalDistance = 0;
+
+    weeklyWorkouts.forEach(workout => {
+      // cardioタイプの距離を集計
+      if (workout.exerciseType === 'cardio' && workout.distance) {
+        totalDistance += Number(workout.distance) || 0;
+      }
+    });
+
+    return totalDistance;
+  };
+
+  const calculateChangeRate = (currentValue, previousValue) => {
+
+    if (previousValue === 0) {
+      return currentValue > 0 ? 100 : 0;
+    }
+
+
+    const rate = ((currentValue - previousValue) / previousValue) * 100;
+    return Math.round(rate * 10) / 10;
+  };
+
+
+  const thisWeekWorkouts = filterThisWeekWorkouts(workouts);
+  const previousWeekWorkouts = filterPreviousWeekWorkouts(workouts);
+
+
+  console.log('今週のワークアウト:', thisWeekWorkouts);
+  console.log('前週のワークアウト:', previousWeekWorkouts);
+
+
+  const currentStats = {
+    weeklyWorkouts: thisWeekWorkouts.length,
+    weeklyReps: calculateWeeklyReps(thisWeekWorkouts),
+    weeklyDistance: calculateWeeklyDistance(thisWeekWorkouts)
+  };
+
+  const previousStats = {
+    weeklyWorkouts: previousWeekWorkouts.length,
+    weeklyReps: calculateWeeklyReps(previousWeekWorkouts),
+    weeklyDistance: calculateWeeklyDistance(previousWeekWorkouts)
+  };
+
+
+  const changeRates = {
+    workouts: calculateChangeRate(currentStats.weeklyWorkouts, previousStats.weeklyWorkouts),
+    reps: calculateChangeRate(currentStats.weeklyReps, previousStats.weeklyReps),
+    distance: calculateChangeRate(currentStats.weeklyDistance, previousStats.weeklyDistance)
+  };
+
+
+  return {
+    ...currentStats,
+    previousWeek: previousStats,
+    changeRates
+  };
 };
