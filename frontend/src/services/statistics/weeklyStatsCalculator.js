@@ -1,7 +1,11 @@
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
 dayjs.extend(isoWeek);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 /**
  * Dashboard用の週間統計を計算するメイン関数
@@ -79,7 +83,6 @@ export const calculateDashboardWeeklyStats = workouts => {
     let totalDistance = 0;
 
     weeklyWorkouts.forEach(workout => {
-      // cardioタイプの距離を集計
       if (workout.exerciseType === 'cardio' && workout.distance) {
         totalDistance += Number(workout.distance) || 0;
       }
@@ -89,24 +92,15 @@ export const calculateDashboardWeeklyStats = workouts => {
   };
 
   const calculateChangeRate = (currentValue, previousValue) => {
-
     if (previousValue === 0) {
       return currentValue > 0 ? 100 : 0;
     }
-
-
     const rate = ((currentValue - previousValue) / previousValue) * 100;
     return Math.round(rate * 10) / 10;
   };
 
-
   const thisWeekWorkouts = filterThisWeekWorkouts(workouts);
   const previousWeekWorkouts = filterPreviousWeekWorkouts(workouts);
-
-
-  console.log('今週のワークアウト:', thisWeekWorkouts);
-  console.log('前週のワークアウト:', previousWeekWorkouts);
-
 
   const currentStats = {
     weeklyWorkouts: thisWeekWorkouts.length,
@@ -120,13 +114,11 @@ export const calculateDashboardWeeklyStats = workouts => {
     weeklyDistance: calculateWeeklyDistance(previousWeekWorkouts)
   };
 
-
   const changeRates = {
     workouts: calculateChangeRate(currentStats.weeklyWorkouts, previousStats.weeklyWorkouts),
     reps: calculateChangeRate(currentStats.weeklyReps, previousStats.weeklyReps),
     distance: calculateChangeRate(currentStats.weeklyDistance, previousStats.weeklyDistance)
   };
-
 
   return {
     ...currentStats,

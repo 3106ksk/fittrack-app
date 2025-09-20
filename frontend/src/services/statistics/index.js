@@ -9,6 +9,7 @@ export { calculateMonthlyStats } from './monthlyStatsCalculator';
 export { calculateChangeRate } from './changeRateCalculator';
 export { filterByMonth } from './workoutFilter';
 export { aggregateStats } from './workoutAggregator';
+export { calculateDashboardWeeklyStats } from './weeklyStatsCalculator';
 
 // デフォルトエクスポートは月別統計計算
 export { calculateMonthlyStats as default } from './monthlyStatsCalculator';
