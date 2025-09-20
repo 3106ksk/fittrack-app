@@ -18,7 +18,7 @@ const useWorkoutSubmit = ({
   isCardioExercise,
   showFeedback,
   reset,
-  generateDefaultValues
+  generateDefaultValues,
 }) => {
   /**
    * カーディオ運動データを送信用に変換
@@ -27,15 +27,20 @@ const useWorkoutSubmit = ({
     const distance = data[`${exercise}_distance`];
     const duration = data[`${exercise}_duration`];
 
-    if (!distance || !duration) {
+    // 数値変換を試みる
+    const numDistance = parseFloat(distance);
+    const numDuration = parseInt(duration, 10);
+
+    // どちらかがNaN（空文字列含む）の場合はnullを返す
+    if (isNaN(numDistance) || isNaN(numDuration)) {
       return null;
     }
 
     return {
       exercise,
       exerciseType: 'cardio',
-      distance: parseFloat(distance),
-      duration: parseInt(duration, 10) * 60,
+      distance: numDistance,
+      duration: numDuration * 60,
       intensity: data.intensity,
     };
   };
@@ -51,7 +56,7 @@ const useWorkoutSubmit = ({
       if (reps && reps > 0) {
         repsData.push({
           id: String(i),
-          reps: parseInt(reps, 10)
+          reps: parseInt(reps, 10),
         });
       }
     }
@@ -72,41 +77,46 @@ const useWorkoutSubmit = ({
   /**
    * フォーム送信処理（元の実装と同じ動作を維持）
    */
-  const handleSubmit = useCallback(async (data) => {
-    try {
-      // 元の実装と同じループ処理
-      for (const exercise of workoutConfig.exercises) {
-        let submitData = null;
+  const handleSubmit = useCallback(
+    async data => {
+      try {
+        // 元の実装と同じループ処理
+        for (const exercise of workoutConfig.exercises) {
+          let submitData = null;
 
-        if (isCardioExercise(exercise)) {
-          submitData = transformCardioData(exercise, data);
-        } else {
-          submitData = transformStrengthData(exercise, data);
+          if (isCardioExercise(exercise)) {
+            submitData = transformCardioData(exercise, data);
+          } else {
+            submitData = transformStrengthData(exercise, data);
+          }
+
+          // データがある場合のみ送信
+          if (submitData) {
+            await apiClient.post('/workouts', submitData);
+          }
         }
 
-        // データがある場合のみ送信
-        if (submitData) {
-          await apiClient.post('/workouts', submitData);
-        }
+        // 元の実装と完全に同じ成功処理
+        showFeedback(
+          'ワークアウトを保存しました。頑張った自分にコーヒーブレイクでもどうですか？',
+          'success'
+        );
+        reset(generateDefaultValues(workoutConfig));
+      } catch (error) {
+        // 元の実装と完全に同じエラー処理
+        const errorMessage =
+          error.response?.data?.error || 'エラーが発生しました';
+        showFeedback(errorMessage, 'error');
       }
-
-      // 元の実装と完全に同じ成功処理
-      showFeedback('ワークアウトを保存しました', 'success');
-      reset(generateDefaultValues(workoutConfig));
-
-    } catch (error) {
-      // 元の実装と完全に同じエラー処理
-      const errorMessage =
-        error.response?.data?.error || 'エラーが発生しました';
-      showFeedback(errorMessage, 'error');
-    }
-  }, [
-    workoutConfig,
-    isCardioExercise,
-    showFeedback,
-    reset,
-    generateDefaultValues
-  ]);
+    },
+    [
+      workoutConfig,
+      isCardioExercise,
+      showFeedback,
+      reset,
+      generateDefaultValues,
+    ]
+  );
 
   return { handleSubmit };
 };

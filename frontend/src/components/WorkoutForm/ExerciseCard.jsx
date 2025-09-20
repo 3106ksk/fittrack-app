@@ -98,7 +98,6 @@ const ExerciseCard = ({
                       error={!!errors[`${exercise}_set${i + 1}`]}
                       helperText={errors[`${exercise}_set${i + 1}`]?.message}
                     >
-                      <MenuItem value="">なし</MenuItem>
                       {REPS_OPTIONS.map(reps => (
                         <MenuItem key={reps} value={reps}>
                           {reps} 回
