@@ -33,15 +33,6 @@ export const EXERCISE_DATABASE = {
     beginner: true,
     metrics: ['duration', 'distance'] as const,
   },
-  cycling: {
-    id: 'cycling',
-    name: 'サイクリング',
-    type: 'cardio' as const,
-    description:
-      '低負荷で持続可能な有酸素運動。膝への負担が少なく、下半身強化に効果的。',
-    beginner: true,
-    metrics: ['duration', 'distance'] as const,
-  },
   squat: {
     id: 'squat',
     name: 'スクワット',
@@ -52,26 +43,26 @@ export const EXERCISE_DATABASE = {
     metrics: ['sets', 'reps'] as const,
   },
   jump_squat: {
-  id: 'jump_squat',
-  name: 'ジャンプスクワット',
-  type: 'strength' as const,
-  description:
-    'プライオメトリック 下半身トレーニング。スクワットの動作にジャンプを加えることで、太もも、お尻、ふくらはぎの筋力と爆発力を同時に鍛える。心肺機能向上にも効果的。',
-  beginner: false,
-  metrics: ['sets', 'reps'] as const,
-},
+    id: 'jump_squat',
+    name: 'ジャンプスクワット',
+    type: 'strength' as const,
+    description:
+      'プライオメトリック 下半身トレーニング。スクワットの動作にジャンプを加えることで、太もも、お尻、ふくらはぎの筋力と爆発力を同時に鍛える。心肺機能向上にも効果的。',
+    beginner: false,
+    metrics: ['sets', 'reps'] as const,
+  },
   jumping_lunge: {
-  id: 'jumping_lunge',
-  name: 'ジャンプランジ',
-  type: 'strength' as const,
-  description:
-    'プライオメトリック下半身トレーニング。ランジの動作にジャンプを加えることで、太もも、お尻、ふくらはぎの筋力とバランス力を強化。片脚ずつ鍛えるため左右差の改善にも効果的。',
-  beginner: false,
-  metrics: ['sets', 'reps'] as const,
-},
+    id: 'jumping_lunge',
+    name: 'ジャンプランジ',
+    type: 'strength' as const,
+    description:
+      'プライオメトリック下半身トレーニング。ランジの動作にジャンプを加えることで、太もも、お尻、ふくらはぎの筋力とバランス力を強化。片脚ずつ鍛えるため左右差の改善にも効果的。',
+    beginner: false,
+    metrics: ['sets', 'reps'] as const,
+  },
   pushup: {
     id: 'pushup',
-    name: 'プッシュアップ',
+    name: '腕立て伏せ',
     type: 'strength' as const,
     description:
       '上半身トレーニング。胸筋、三頭筋、肩を鍛える基本的な自重トレーニング。',
@@ -96,18 +87,9 @@ export const EXERCISE_DATABASE = {
     beginner: true,
     metrics: ['sets', 'reps'] as const,
   },
-  diamond_pushup: {
-    id: 'diamond_pushup',
-    name: 'ダイヤモンドプッシュアップ',
-    type: 'strength' as const,
-    description:
-      '上腕三頭筋に特化したプッシュアップバリエーション。胸筋下部も鍛える。',
-    beginner: false,
-    metrics: ['sets', 'reps'] as const,
-  },
   pullup: {
     id: 'pullup',
-    name: '懸垂（チンニング）',
+    name: '懸垂',
     type: 'strength' as const,
     description:
       '上半身トレーニング。広背筋、僧帽筋、上腕二頭筋を中心に鍛える複合運動。',
@@ -125,7 +107,7 @@ export const EXERCISE_DATABASE = {
   },
   crunch: {
     id: 'crunch',
-    name: 'クランチ',
+    name: '腹筋',
     type: 'strength' as const,
     description: '腹筋運動。主に腹直筋上部を鍛える自重トレーニング。',
     beginner: true,
