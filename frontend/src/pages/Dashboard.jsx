@@ -10,6 +10,8 @@ import {
   WbSunny as MorningIcon,
   NightsStay as NightIcon,
   TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon,
+  TrendingFlat as TrendingFlatIcon,
 } from '@mui/icons-material';
 
 import {
@@ -26,13 +28,14 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../components/Hook';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import StravaConnect from '../components/strava/StravaConnect';
 import StravaSync from '../components/strava/StravaSync';
 import apiClient from '../services/api';
+import { calculateDashboardWeeklyStats } from '../services/StatisticsService';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -104,52 +107,42 @@ const DashboardPage = () => {
 
   const greeting = getGreeting();
 
-  // 統計データ
-  const getWeeklyWorkouts = () => {
-    if (!workouts || workouts.length === 0) {
-      return 0;
-    }
-    const today = new Date();
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay());
+  // 週間統計データを計算（メモ化で最適化）
+  const weeklyStats = useMemo(() => {
+    return calculateDashboardWeeklyStats(workouts);
+  }, [workouts]);
 
-    return workouts.filter(w => {
-      const workoutDate = new Date(w.date || w.dateForSort);
-      return workoutDate >= weekStart;
-    }).length;
-  };
+  // 週間目標の進捗率（週5回を目標）
+  const weeklyGoalProgress = Math.min((weeklyStats.weeklyWorkouts / 5) * 100, 100);
 
-  const continuityData = {
-    currentStreak: workouts?.length > 0 ? Math.min(workouts.length, 7) : 0,
-    totalWorkouts: workouts?.length || 0,
-    totalMinutes:
-      workouts?.reduce((acc, w) => acc + (w.duration || 30), 0) || 0,
-    weeklyGoalProgress: Math.min((getWeeklyWorkouts() / 5) * 100, 100),
-    weeklyWorkouts: getWeeklyWorkouts(),
-  };
-
-  // クイックスタットデータ
+  // クイックスタットデータ（前週比較付き）
   const quickStats = [
     {
       label: '今週のワークアウト',
-      value: continuityData.weeklyWorkouts,
+      value: weeklyStats.weeklyWorkouts,
       unit: '回',
       icon: <CalendarIcon sx={{ fontSize: 17 }} />,
       color: '#4CAF50',
+      previousValue: weeklyStats.previousWeek.weeklyWorkouts,
+      changeRate: weeklyStats.changeRates.workouts,
     },
     {
       label: '今週のレップス回数',
-      value: Math.floor(continuityData.totalMinutes / 60),
+      value: weeklyStats.weeklyReps,
       unit: '回',
       icon: <FitnessCenterIcon sx={{ fontSize: 17 }} />,
       color: '#2196F3',
+      previousValue: weeklyStats.previousWeek.weeklyReps,
+      changeRate: weeklyStats.changeRates.reps,
     },
     {
       label: '今週の距離',
-      value: continuityData.currentStreak,
+      value: weeklyStats.weeklyDistance.toFixed(1),
       unit: 'km',
       icon: <DirectionsRunIcon sx={{ fontSize: 17 }} />,
       color: '#FF5722',
+      previousValue: weeklyStats.previousWeek.weeklyDistance.toFixed(1),
+      changeRate: weeklyStats.changeRates.distance,
     },
   ];
 
@@ -332,10 +325,57 @@ const DashboardPage = () => {
                             sx={{
                               color: 'rgba(255,255,255,0.9)',
                               fontSize: { xs: '0.66rem', sm: '0.78rem' },
+                              mb: 0.5,
                             }}
                           >
                             {stat.label}
                           </Typography>
+
+                          {/* 前週比較 */}
+                          <Box sx={{ mt: 1 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: 'rgba(255,255,255,0.7)',
+                                fontSize: { xs: '0.6rem', sm: '0.7rem' },
+                                display: 'block',
+                              }}
+                            >
+                              先週: {stat.previousValue}{stat.unit}
+                            </Typography>
+
+                            {/* 変化率表示 */}
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                mt: 0.5,
+                              }}
+                            >
+                              {stat.changeRate > 0 && (
+                                <TrendingUpIcon sx={{ fontSize: 14, color: '#4CAF50', mr: 0.5 }} />
+                              )}
+                              {stat.changeRate < 0 && (
+                                <TrendingDownIcon sx={{ fontSize: 14, color: '#f44336', mr: 0.5 }} />
+                              )}
+                              {stat.changeRate === 0 && (
+                                <TrendingFlatIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', mr: 0.5 }} />
+                              )}
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: stat.changeRate > 0 ? '#4CAF50' :
+                                         stat.changeRate < 0 ? '#f44336' :
+                                         'rgba(255,255,255,0.7)',
+                                  fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                                  fontWeight: 'bold',
+                                }}
+                              >
+                                {stat.changeRate > 0 ? '+' : ''}{stat.changeRate}%
+                              </Typography>
+                            </Box>
+                          </Box>
                         </Box>
                       </Fade>
                     </Grid>
@@ -370,12 +410,12 @@ const DashboardPage = () => {
                         variant="body2"
                         sx={{ ml: 'auto', fontWeight: 'bold', color: 'white' }}
                       >
-                        {Math.round(continuityData.weeklyGoalProgress)}%
+                        {Math.round(weeklyGoalProgress)}%
                       </Typography>
                     </Box>
                     <LinearProgress
                       variant="determinate"
-                      value={continuityData.weeklyGoalProgress}
+                      value={weeklyGoalProgress}
                       sx={{
                         height: 6,
                         borderRadius: 4,
@@ -394,7 +434,7 @@ const DashboardPage = () => {
                         display: 'block',
                       }}
                     >
-                      あと{Math.max(5 - continuityData.weeklyWorkouts, 0)}
+                      あと{Math.max(5 - weeklyStats.weeklyWorkouts, 0)}
                       回で次のマイルストーン達成！
                     </Typography>
                   </Box>
