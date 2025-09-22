@@ -36,22 +36,6 @@ router.post('/auth', authMiddleware, async (req, res) => {
 });
 
 router.get('/callback', async (req, res) => {
-  console.log('========== STRAVA CALLBACK DEBUG ==========');
-  console.log('1. Callback reached at:', new Date().toISOString());
-  console.log('2. Query parameters:', {
-    hasCode: !!req.query.code,
-    hasState: !!req.query.state,
-    codeLength: req.query.code?.length,
-    stateLength: req.query.state?.length,
-    fullQuery: req.query,
-  });
-  console.log('3. Request headers:', {
-    host: req.headers.host,
-    referer: req.headers.referer,
-    userAgent: req.headers['user-agent'],
-  });
-  console.log('==========================================');
-
   try {
     const { code, state } = req.query;
 
@@ -72,6 +56,16 @@ router.get('/callback', async (req, res) => {
     if (!tokenData || !tokenData.access_token) {
       console.error('Invalid token data received:', tokenData);
       throw new Error('Stravaからアクセストークンの取得に失敗しました');
+    }
+
+    // Stravaアカウントが既に別のユーザーに紐付いていないか確認
+    const existingUser = await User.findOne({
+      where: { strava_athlete_id: tokenData.athlete.id.toString() }
+    });
+
+    if (existingUser && existingUser.id !== stateData.userId) {
+      console.error(`Strava athlete ${tokenData.athlete.id} is already connected to user ${existingUser.id}`);
+      throw new Error('このStravaアカウントは既に別のユーザーに連携されています。');
     }
 
     await User.update(
