@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  Box,
-  Chip
-} from '@mui/material';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import LaunchIcon from '@mui/icons-material/Launch';
 import TimerIcon from '@mui/icons-material/Timer';
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import {
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+} from '@mui/material';
+import { useState } from 'react';
 
-const GOOGLE_FORM_URL = 'https://forms.gle/YOUR_FORM_ID'; // TODO: 実際のGoogle Forms URLに変更
+const GOOGLE_FORM_URL = 'https://forms.gle/ytmDEZVJsFu7aioJ8';
 
 const FeedbackButton = () => {
   const [open, setOpen] = useState(false);
@@ -39,7 +39,7 @@ const FeedbackButton = () => {
     if (window.gtag) {
       window.gtag('event', 'feedback_form_opened', {
         event_category: 'engagement',
-        event_label: 'google_form'
+        event_label: 'google_form',
       });
     }
   };
@@ -60,8 +60,8 @@ const FeedbackButton = () => {
           '@keyframes pulse': {
             '0%': { boxShadow: '0 0 0 0 rgba(79, 70, 229, 0.7)' },
             '70%': { boxShadow: '0 0 0 10px rgba(79, 70, 229, 0)' },
-            '100%': { boxShadow: '0 0 0 0 rgba(79, 70, 229, 0)' }
-          }
+            '100%': { boxShadow: '0 0 0 0 rgba(79, 70, 229, 0)' },
+          },
         }}
       >
         フィードバック
@@ -109,8 +109,13 @@ const FeedbackButton = () => {
             </Typography>
           </Box>
 
-          <Box sx={{ mt: 2, p: 1.5, bgcolor: 'success.light', borderRadius: 1 }}>
-            <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'success.dark' }}>
+          <Box
+            sx={{ mt: 2, p: 1.5, bgcolor: 'success.light', borderRadius: 1 }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 'bold', color: 'success.dark' }}
+            >
               🎁 回答特典
             </Typography>
             <Typography variant="body2" sx={{ color: 'success.dark' }}>
