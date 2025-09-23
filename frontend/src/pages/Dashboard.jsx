@@ -34,6 +34,7 @@ import { useAuth } from '../components/Hook';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import StravaConnect from '../components/strava/StravaConnect';
 import StravaSync from '../components/strava/StravaSync';
+import FeedbackButton from '../components/FeedbackButton';
 import apiClient from '../services/api';
 import { calculateDashboardWeeklyStats } from '../services/StatisticsService';
 
@@ -673,6 +674,8 @@ const DashboardPage = () => {
           </Paper>
         </Box>
       </Fade>
+      {/* フィードバックボタン */}
+      <FeedbackButton />
     </Container>
   );
 };
