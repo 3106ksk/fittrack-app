@@ -1,6 +1,6 @@
-# 🏋️‍♂️ **FitStart** - 運動習慣化支援フィットネストラッキングアプリ
+# <img src="./frontend/public/fitstart-runner-favicon-192.png" alt="FitStart" width="32" height="32" style="vertical-align: middle;"> **FitStart** - 運動習慣化支援フィットネストラッキングアプリ
 
-![FitStart](./og-image-fitstart.png)
+![FitStart](./frontend/public/og-image-fitstart.png)
 
 <br>
 
