@@ -19,7 +19,7 @@ const getCorsConfig = () => {
       const baseOrigins = [process.env.CORS_ORIGIN_DEV || 'http://localhost:5173'];
 
       if (isDockerEnvironment) {
-        baseOrigins.push('http://frontend:3000');
+        baseOrigins.push('http://localhost:3000');
       }
 
       return baseOrigins;

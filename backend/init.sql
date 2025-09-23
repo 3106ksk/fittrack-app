@@ -8,7 +8,12 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    strava_athlete_id VARCHAR(255),
+    strava_access_token TEXT,
+    strava_refresh_token TEXT,
+    strava_token_expires_at BIGINT,
+    strava_last_sync TIMESTAMP WITH TIME ZONE
 );
 
 -- Create indexes for users table
