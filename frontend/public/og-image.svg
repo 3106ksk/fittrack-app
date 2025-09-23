@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <!-- 背景グラデーション -->
+  <rect width="1200" height="630" fill="url(#bg-gradient)"/>
+
+  <!-- パターン装飾 -->
+  <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+    <circle cx="20" cy="20" r="1" fill="white" opacity="0.2"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#dots)" opacity="0.5"/>
+
+  <!-- ロゴアイコン -->
+  <g transform="translate(100, 150)">
+    <circle cx="100" cy="100" r="95" fill="white" opacity="0.95"/>
+    <circle cx="100" cy="100" r="85" fill="url(#icon-gradient)"/>
+    <!-- フィットネスアイコン -->
+    <path d="M70 70 C70 55 85 45 100 45 C115 45 130 55 130 70 C130 85 115 95 100 95 C85 95 70 85 70 70 Z" fill="white"/>
+    <path d="M100 95 L100 120 M60 100 L140 100 M100 120 L80 145 M100 120 L120 145" stroke="white" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- タイトル -->
+  <text x="380" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="90" font-weight="bold" fill="white">
+    FitStart
+  </text>
+
+  <!-- サブタイトル -->
+  <text x="380" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="white" opacity="0.9">
+    フィットネストラッカー
+  </text>
+
+  <!-- 説明文 -->
+  <text x="380" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="white" opacity="0.8">
+    運動習慣を身につけるための
+  </text>
+  <text x="380" y="460" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="white" opacity="0.8">
+    シンプルなトラッキングアプリ
+  </text>
+
+  <!-- 特徴アイコン -->
+  <g transform="translate(850, 400)">
+    <!-- Strava連携 -->
+    <rect x="0" y="0" width="300" height="60" rx="30" fill="white" opacity="0.2"/>
+    <text x="150" y="37" font-family="system-ui" font-size="20" fill="white" text-anchor="middle">
+      🚴 Strava連携
+    </text>
+
+    <!-- 週次/月次統計 -->
+    <rect x="0" y="80" width="300" height="60" rx="30" fill="white" opacity="0.2"/>
+    <text x="150" y="117" font-family="system-ui" font-size="20" fill="white" text-anchor="middle">
+      📊 週次/月次統計
+    </text>
+
+    <!-- 簡単記録 -->
+    <rect x="0" y="160" width="300" height="60" rx="30" fill="white" opacity="0.2"/>
+    <text x="150" y="197" font-family="system-ui" font-size="20" fill="white" text-anchor="middle">
+      ✍️ 簡単記録
+    </text>
+  </g>
+
+  <!-- グラデーション定義 -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#4F46E5;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+</svg>
