@@ -104,20 +104,6 @@ const FeedbackButton = () => {
               <li>追加してほしい機能</li>
             </Typography>
           </Box>
-
-          <Box
-            sx={{ mt: 2, p: 1.5, bgcolor: 'success.light', borderRadius: 1 }}
-          >
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 'bold', color: 'success.dark' }}
-            >
-              🎁 回答特典
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'success.dark' }}>
-              有料版リリース時の1ヶ月無料クーポンをプレゼント！
-            </Typography>
-          </Box>
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2 }}>
