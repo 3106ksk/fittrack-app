@@ -160,9 +160,20 @@ const StravaSync = () => {
                   </Typography>
                 )}
                 {syncState.result.errors > 0 && (
-                  <Typography variant="body2" color="warning.main">
-                    • エラー: {syncState.result.errors}件
-                  </Typography>
+                  <>
+                    <Typography variant="body2" color="warning.main">
+                      • エラー: {syncState.result.errors}件
+                    </Typography>
+                    {syncState.result.errorDetails && syncState.result.errorDetails.length > 0 && (
+                      <Box sx={{ mt: 1, pl: 2 }}>
+                        {syncState.result.errorDetails.map((err) => (
+                          <Typography key={`${err.activityId}-${err.activityName}`} variant="caption" color="error" component="div">
+                            - {err.activityName}: {err.error}
+                          </Typography>
+                        ))}
+                      </Box>
+                    )}
+                  </>
                 )}
               </Box>
             )}

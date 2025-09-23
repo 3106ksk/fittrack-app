@@ -173,6 +173,7 @@ router.post('/sync', authMiddleware, async (req, res) => {
       synced: results.synced,
       skipped: results.skipped,
       errors: results.errors.length || 0,
+      errorDetails: results.errorDetails || [],
       message: results.message,
     });
   } catch (error) {

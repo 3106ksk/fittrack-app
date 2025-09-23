@@ -144,6 +144,13 @@ class StravaService {
     const exerciseNameMapping = {
       'Run': 'ランニング',
       'Walk': 'ウォーキング',
+      'Ride': 'サイクリング',
+      'Swim': '水泳',
+      'WeightTraining': 'ウェイトトレーニング',
+      'Workout': 'ワークアウト',
+      'Yoga': 'ヨガ',
+      'VirtualRide': 'バーチャルライド',
+      'VirtualRun': 'バーチャルラン',
     }
 
     const exerciseTypeMapping = {
@@ -153,14 +160,20 @@ class StravaService {
       'Swim': 'cardio',
       'WeightTraining': 'strength',
       'Workout': 'strength',
+      'Yoga': 'flexibility',
+      'VirtualRide': 'cardio',
+      'VirtualRun': 'cardio',
     }
+
+    // デバッグ用ログ
+    console.log(`Mapping activity: ${stravaActivity.name} (type: ${stravaActivity.sport_type || stravaActivity.type})`);
 
     return {
       userID: userId,
       external_id: stravaActivity.id.toString(),
       source: 'strava',
       date: stravaActivity.start_date.split('T')[0],
-      exercise: exerciseNameMapping[stravaActivity.sport_type] || stravaActivity.name,
+      exercise: exerciseNameMapping[stravaActivity.sport_type] || stravaActivity.sport_type || stravaActivity.name,
       exerciseType: exerciseTypeMapping[stravaActivity.sport_type] || 'cardio',
       distance: stravaActivity.distance ? stravaActivity.distance / 1000 : null,
       duration: stravaActivity.moving_time || stravaActivity.elapsed_time,
@@ -171,7 +184,7 @@ class StravaService {
 
   async syncActivitiesToWorkouts(activities, userId) {
     const { Workout } = require('../models');
-    const results = { synced: 0, skipped: 0, errors: [] };
+    const results = { synced: 0, skipped: 0, errors: [], errorDetails: [] };
     
     
     let existingExternalIds;
@@ -210,10 +223,18 @@ class StravaService {
       } catch (error) {
         consecutiveErrors++;
         console.error(`❌ エラー: ${activity.name} - ${error.message}`);
+        console.error('詳細エラー:', error);
+        console.error('アクティビティデータ:', JSON.stringify(activity, null, 2));
         results.errors.push({
           activityName: activity.name,
           activityId: activity.id,
           error: error.message
+        });
+        results.errorDetails.push({
+          activityName: activity.name,
+          activityId: activity.id,
+          error: error.message,
+          stack: error.stack
         });
 
         if (consecutiveErrors >= maxConsecutiveErrors) {
