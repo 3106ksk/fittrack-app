@@ -8,7 +8,7 @@ networks:
 services:
   # PostgreSQL データベース（既存設定を維持）
   postgres:
-    image: postgres:17
+    image: postgres:16
     container_name: fittrack_postgres
     restart: always
     environment:
