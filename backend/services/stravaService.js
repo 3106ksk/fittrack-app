@@ -165,8 +165,8 @@ class StravaService {
       'VirtualRun': 'cardio',
     }
 
-    // デバッグ用ログ
-    console.log(`Mapping activity: ${stravaActivity.name} (type: ${stravaActivity.sport_type || stravaActivity.type})`);
+    // デバッグ用ログ（本番環境では削減）
+    // console.log(`Mapping activity: ${stravaActivity.name} (type: ${stravaActivity.sport_type || stravaActivity.type})`);
 
     return {
       userID: userId,
@@ -177,7 +177,7 @@ class StravaService {
       exerciseType: exerciseTypeMapping[stravaActivity.sport_type] || 'cardio',
       distance: stravaActivity.distance ? stravaActivity.distance / 1000 : null,
       duration: stravaActivity.moving_time || stravaActivity.elapsed_time,
-      raw_data: stravaActivity,  
+      // raw_data: stravaActivity,  // Railway環境でサイズ制限エラーになるためコメントアウト
       synced_at: new Date(),
     }
   }
@@ -185,23 +185,8 @@ class StravaService {
   async syncActivitiesToWorkouts(activities, userId) {
     const { Workout } = require('../models');
     const results = { synced: 0, skipped: 0, errors: [], errorDetails: [] };
-    
-    
-    let existingExternalIds;
-    try {
-      const existingWorkouts = await Workout.findAll({
-        where: {
-          userID: userId,
-          source: 'strava'
-        },
-        attributes: ['external_id'],
-      });
-      existingExternalIds = new Set(existingWorkouts.map(workout => workout.external_id));
-    } catch (error) {
-      console.error('既存のWorkout取得失敗:', error);
-      throw error;
-    }
 
+    console.log('stravaアカウント',activities )
     let consecutiveErrors = 0;
     const maxConsecutiveErrors = 5;
 
@@ -209,22 +194,65 @@ class StravaService {
     for (const activity of activities) {
       try {
         const stravaId = activity.id.toString();
-        if (existingExternalIds.has(stravaId)) {
+        const workoutData = this.mapStravaToWorkout(activity, userId);
+
+        // 既存チェック（同一ユーザーの重複を防ぐ）
+        const existingWorkout = await Workout.findOne({
+          where: {
+            external_id: stravaId,
+            userID: userId
+          }
+        });
+
+        if (existingWorkout) {
+          // 同じユーザーが既に同期済み
           results.skipped++;
           consecutiveErrors = 0;
           continue;
         }
-        
-        const workoutData = this.mapStravaToWorkout(activity, userId);
+
+        // 新規作成
         await Workout.create(workoutData);
         results.synced++;
         consecutiveErrors = 0;
         
       } catch (error) {
+        // ユニーク制約エラーの詳細な処理
+        if (error.name === 'SequelizeUniqueConstraintError') {
+          // 既に他のユーザーがこのアクティビティを保存している可能性
+          const existingWorkout = await Workout.findOne({
+            where: { external_id: stravaId },
+            include: [{ model: require('../models').User, attributes: ['id', 'username', 'email'] }]
+          });
+
+          if (existingWorkout && existingWorkout.userID !== userId) {
+            // 別のユーザーが既に保存している
+            results.errors.push({
+              activityName: activity.name,
+              activityId: activity.id,
+              error: 'このアクティビティは別のアカウントで既に同期されています',
+              type: 'duplicate_user'
+            });
+            results.errorDetails.push({
+              activityName: activity.name,
+              activityId: activity.id,
+              error: 'このアクティビティは別のアカウントで既に同期されています',
+              type: 'duplicate_user',
+              existingUserId: existingWorkout.userID
+            });
+          } else {
+            // 同じユーザーの重複（正常）
+            results.skipped++;
+          }
+          consecutiveErrors = 0;
+          continue;
+        }
+
         consecutiveErrors++;
-        console.error(`❌ エラー: ${activity.name} - ${error.message}`);
-        console.error('詳細エラー:', error);
-        console.error('アクティビティデータ:', JSON.stringify(activity, null, 2));
+        // 本番環境ではログを抑制
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(`❌ エラー: ${activity.name} - ${error.message}`);
+        }
         results.errors.push({
           activityName: activity.name,
           activityId: activity.id,

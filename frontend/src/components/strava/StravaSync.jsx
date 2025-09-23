@@ -167,9 +167,16 @@ const StravaSync = () => {
                     {syncState.result.errorDetails && syncState.result.errorDetails.length > 0 && (
                       <Box sx={{ mt: 1, pl: 2 }}>
                         {syncState.result.errorDetails.map((err) => (
-                          <Typography key={`${err.activityId}-${err.activityName}`} variant="caption" color="error" component="div">
-                            - {err.activityName}: {err.error}
-                          </Typography>
+                          <Box key={`${err.activityId}-${err.activityName}`} sx={{ mb: 0.5 }}>
+                            <Typography variant="caption" color="error" component="div">
+                              - {err.activityName}: {err.error}
+                            </Typography>
+                            {err.type === 'duplicate_user' && (
+                              <Typography variant="caption" color="warning.main" component="div" sx={{ pl: 2 }}>
+                                ⚠️ 同じStravaアカウントを複数のユーザーで使用することはできません
+                              </Typography>
+                            )}
+                          </Box>
                         ))}
                       </Box>
                     )}
