@@ -160,6 +160,11 @@ const DashboardPage = () => {
       maxWidth="lg"
       sx={{ mt: { xs: 1, sm: 2, md: 3 }, mb: 4, px: { xs: 1, sm: 2, md: 3 } }}
     >
+      {/* フィードバックボタン（上部配置） */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+        <FeedbackButton />
+      </Box>
+
       {/* ダイナミックヘローカード */}
       <Fade in={true} timeout={600}>
         <Paper
@@ -674,8 +679,6 @@ const DashboardPage = () => {
           </Paper>
         </Box>
       </Fade>
-      {/* フィードバックボタン */}
-      <FeedbackButton />
     </Container>
   );
 };
