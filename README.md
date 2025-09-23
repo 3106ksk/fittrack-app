@@ -1,5 +1,7 @@
 # 🏋️‍♂️ **FitStart** - 運動習慣化支援フィットネストラッキングアプリ
 
+![FitStart](./og-image-fitstart.png)
+
 <br>
 
 ### 📝 **テストアカウント情報**
@@ -13,7 +15,8 @@
 
 運動の継続を「見える化」でサポートし、身体と精神の健康向上を実現を目指した Web アプリケーション。医療連携を視野に入れた拡張性を持つヘルスケアプラットフォームです。
 
-**サービス URL**: https://fitstart-frontend.vercel.app/
+**サービス URL**: https://fitstart-frontend.vercel.app/login
+
 
 <br>
 
