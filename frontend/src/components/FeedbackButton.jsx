@@ -52,10 +52,6 @@ const FeedbackButton = () => {
         startIcon={<FeedbackIcon />}
         onClick={handleOpen}
         sx={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          zIndex: 1000,
           animation: hasClicked ? 'none' : 'pulse 2s infinite',
           '@keyframes pulse': {
             '0%': { boxShadow: '0 0 0 0 rgba(79, 70, 229, 0.7)' },
