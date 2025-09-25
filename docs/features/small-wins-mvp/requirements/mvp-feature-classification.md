@@ -2,7 +2,7 @@
 
 **文書番号**: FRD-SW-001
 **バージョン**: 1.0.0
-**作成日**: 2025-01-25
+**作成日**: 2025-09-25
 **ステータス**: MVP Planning
 
 ## 1. 機能分類（Must/Better/Unnecessary）
@@ -90,7 +90,7 @@ CREATE TABLE insights (
   user_id INTEGER NOT NULL REFERENCES users(id),
   date DATE NOT NULL,
   score INTEGER,
-  aerobic_score INTEGER,
+  cardio_score INTEGER,
   strength_score INTEGER,
   rationale JSONB,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -101,11 +101,11 @@ CREATE TABLE insights (
 class SmallWinsEngine {
   calculateScore(userId, date) {
     // MUST機能のみ実装
-    const aerobic = this.calculateAerobicScore(userId);
+    const cardio = this.calculateCardioScore(userId);
     const strength = this.calculateStrengthScore(userId);
     return {
-      total: aerobic * 0.6 + strength * 0.4,
-      aerobic,
+      total: cardio * 0.6 + strength * 0.4,
+      cardio,
       strength
     };
   }
@@ -151,7 +151,7 @@ const HealthScoreCard = () => {
         variant="determinate"
         value={score?.total || 0}
       />
-      {score?.aerobic >= 100 && (
+      {score?.cardio >= 100 && (
         <Chip label="WHO有酸素達成" color="success" />
       )}
       {score?.strength >= 100 && (

@@ -1,0 +1,73 @@
+erDiagram
+    USERS ||--o{ WORKOUTS : "has"
+    USERS ||--o| STRAVA_TOKENS : "may have"
+    USERS ||--o{ INSIGHTS : "has"
+    WORKOUTS ||--|| WORKOUT_DETAILS : "has details"
+    WORKOUTS ||--o| STRAVA_SYNC_DATA : "may have sync"
+
+    USERS {
+        int id PK
+        string username UK
+        varchar email UK
+        varchar password_hash
+        jsonb health_profile
+        jsonb privacy_settings
+        datetime created_at
+        datetime updated_at
+    }
+
+    STRAVA_TOKENS {
+        int user_id PK_FK
+        varchar athlete_id UK
+        text access_token
+        text refresh_token
+        datetime expires_at
+        datetime last_sync
+    }
+
+    WORKOUTS {
+        int id PK
+        int user_id FK
+        date workout_date
+        varchar exercise_name
+        varchar exercise_type
+        varchar source
+        jsonb exercise_details
+        datetime created_at
+        datetime updated_at
+    }
+
+    WORKOUT_DETAILS {
+        int workout_id PK_FK
+        int sets
+        int reps
+        json reps_detail
+        float distance_km
+        int duration_min
+        varchar intensity
+    }
+
+    STRAVA_SYNC_DATA {
+        int workout_id PK_FK
+        varchar external_id UK
+        json raw_data
+        datetime synced_at
+    }
+
+    INSIGHTS {
+        int id PK
+        int user_id FK
+        date date
+        int total_score
+        int cardio_score
+        int strength_score
+        boolean who_cardio_achieved
+        boolean who_strength_achieved
+        jsonb metrics
+        varchar health_message
+        text_array recommendations
+        datetime calculated_at
+        varchar version
+        datetime created_at
+        datetime updated_at
+    }

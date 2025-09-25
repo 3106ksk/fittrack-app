@@ -2,7 +2,7 @@
 
 **文書番号**: DBD-SW-001
 **バージョン**: 1.0.0
-**作成日**: 2025-01-25
+**作成日**: 2025-09-25
 **ステータス**: MVP Design
 
 ## 1. 設計方針
@@ -20,6 +20,14 @@
 
 ## 2. テーブル設計
 
+### 2.0 既存テーブルとの関係性サマリー
+
+| 関係 | 説明 | 外部キー | 削除ポリシー |
+|------|------|----------|-------------|
+| USERS → INSIGHTS | 1対多: 1ユーザーが複数日のインサイトを持つ | insights.user_id → users.id | CASCADE |
+| WORKOUTS ⇢ INSIGHTS | 集約関係: 週間ワークアウトを集計してインサイトを生成 | なし（論理的関係） | 独立管理 |
+| INSIGHTS ↔ STRAVA_SYNC_DATA | 間接関係: WORKOUTSを経由してStravaデータを参照 | なし（WORKOUTs経由） | 独立管理 |
+
 ### 2.1 新規テーブル: insights
 
 ```sql
@@ -31,18 +39,18 @@ CREATE TABLE insights (
 
   -- スコア（0-100）
   total_score INTEGER DEFAULT 0 CHECK (total_score >= 0 AND total_score <= 100),
-  aerobic_score INTEGER DEFAULT 0 CHECK (aerobic_score >= 0 AND aerobic_score <= 100),
+  cardio_score INTEGER DEFAULT 0 CHECK (cardio_score >= 0 AND cardio_score <= 100),
   strength_score INTEGER DEFAULT 0 CHECK (strength_score >= 0 AND strength_score <= 100),
 
   -- WHO達成フラグ
-  who_aerobic_achieved BOOLEAN DEFAULT FALSE,
+  who_cardio_achieved BOOLEAN DEFAULT FALSE,
   who_strength_achieved BOOLEAN DEFAULT FALSE,
 
   -- 詳細データ（JSONB for flexibility）
   metrics JSONB DEFAULT '{}',
   /* 構造例:
   {
-    "aerobic": {
+    "cardio": {
       "weeklyMinutes": 157,
       "targetMinutes": 150,
       "intensity": {"moderate": 120, "vigorous": 37}
@@ -79,7 +87,7 @@ CREATE INDEX idx_insights_user_date ON insights(user_id, date DESC);
 CREATE INDEX idx_insights_user_score ON insights(user_id, total_score DESC);
 CREATE INDEX idx_insights_date ON insights(date);
 CREATE INDEX idx_insights_who_achieved ON insights(user_id)
-  WHERE who_aerobic_achieved = TRUE AND who_strength_achieved = TRUE;
+  WHERE who_cardio_achieved = TRUE AND who_strength_achieved = TRUE;
 ```
 
 ### 2.2 既存テーブル拡張: workouts（最小限の変更）
@@ -91,7 +99,7 @@ ALTER TABLE workouts ADD COLUMN IF NOT EXISTS
 
 /* exercise_details の構造:
 {
-  "type": "strength" | "aerobic" | "mixed",
+  "type": "strength" | "cardio" | "mixed",
   "muscleGroups": ["chest", "back"],
   "equipment": "dumbbell",
   "sets": 3,
@@ -125,9 +133,9 @@ graph LR
 -- 1. 最新スコア取得（高頻度）
 SELECT
   total_score,
-  aerobic_score,
+  cardio_score,
   strength_score,
-  who_aerobic_achieved,
+  who_cardio_achieved,
   who_strength_achieved,
   health_message
 FROM insights
@@ -150,7 +158,7 @@ SELECT
   i.date
 FROM insights i
 JOIN users u ON i.user_id = u.id
-WHERE i.who_aerobic_achieved = TRUE
+WHERE i.who_cardio_achieved = TRUE
   AND i.who_strength_achieved = TRUE
   AND i.date = CURRENT_DATE
 ORDER BY i.total_score DESC
