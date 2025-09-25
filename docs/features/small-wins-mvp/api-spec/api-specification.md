@@ -2,7 +2,7 @@
 
 **文書番号**: API-SW-001
 **バージョン**: 1.0.0
-**作成日**: 2025-01-25
+**作成日**: 2025-09-25
 **ステータス**: MVP Specification
 
 ## 1. API概要
@@ -42,14 +42,14 @@ Authorization: Bearer {token}
 **Response (200 OK):**
 ```json
 {
-  "date": "2025-01-25",
+  "date": "2025-09-25",
   "scores": {
     "total": 85,
-    "aerobic": 100,
+    "cardio": 100,
     "strength": 50
   },
   "whoCompliance": {
-    "aerobic": true,
+    "cardio": true,
     "strength": false,
     "combined": false
   },
@@ -59,7 +59,7 @@ Authorization: Bearer {token}
     "上半身の筋群も鍛えるとバランスが向上します"
   ],
   "metrics": {
-    "aerobic": {
+    "cardio": {
       "weeklyMinutes": 165,
       "targetMinutes": 150,
       "achievementRate": 110
@@ -95,13 +95,13 @@ Authorization: Bearer {token}
 ```json
 {
   "period": {
-    "start": "2025-01-19",
-    "end": "2025-01-25"
+    "start": "2025-09-19",
+    "end": "2025-09-25"
   },
   "summary": {
     "averageScore": 82,
     "bestDay": {
-      "date": "2025-01-23",
+      "date": "2025-09-23",
       "score": 95
     },
     "totalWorkoutDays": 5,
@@ -109,15 +109,15 @@ Authorization: Bearer {token}
   },
   "daily": [
     {
-      "date": "2025-01-25",
+      "date": "2025-09-25",
       "totalScore": 85,
-      "aerobicScore": 100,
+      "cardioScore": 100,
       "strengthScore": 50
     },
     {
-      "date": "2025-01-24",
+      "date": "2025-09-24",
       "totalScore": 90,
-      "aerobicScore": 100,
+      "cardioScore": 100,
       "strengthScore": 75
     }
     // ... 残り5日分
@@ -143,7 +143,7 @@ Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "date": "2025-01-25"  // optional, デフォルトは今日
+  "date": "2025-09-25"  // optional, デフォルトは今日
 }
 ```
 
@@ -152,11 +152,11 @@ Content-Type: application/json
 {
   "message": "スコアを再計算しました",
   "result": {
-    "date": "2025-01-25",
+    "date": "2025-09-25",
     "previousScore": 80,
     "newScore": 85,
     "changes": {
-      "aerobic": "+10",
+      "cardio": "+10",
       "strength": "0"
     }
   },
@@ -215,13 +215,13 @@ router.get('/current', authenticateToken, async (req, res) => {
       date: insight.date,
       scores: {
         total: insight.totalScore,
-        aerobic: insight.aerobicScore,
+        cardio: insight.cardioScore,
         strength: insight.strengthScore
       },
       whoCompliance: {
-        aerobic: insight.whoAerobicAchieved,
+        cardio: insight.whoCardioAchieved,
         strength: insight.whoStrengthAchieved,
-        combined: insight.whoAerobicAchieved && insight.whoStrengthAchieved
+        combined: insight.whoCardioAchieved && insight.whoStrengthAchieved
       },
       healthMessage: insight.healthMessage,
       recommendations: insight.recommendations,
@@ -272,7 +272,7 @@ router.get('/weekly', authenticateToken, async (req, res) => {
       ),
       totalWorkoutDays: insights.length,
       whoAchievementDays: insights.filter(i =>
-        i.whoAerobicAchieved && i.whoStrengthAchieved
+        i.whoCardioAchieved && i.whoStrengthAchieved
       ).length
     };
 
@@ -291,7 +291,7 @@ router.get('/weekly', authenticateToken, async (req, res) => {
       daily: insights.map(i => ({
         date: i.date,
         totalScore: i.totalScore,
-        aerobicScore: i.aerobicScore,
+        cardioScore: i.cardioScore,
         strengthScore: i.strengthScore
       })),
       trends: {
@@ -357,7 +357,7 @@ router.post('/calculate', authenticateToken, async (req, res) => {
         previousScore: existing?.totalScore || null,
         newScore: newScores.totalScore,
         changes: {
-          aerobic: `${(newScores.aerobicScore - (existing?.aerobicScore || 0)) >= 0 ? '+' : ''}${newScores.aerobicScore - (existing?.aerobicScore || 0)}`,
+          cardio: `${(newScores.cardioScore - (existing?.cardioScore || 0)) >= 0 ? '+' : ''}${newScores.cardioScore - (existing?.cardioScore || 0)}`,
           strength: `${(newScores.strengthScore - (existing?.strengthScore || 0)) >= 0 ? '+' : ''}${newScores.strengthScore - (existing?.strengthScore || 0)}`
         }
       },

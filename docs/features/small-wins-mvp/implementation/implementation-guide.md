@@ -2,7 +2,7 @@
 
 **文書番号**: IMP-SW-001
 **バージョン**: 1.0.0
-**作成日**: 2025-01-25
+**作成日**: 2025-09-25
 **ステータス**: MVP Implementation Guide
 
 ## 1. 実装順序とタイムライン
@@ -60,7 +60,7 @@ const Insight = sequelize.define('Insight', {
       max: 100
     }
   },
-  aerobicScore: {
+  cardioScore: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
     validate: {
@@ -76,7 +76,7 @@ const Insight = sequelize.define('Insight', {
       max: 100
     }
   },
-  whoAerobicAchieved: {
+  whoCardioAchieved: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
@@ -167,7 +167,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
-      aerobicScore: {
+      cardioScore: {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
@@ -175,7 +175,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
-      whoAerobicAchieved: {
+      whoCardioAchieved: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
@@ -267,7 +267,7 @@ class SmallWinsEngine {
 
     // スコア重み付け
     this.WEIGHTS = {
-      aerobic: 0.35,
+      cardio: 0.35,
       strength: 0.20,
       consistency: 0.15,
       improvement: 0.15,
@@ -294,7 +294,7 @@ class SmallWinsEngine {
     const workouts = await this.getWeeklyWorkouts(userId, weekStart, weekEnd);
 
     // 各種スコア計算
-    const aerobicData = this.calculateAerobicScore(workouts);
+    const cardioData = this.calculateCardioScore(workouts);
     const strengthData = this.calculateStrengthScore(workouts);
     const consistencyScore = this.calculateConsistencyScore(workouts);
     const improvementScore = await this.calculateImprovementScore(userId, workouts);
@@ -302,7 +302,7 @@ class SmallWinsEngine {
 
     // 総合スコア計算
     const totalScore = Math.round(
-      aerobicData.score * this.WEIGHTS.aerobic +
+      cardioData.score * this.WEIGHTS.cardio +
       strengthData.score * this.WEIGHTS.strength +
       consistencyScore * this.WEIGHTS.consistency +
       improvementScore * this.WEIGHTS.improvement +
@@ -310,23 +310,23 @@ class SmallWinsEngine {
     );
 
     // 健康メッセージ生成
-    const healthMessage = this.generateHealthMessage(aerobicData, strengthData);
+    const healthMessage = this.generateHealthMessage(cardioData, strengthData);
 
     // 推奨事項生成
     const recommendations = this.generateRecommendations(
-      aerobicData,
+      cardioData,
       strengthData,
       consistencyScore
     );
 
     return {
       totalScore,
-      aerobicScore: aerobicData.score,
+      cardioScore: cardioData.score,
       strengthScore: strengthData.score,
-      whoAerobicAchieved: aerobicData.achieved,
+      whoCardioAchieved: cardioData.achieved,
       whoStrengthAchieved: strengthData.achieved,
       metrics: {
-        aerobic: aerobicData.metrics,
+        cardio: cardioData.metrics,
         strength: strengthData.metrics,
         consistency: { score: consistencyScore, workoutDays: workouts.length },
         improvement: { score: improvementScore }
@@ -352,14 +352,14 @@ class SmallWinsEngine {
   }
 
   /**
-   * 有酸素運動スコア計算
+   * カーディオ運動スコア計算
    */
-  calculateAerobicScore(workouts) {
-    const aerobicWorkouts = workouts.filter(w =>
+  calculateCardioScore(workouts) {
+    const cardioWorkouts = workouts.filter(w =>
       !this.isStrengthExercise(w.exercise)
     );
 
-    const totalMinutes = aerobicWorkouts.reduce((sum, w) =>
+    const totalMinutes = cardioWorkouts.reduce((sum, w) =>
       sum + (w.duration || 0), 0
     );
 
@@ -511,17 +511,17 @@ class SmallWinsEngine {
   /**
    * 健康メッセージ生成
    */
-  generateHealthMessage(aerobicData, strengthData) {
-    if (aerobicData.achieved && strengthData.achieved) {
+  generateHealthMessage(cardioData, strengthData) {
+    if (cardioData.achieved && strengthData.achieved) {
       return 'WHO推奨完全達成：総死亡リスク40%減（BMJ 2022）';
     }
-    if (aerobicData.achieved) {
-      return 'WHO有酸素推奨達成：心疾患リスク30%減';
+    if (cardioData.achieved) {
+      return 'WHOカーディオ推奨達成：心疾患リスク30%減';
     }
     if (strengthData.achieved) {
       return 'WHO筋力推奨達成：サルコペニア予防効果';
     }
-    if (aerobicData.score >= 50 || strengthData.score >= 50) {
+    if (cardioData.score >= 50 || strengthData.score >= 50) {
       return '良好な運動習慣：健康維持に貢献中';
     }
     return '運動習慣を増やしましょう：週150分の運動で健康改善';
@@ -530,15 +530,15 @@ class SmallWinsEngine {
   /**
    * 推奨事項生成
    */
-  generateRecommendations(aerobicData, strengthData, consistencyScore) {
+  generateRecommendations(cardioData, strengthData, consistencyScore) {
     const recommendations = [];
 
-    // 有酸素運動の推奨
-    if (!aerobicData.achieved) {
-      const shortage = this.WHO_AEROBIC_TARGET - aerobicData.metrics.weeklyMinutes;
+    // カーディオ運動の推奨
+    if (!cardioData.achieved) {
+      const shortage = this.WHO_AEROBIC_TARGET - cardioData.metrics.weeklyMinutes;
       if (shortage > 0) {
         recommendations.push(
-          `有酸素運動をあと週${shortage}分追加でWHO推奨達成`
+          `カーディオ運動をあと週${shortage}分追加でWHO推奨達成`
         );
       }
     }
@@ -571,7 +571,7 @@ class SmallWinsEngine {
     }
 
     // 完全達成者への推奨
-    if (aerobicData.achieved && strengthData.achieved) {
+    if (cardioData.achieved && strengthData.achieved) {
       recommendations.push('素晴らしい！この習慣を維持しましょう');
       recommendations.push('Zone2運動を増やすと脂質代謝がさらに向上');
     }
@@ -771,7 +771,7 @@ describe('SmallWinsEngine', () => {
     engine = new SmallWinsEngine();
   });
 
-  describe('calculateAerobicScore', () => {
+  describe('calculateCardioScore', () => {
     it('should calculate correct score for WHO target', () => {
       const workouts = [
         { exercise: 'running', duration: 30 },
@@ -780,7 +780,7 @@ describe('SmallWinsEngine', () => {
         { exercise: 'walking', duration: 35 }
       ];
 
-      const result = engine.calculateAerobicScore(workouts);
+      const result = engine.calculateCardioScore(workouts);
 
       expect(result.score).toBe(100);
       expect(result.achieved).toBe(true);
@@ -840,7 +840,7 @@ describe('Insights API', () => {
       const response = await request(app)
         .post('/api/v1/insights/calculate')
         .set('Authorization', `Bearer ${token}`)
-        .send({ date: '2025-01-25' })
+        .send({ date: '2025-09-25' })
         .expect(200);
 
       expect(response.body).toHaveProperty('message');
@@ -868,7 +868,7 @@ describe('Insights API', () => {
 const debug = require('debug')('fitstart:insights');
 
 debug('Calculating score for user %d on %s', userId, date);
-debug('Aerobic score: %O', aerobicData);
+debug('Cardio score: %O', cardioData);
 debug('Strength score: %O', strengthData);
 ```
 

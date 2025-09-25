@@ -2,7 +2,7 @@
 
 **文書番号**: UI-SW-001
 **バージョン**: 1.0.0
-**作成日**: 2025-01-25
+**作成日**: 2025-09-25
 **ステータス**: MVP Design
 
 ## 1. UI設計方針
@@ -141,14 +141,14 @@ const HealthScoreCard = ({ loading, data }) => {
           <Grid item>
             <Chip
               icon={<HeartIcon />}
-              label={`有酸素 ${scores.aerobic}%`}
+              label={`カーディオ ${scores.cardio}%`}
               size="small"
               sx={{
-                backgroundColor: whoCompliance.aerobic
+                backgroundColor: whoCompliance.cardio
                   ? 'rgba(76, 175, 80, 0.2)'
                   : 'rgba(255, 255, 255, 0.1)',
                 color: 'white',
-                border: whoCompliance.aerobic
+                border: whoCompliance.cardio
                   ? '1px solid rgba(76, 175, 80, 0.5)'
                   : '1px solid rgba(255, 255, 255, 0.3)'
               }}
@@ -224,8 +224,8 @@ const WHOComplianceBadge = ({ type, achieved, value, target }) => {
   const percentage = Math.min(100, (value / target) * 100);
 
   const config = {
-    aerobic: {
-      label: '有酸素運動',
+    cardio: {
+      label: 'カーディオ運動',
       unit: '分/週',
       color: '#4caf50',
       icon: '🏃'
