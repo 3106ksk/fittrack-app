@@ -44,6 +44,10 @@ services:
         condition: service_healthy
     networks:
       - fittrack-network
+    volumes:
+      # Hot Reload用（開発環境）- ソースコードの変更を即座に反映
+      - ./backend:/app
+      - /app/node_modules  # node_modulesはコンテナ内のものを使用
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
       interval: 30s
