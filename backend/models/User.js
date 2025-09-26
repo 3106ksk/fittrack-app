@@ -49,6 +49,9 @@ module.exports = (sequelize, DataTypes) => {
 
   User.associate = (models) => {
     User.hasMany(models.Workout, { foreignKey: 'userID' });
+    if (models.Insight) {
+      User.hasMany(models.Insight, { foreignKey: 'userId', as: 'insights' });
+    }
   };
 
   return User;
