@@ -49,9 +49,8 @@ class SmallWinsEngine {
    * @returns {Object} cardioメトリクス
    */
   calculateCardioMetrics(workouts) {
-
     const cardioWorkouts = workouts.filter((workout) => workout.exerciseType === 'cardio');
-    
+
     // 総運動時間を計算（秒単位で集計）
     let totalSeconds = 0;
 
@@ -99,7 +98,60 @@ class SmallWinsEngine {
    * @param {Array} workouts - ワークアウトデータ
    * @returns {Object} strengthメトリクス
    */
-  calculateStrengthMetrics(workouts) {}
+  calculateStrengthMetrics(workouts) {
+    // 筋力トレーニングをフィルタリング
+    const strengthWorkouts = workouts.filter((workout) => workout.exerciseType === 'strength');
+
+    // トレーニング実施日を取得（重複排除のためSetを使用）
+    const trainingDays = new Set();
+
+    // 総セット数とレップ数の集計
+    let totalSets = 0;
+    let totalReps = 0;
+    const byDay = {};
+
+    // TODO(human): strengthWorkoutsをループして、各メトリクスを計算
+    // 1. trainingDaysに日付を追加（重複自動排除）
+    // 2. totalSetsとtotalRepsを累積
+    // 3. byDayオブジェクトに日別データを格納
+
+    strengthWorkouts.forEach((workout) => {
+      if (!workout) {
+        return;
+      }
+      
+      const byDay = workout.date;
+      trainingDays.add(byDay);
+
+      if (workout.exerciseType === 'strength' && workout.reps) {
+        totalReps += Number(workout.reps) || 0;
+      }
+    });
+
+    // 週間トレーニング日数
+    const weeklyDays = trainingDays.size;
+    const targetDays = this.WHO_STANDARDS.strength.weeklyDays;
+
+    // スコア計算（週2日で100点、それ以上も100点上限）
+    const score = Math.min(100, Math.round((weeklyDays / targetDays) * 100));
+
+    // WHO基準達成判定
+    const whoAchieved = weeklyDays >= targetDays;
+
+    return {
+      score: score,
+      whoAchieved: whoAchieved,
+      details: {
+        weeklyDays: weeklyDays,
+        targetDays: targetDays,
+        achievementRate: Math.round((weeklyDays / targetDays) * 100),
+        totalSets: totalSets,
+        totalReps: totalReps,
+        byDay: byDay,
+        workoutCount: strengthWorkouts.length,
+      },
+    };
+  }
 
   /**
    * 総合スコアを計算
