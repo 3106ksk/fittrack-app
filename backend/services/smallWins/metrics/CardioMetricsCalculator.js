@@ -12,13 +12,15 @@ class CardioMetricsCalculator {
    * @returns {Object} cardioメトリクス
    */
   calculate(workouts) {
-    const cardioWorkouts = workouts.filter((workout) =>
-      workout && workout.exerciseType === 'cardio'
+    const cardioWorkouts = workouts.filter(
+      (workout) => workout && workout.exerciseType === 'cardio'
     );
 
     let totalSeconds = 0;
     cardioWorkouts.forEach(({ duration = 0 }) => {
-      totalSeconds += Number(duration) || 0;
+      // 負の値を0にクランプして防御
+      const validDuration = Math.max(0, Number(duration) || 0);
+      totalSeconds += validDuration;
     });
     const totalMinutes = Math.floor(totalSeconds / 60);
 
@@ -28,8 +30,13 @@ class CardioMetricsCalculator {
     const whoAchieved = totalMinutes >= targetMinutes;
     const byDay = {};
     cardioWorkouts.forEach(({ date, duration = 0 }) => {
-      const minutes = Math.floor(duration / 60);
-      byDay[date] = (byDay[date] || 0) + minutes;
+      // 負の値を0にクランプして防御
+      const validDuration = Math.max(0, Number(duration) || 0);
+      const minutes = Math.floor(validDuration / 60);
+      // 0分の場合も日付は記録（運動した事実は残す）
+      if (minutes > 0 || !byDay[date]) {
+        byDay[date] = (byDay[date] || 0) + minutes;
+      }
     });
 
     return {
@@ -51,9 +58,10 @@ class CardioMetricsCalculator {
    * @returns {Object} 統計情報
    */
   getStatistics(metrics) {
-    const dailyAverage = Object.keys(metrics.details.byDay).length > 0
-      ? Math.round(metrics.details.weeklyMinutes / Object.keys(metrics.details.byDay).length)
-      : 0;
+    const dailyAverage =
+      Object.keys(metrics.details.byDay).length > 0
+        ? Math.round(metrics.details.weeklyMinutes / Object.keys(metrics.details.byDay).length)
+        : 0;
 
     return {
       dailyAverage,

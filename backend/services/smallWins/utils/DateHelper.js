@@ -39,8 +39,9 @@ class DateHelper {
     if (!workout || !workout.date) return false;
 
     const workoutDate = dayjs(workout.date);
-    return workoutDate.isSameOrAfter(weekBounds.start) &&
-           workoutDate.isSameOrBefore(weekBounds.end);
+    return (
+      workoutDate.isSameOrAfter(weekBounds.start) && workoutDate.isSameOrBefore(weekBounds.end)
+    );
   }
 
   /**
@@ -52,7 +53,7 @@ class DateHelper {
   static filterWeeklyWorkouts(workouts, targetDate = new Date()) {
     const weekBounds = this.getWeekBounds(targetDate);
 
-    return workouts.filter(workout => this.isInWeek(workout, weekBounds));
+    return workouts.filter((workout) => this.isInWeek(workout, weekBounds));
   }
 
   /**
