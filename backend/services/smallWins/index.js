@@ -1,125 +1,104 @@
 /**
  * SmallWinsEngine
- * 統合エントリーポイント
- *
- * 各モジュールを組み合わせて、週間の運動データから
- * WHO基準に基づく健康スコアとインサイトを生成
+ * WHO基準に基づく健康スコア計算エンジン
  */
 
 const CardioMetricsCalculator = require('./metrics/CardioMetricsCalculator');
 const StrengthMetricsCalculator = require('./metrics/StrengthMetricsCalculator');
-const ScoreCalculator = require('./scoring/ScoreCalculator');
-const HealthMessageGenerator = require('./insights/HealthMessageGenerator');
-const RecommendationEngine = require('./insights/RecommendationEngine');
-const DateHelper = require('./utils/DateHelper');
 
 class SmallWinsEngine {
   constructor() {
-    this.version = '2.0.0';
     this.cardioCalculator = new CardioMetricsCalculator();
     this.strengthCalculator = new StrengthMetricsCalculator();
-    this.scoreCalculator = new ScoreCalculator();
-    this.messageGenerator = new HealthMessageGenerator();
-    this.recommendationEngine = new RecommendationEngine();
   }
 
   /**
-   * メインメソッド：週間のワークアウトデータからInsightを計算
+   * 週間のワークアウトデータからInsightを計算
    * @param {Array} workouts - ワークアウトデータの配列
-   * @param {Date} targetDate - 計算対象日（デフォルト: 今日）
-   * @returns {Object} 計算されたInsightデータ
+   * @returns {Object} 計算結果
    */
-  calculateWeeklyInsight(workouts, targetDate = new Date()) {
-    const weeklyWorkouts = DateHelper.filterWeeklyWorkouts(workouts, targetDate);
-    const weekInfo = DateHelper.getWeekInfo(targetDate);
-    const weekBounds = DateHelper.getWeekBounds(targetDate);
+  calculateWeeklyInsight(workouts) {
+    const cardioMetrics = this.cardioCalculator.calculate(workouts);
+    const strengthMetrics = this.strengthCalculator.calculate(workouts);
 
-    const cardioMetrics = this.cardioCalculator.calculate(weeklyWorkouts);
-    const strengthMetrics = this.strengthCalculator.calculate(weeklyWorkouts);
-
-    const totalScore = this.scoreCalculator.calculateTotal(cardioMetrics, strengthMetrics);
-    const scoreBreakdown = this.scoreCalculator.getScoreBreakdown(cardioMetrics, strengthMetrics);
-    const weekSummary = {
-      weekStartDate: weekBounds.startString,
-      weekEndDate: weekBounds.endString,
-      totalWorkouts: weeklyWorkouts.length,
-      trainingDays: new Set(weeklyWorkouts.map(w => w.date)).size,
-      remainingDays: DateHelper.getRemainingDaysInWeek(),
-    };
+    const cardioScore = cardioMetrics.score;
+    const strengthScore = strengthMetrics.score;
+    const totalScore = Math.round((cardioScore + strengthScore) / 2);
 
     const achievements = {
       cardio: cardioMetrics.whoAchieved,
       strength: strengthMetrics.whoAchieved,
-      both: cardioMetrics.whoAchieved && strengthMetrics.whoAchieved,
+      both: cardioMetrics.whoAchieved && strengthMetrics.whoAchieved
     };
-    const healthMessage = this.messageGenerator.generate(totalScore, achievements);
-    const detailedMessage = this.messageGenerator.generateDetailed({
-      score: { total: totalScore },
-      achievements,
-      metrics: { cardio: cardioMetrics.details, strength: strengthMetrics.details },
-      summary: weekSummary,
-    });
-    const recommendations = this.recommendationEngine.generate(cardioMetrics, strengthMetrics);
 
-    const statistics = {
-      cardio: this.cardioCalculator.getStatistics(cardioMetrics),
-      strength: this.strengthCalculator.getStatistics(strengthMetrics),
-    };
+    const healthMessage = this.generateHealthMessage(achievements);
+    const recommendations = this.generateRecommendations(
+      cardioMetrics,
+      strengthMetrics
+    );
+
     return {
-      version: this.version,
-      calculatedAt: new Date().toISOString(),
-      targetWeek: {
-        start: weekBounds.startString,
-        end: weekBounds.endString,
-        isoWeek: weekInfo.isoWeek,
-        year: weekInfo.year,
-      },
       score: {
         total: totalScore,
-        cardio: cardioMetrics.score,
-        strength: strengthMetrics.score,
-        breakdown: scoreBreakdown,
-        level: this.scoreCalculator.getScoreLevel(totalScore),
+        cardio: cardioScore,
+        strength: strengthScore
       },
       metrics: {
         cardio: cardioMetrics.details,
-        strength: strengthMetrics.details,
+        strength: strengthMetrics.details
       },
-      statistics,
       achievements,
-      summary: weekSummary,
       healthMessage,
-      detailedMessage,
       recommendations,
+      version: '1.0.0-mvp'
     };
   }
 
   /**
-   * 簡易版：スコアのみを計算
-   * @param {Array} workouts - ワークアウトデータの配列
-   * @param {Date} targetDate - 計算対象日
-   * @returns {Number} 総合スコア
+   * シンプルな健康メッセージ生成
    */
-  calculateScoreOnly(workouts, targetDate = new Date()) {
-    const weeklyWorkouts = DateHelper.filterWeeklyWorkouts(workouts, targetDate);
-    const cardioMetrics = this.cardioCalculator.calculate(weeklyWorkouts);
-    const strengthMetrics = this.strengthCalculator.calculate(weeklyWorkouts);
-    return this.scoreCalculator.calculateTotal(cardioMetrics, strengthMetrics);
+  generateHealthMessage(achievements) {
+    if (achievements.both) {
+      return 'WHO推奨完全達成：総死亡リスク40%減';
+    }
+    if (achievements.cardio) {
+      return 'WHO有酸素推奨達成：心疾患リスク30%減';
+    }
+    if (achievements.strength) {
+      return 'WHO筋力推奨達成：サルコペニア予防効果';
+    }
+    return '運動習慣を増やしましょう：週150分の運動で健康改善';
   }
 
   /**
-   * メトリクスのみを計算（UIでの即時フィードバック用）
-   * @param {Array} workouts - ワークアウトデータの配列
-   * @param {String} type - 'cardio' or 'strength'
-   * @returns {Object} メトリクス
+   * 推奨事項生成
    */
-  calculateMetricsOnly(workouts, type) {
-    if (type === 'cardio') {
-      return this.cardioCalculator.calculate(workouts);
-    } else if (type === 'strength') {
-      return this.strengthCalculator.calculate(workouts);
+  generateRecommendations(cardioMetrics, strengthMetrics) {
+    const recommendations = [];
+
+    if (!cardioMetrics.whoAchieved) {
+      const shortage = 150 - cardioMetrics.details.weeklyMinutes;
+      if (shortage > 0) {
+        recommendations.push(
+          `有酸素運動をあと週${shortage}分追加でWHO推奨達成`
+        );
+      }
     }
-    throw new Error(`Invalid type: ${type}. Must be 'cardio' or 'strength'`);
+
+    if (!strengthMetrics.whoAchieved) {
+      const daysNeeded = 2 - strengthMetrics.details.weeklyDays;
+      if (daysNeeded > 0) {
+        recommendations.push(
+          `筋力トレーニングをあと週${daysNeeded}日追加でWHO推奨達成`
+        );
+      }
+    }
+
+    if (cardioMetrics.whoAchieved && strengthMetrics.whoAchieved) {
+      recommendations.push('素晴らしい！この習慣を維持しましょう');
+    }
+
+    return recommendations.slice(0, 3);
   }
 }
 
