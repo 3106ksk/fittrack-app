@@ -5,12 +5,12 @@ const helmet = require('helmet');
 const authRouter = require('./routes/authRoutes');
 const workouts = require('./routes/workouts');
 const stravaRoutes = require('./routes/stravaRoutes');
+const insightsRoutes = require('./routes/insightRoutes');
 
 const getCorsConfig = () => {
   const currentEnv = process.env.NODE_ENV || 'development';
   const isProduction = currentEnv === 'production';
   const isDockerEnvironment = process.env.DOCKER_ENV === 'true';
-
 
   const getAllowedOrigins = () => {
     if (isProduction) {
@@ -53,7 +53,6 @@ const getCorsConfig = () => {
 app.use(helmet());
 app.use(cors(getCorsConfig()));
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -72,6 +71,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/authrouter', authRouter);
 app.use('/workouts', workouts);
 app.use('/api/strava', stravaRoutes);
+app.use('/api/insights', insightsRoutes);
 
 app.use((err, _req, res, _next) => {
   if (err.name === 'UnauthorizedError') {

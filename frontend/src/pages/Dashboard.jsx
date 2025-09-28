@@ -478,6 +478,9 @@ const DashboardPage = () => {
         </Paper>
       </Fade>
 
+      {/* 健康スコアカード - 開発中 */}
+      {/* TODO: HealthScoreCardを再実装予定 */}
+
       {/* アクションセクション */}
       <Box
         sx={{
