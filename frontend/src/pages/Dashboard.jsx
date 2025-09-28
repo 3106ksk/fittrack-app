@@ -1,5 +1,4 @@
 import {
-  AutoAwesome as AutoAwesomeIcon,
   CalendarMonth as CalendarIcon,
   CloudSync as CloudSyncIcon,
   LightMode as DayIcon,
@@ -24,17 +23,17 @@ import {
   Container,
   Fade,
   Grid,
-  LinearProgress,
   Paper,
   Typography,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import FeedbackButton from '../components/FeedbackButton';
 import { useAuth } from '../components/Hook';
+import HealthScoreCard from '../components/insights/HealthScoreCard';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import StravaConnect from '../components/strava/StravaConnect';
 import StravaSync from '../components/strava/StravaSync';
-import FeedbackButton from '../components/FeedbackButton';
 import apiClient from '../services/api';
 import { calculateDashboardWeeklyStats } from '../services/StatisticsService';
 
@@ -415,71 +414,15 @@ const DashboardPage = () => {
                   ))}
                 </Grid>
               </Grid>
-
-              {/* プログレスバー */}
-              <Grid item xs={12}>
-                <Fade in={true} timeout={1600}>
-                  <Box
-                    sx={{
-                      bgcolor: 'rgba(255,255,255,0.15)',
-                      borderRadius: 2,
-                      p: 1,
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <AutoAwesomeIcon
-                        sx={{ fontSize: 14, mr: 0.5, color: 'white' }}
-                      />
-                      <Typography
-                        variant="body2"
-                        fontWeight="bold"
-                        sx={{ color: 'white' }}
-                      >
-                        設定目標(🛠️👷開発中)
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ ml: 'auto', fontWeight: 'bold', color: 'white' }}
-                      >
-                        {Math.round(weeklyGoalProgress)}%
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={weeklyGoalProgress}
-                      sx={{
-                        height: 6,
-                        borderRadius: 4,
-                        bgcolor: 'rgba(255,255,255,0.2)',
-                        '& .MuiLinearProgress-bar': {
-                          borderRadius: 4,
-                          bgcolor: 'rgba(255,255,255,0.9)',
-                        },
-                      }}
-                    />
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: 'rgba(255,255,255,0.9)',
-                        mt: 1,
-                        display: 'block',
-                      }}
-                    >
-                      あと{Math.max(5 - weeklyStats.weeklyWorkouts, 0)}
-                      回で次のマイルストーン達成！
-                    </Typography>
-                  </Box>
-                </Fade>
-              </Grid>
             </Grid>
           </CardContent>
         </Paper>
       </Fade>
 
-      {/* 健康スコアカード - 開発中 */}
-      {/* TODO: HealthScoreCardを再実装予定 */}
+      {/* 健康スコアカード */}
+      <Box sx={{ mb: 2 }}>
+        <HealthScoreCard />
+      </Box>
 
       {/* アクションセクション */}
       <Box
