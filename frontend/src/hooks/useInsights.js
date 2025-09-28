@@ -2,7 +2,6 @@
  * useInsights カスタムフック
  *
  * Insights APIとの連携を担当するカスタムフック
- * 現在はモックデータを使用した実装
  *
  * @returns {Object} data - インサイトデータ
  * @returns {boolean} loading - ローディング状態
@@ -23,8 +22,6 @@ export const useInsights = () => {
       setLoading(true);
       setError(null);
       const response = await apiClient.get('/api/insights/current');
-      console.log('🚧/api/insights/current🚧', response.data);
-
       setData(response.data);
     } catch (err) {
       setError(err.message || 'データの取得に失敗しました');

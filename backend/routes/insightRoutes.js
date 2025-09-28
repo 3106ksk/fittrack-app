@@ -26,35 +26,32 @@ router.get('/current', authMiddleware, async (req, res) => {
   const weekBounds = DateHelper.getWeekBounds(new Date());
 
   try {
-    // Insightテーブルから既存データを検索
-    let insight = await Insight.findOne({
-      where: { userId, date: today },
+    // 最新のワークアウトデータを取得
+    const workouts = await Workout.findAll({
+      where: {
+        userID: userId,
+        date: { [Op.between]: [weekBounds.startString, weekBounds.endString] },
+      },
     });
 
-    // データがなければ新規計算
-    if (!insight) {
-      const workouts = await Workout.findAll({
-        where: {
-          userID: userId,
-          date: { [Op.between]: [weekBounds.startString, weekBounds.endString] },
-        },
-      });
+    const result = engine.calculateWeeklyInsight(workouts);
 
-      const result = engine.calculateWeeklyInsight(workouts);
-
-      insight = await Insight.create({
-        userId,
-        date: today,
-        totalScore: result.score.total,
-        cardioScore: result.score.cardio,
-        strengthScore: result.score.strength,
-        whoCardioAchieved: result.achievements.cardio,
-        whoStrengthAchieved: result.achievements.strength,
-        metrics: result.metrics,
-        healthMessage: result.healthMessage,
-        recommendations: result.recommendations,
-      });
-    }
+    // 既存レコードを更新または新規作成
+    const [insight] = await Insight.upsert({
+      userId,
+      date: today,
+      totalScore: result.score.total,
+      cardioScore: result.score.cardio,
+      strengthScore: result.score.strength,
+      whoCardioAchieved: result.achievements.cardio,
+      whoStrengthAchieved: result.achievements.strength,
+      metrics: result.metrics,
+      healthMessage: result.healthMessage,
+      recommendations: result.recommendations,
+    }, {
+      where: { userId, date: today },
+      returning: true,
+    });
 
     // レスポンス整形
     const response = {
@@ -73,14 +70,11 @@ router.get('/current', authMiddleware, async (req, res) => {
       healthMessage: insight.healthMessage || '運動習慣を増やしましょう',
       recommendations: insight.recommendations || [],
     };
-    console.log('🚧DBフェッチ結果🚧', response);
     res.json(response);
   } catch (error) {
     console.error('Error in /insights/current:', error);
     res.status(500).json({ error: 'データ取得中にエラーが発生しました' });
   }
 });
-
-// TODO: 他のエンドポイント（weekly, calculate）を実装
 
 module.exports = router;

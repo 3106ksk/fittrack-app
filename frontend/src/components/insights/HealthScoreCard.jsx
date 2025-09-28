@@ -132,13 +132,11 @@ const HealthScoreCard = () => {
             </Box>
 
             {/* WHO達成状況 */}
-            {/* ステップ1: データの存在確認 */}
             <Box sx={{ mb: 2 }}>
               <Typography variant="subtitle2" gutterBottom>
                 WHO推奨達成状況
               </Typography>
 
-              {/* ステップ3: アイコンと条件付きスタイル */}
               {data.whoCompliance && (
                 <Grid container spacing={1}>
                   {/* 有酸素運動 */}

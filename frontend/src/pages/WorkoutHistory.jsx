@@ -26,7 +26,6 @@ const WorkoutHistory = () => {
     const fetchWorkouts = async () => {
       try {
         setLoading(true);
-        console.log('📅 ワークアウト履歴を取得中...');
         const response = await apiClient.get('/workouts');
         const transformedData = transformWorkoutData(response.data);
         setWorkouts(transformedData);
