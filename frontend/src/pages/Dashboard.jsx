@@ -112,11 +112,6 @@ const DashboardPage = () => {
     return calculateDashboardWeeklyStats(workouts);
   }, [workouts]);
 
-  // 週間目標の進捗率（週5回を目標）
-  const weeklyGoalProgress = Math.min(
-    (weeklyStats.weeklyWorkouts / 5) * 100,
-    100
-  );
 
   // クイックスタットデータ（前週比較付き）
   const quickStats = [

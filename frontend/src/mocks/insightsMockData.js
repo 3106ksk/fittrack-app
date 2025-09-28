@@ -14,7 +14,7 @@ export const mockCurrentInsightResponse = {
     cardio: {
       weeklyMinutes: 165,
       targetMinutes: 150,
-      achievementRate: 110,
+      achievementRate: 100,
       workoutCount: 4,
     },
     strength: {
