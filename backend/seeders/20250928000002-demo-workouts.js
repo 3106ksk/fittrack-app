@@ -13,6 +13,7 @@ module.exports = {
 
     return queryInterface.bulkInsert('workouts', [
       // User 1 - demo_user (週150分の有酸素運動と週2回の筋トレでWHO基準を満たす)
+      // Bug #2検証用: 同日に同じエクササイズを複数回実施
       {
         "userID": 1,
         date: today,
@@ -28,8 +29,26 @@ module.exports = {
         source: 'manual',
         raw_data: null,
         synced_at: null,
-        createdAt: now,
-        updatedAt: now
+        createdAt: new Date(now.getTime() - 10000), // 朝のランニング
+        updatedAt: new Date(now.getTime() - 10000)
+      },
+      {
+        "userID": 1,
+        date: today,
+        exercise: 'ランニング', // 同じ日に2回目のランニング
+        exerciseType: 'cardio',
+        sets: null,
+        reps: null,
+        repsDetail: null,
+        distance: 3,
+        duration: 20,
+        intensity: '中',
+        external_id: null,
+        source: 'manual',
+        raw_data: null,
+        synced_at: null,
+        createdAt: new Date(now.getTime() - 5000), // 夕方のランニング
+        updatedAt: new Date(now.getTime() - 5000)
       },
       {
         "userID": 1,
@@ -42,6 +61,24 @@ module.exports = {
         distance: null,
         duration: null,
         intensity: '中',
+        external_id: null,
+        source: 'manual',
+        raw_data: null,
+        synced_at: null,
+        createdAt: new Date(now.getTime() - 3000),
+        updatedAt: new Date(now.getTime() - 3000)
+      },
+      {
+        "userID": 1,
+        date: today,
+        exercise: '腕立て伏せ', // 同じ日に2回目の腕立て伏せ
+        exerciseType: 'strength',
+        sets: 2,
+        reps: 20,
+        repsDetail: JSON.stringify([{"setNumber": 1, "reps": 10}, {"setNumber": 2, "reps": 10}]),
+        distance: null,
+        duration: null,
+        intensity: '低',
         external_id: null,
         source: 'manual',
         raw_data: null,

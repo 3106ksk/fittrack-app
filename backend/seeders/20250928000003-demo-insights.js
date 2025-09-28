@@ -13,6 +13,7 @@ module.exports = {
 
     return queryInterface.bulkInsert('insights', [
       // User 1 - demo_user (WHO基準達成)
+      // Bug #2検証用: このデータは初回計算時のもの（同日複数ワークアウトが反映されていない状態）
       {
         user_id: 1,
         date: today,
@@ -28,7 +29,7 @@ module.exports = {
             achievementRate: 103,
             workoutCount: 5,
             byDay: {
-              [today]: 30,
+              [today]: 30, // 本来は50分（30+20）になるべきだが、初回のみ反映
               [yesterday]: 40,
               [threeDaysAgo]: 30,
               [fourDaysAgo]: 30,
@@ -43,14 +44,14 @@ module.exports = {
             totalSets: 7,
             totalReps: 70,
             byDay: {
-              [today]: { sets: 3, reps: 30 },
+              [today]: { sets: 3, reps: 30 }, // 本来はsets:5, reps:50になるべき
               [twoDaysAgo]: { sets: 4, reps: 40 }
             }
           }
         }),
         calculation_version: '1.0.0',
-        createdAt: now,
-        updatedAt: now
+        createdAt: new Date(now.getTime() - 20000), // 古いタイムスタンプで作成
+        updatedAt: new Date(now.getTime() - 20000)  // 更新されていない状態
       },
       {
         user_id: 1,

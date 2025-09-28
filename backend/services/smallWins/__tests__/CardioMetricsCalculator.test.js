@@ -41,6 +41,7 @@ describe('CardioMetricsCalculator', () => {
       ];
 
       const result = calculator.calculate(workouts);
+      console.log(result);
 
       // 期待値の検証
       expect(result.score).toBe(100);

@@ -14,7 +14,10 @@
     "migrate:undo": "npx sequelize-cli db:migrate:undo",
     "seed": "npx sequelize-cli db:seed:all",
     "seed:prod": "NODE_ENV=production npx sequelize-cli db:seed:all",
-    "seed:dev": "NODE_ENV=development npx sequelize-cli db:seed:all"
+    "seed:dev": "NODE_ENV=development npx sequelize-cli db:seed:all",
+    "seed:undo": "npx sequelize-cli db:seed:undo:all",
+    "db:reset": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all",
+    "db:reset:docker": "npm run migrate:undo && npm run migrate && npm run seed"
   },
   "keywords": [],
   "author": "",
