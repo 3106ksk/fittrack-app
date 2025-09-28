@@ -28,7 +28,7 @@ router.get('/current', authMiddleware, async (req, res) => {
   try {
     // Insightテーブルから既存データを検索
     let insight = await Insight.findOne({
-      where: { userId, date: today }
+      where: { userId, date: today },
     });
 
     // データがなければ新規計算
@@ -36,8 +36,8 @@ router.get('/current', authMiddleware, async (req, res) => {
       const workouts = await Workout.findAll({
         where: {
           userID: userId,
-          date: { [Op.between]: [weekBounds.startString, weekBounds.endString] }
-        }
+          date: { [Op.between]: [weekBounds.startString, weekBounds.endString] },
+        },
       });
 
       const result = engine.calculateWeeklyInsight(workouts);
@@ -52,7 +52,7 @@ router.get('/current', authMiddleware, async (req, res) => {
         whoStrengthAchieved: result.achievements.strength,
         metrics: result.metrics,
         healthMessage: result.healthMessage,
-        recommendations: result.recommendations
+        recommendations: result.recommendations,
       });
     }
 
@@ -62,20 +62,19 @@ router.get('/current', authMiddleware, async (req, res) => {
       scores: {
         total: insight.totalScore,
         cardio: insight.cardioScore,
-        strength: insight.strengthScore
+        strength: insight.strengthScore,
       },
       whoCompliance: {
         cardio: insight.whoCardioAchieved,
         strength: insight.whoStrengthAchieved,
-        combined: insight.whoCardioAchieved && insight.whoStrengthAchieved
+        combined: insight.whoCardioAchieved && insight.whoStrengthAchieved,
       },
       metrics: insight.metrics || {},
       healthMessage: insight.healthMessage || '運動習慣を増やしましょう',
-      recommendations: insight.recommendations || []
+      recommendations: insight.recommendations || [],
     };
-
+    console.log('🚧DBフェッチ結果🚧', response);
     res.json(response);
-
   } catch (error) {
     console.error('Error in /insights/current:', error);
     res.status(500).json({ error: 'データ取得中にエラーが発生しました' });

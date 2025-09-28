@@ -11,7 +11,8 @@
  */
 
 import { useEffect, useState } from 'react';
-import { mockCurrentInsightResponse } from '../mocks/insightsMockData';
+import apiClient from '../services/api';
+
 export const useInsights = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -21,15 +22,10 @@ export const useInsights = () => {
     try {
       setLoading(true);
       setError(null);
+      const response = await apiClient.get('/api/insights/current');
+      console.log('🚧/api/insights/current🚧', response.data);
 
-      // APIレスポンス時間をシミュレート（実APIでは削除）
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // TODO: 将来的には実APIに置き換える
-      // const response = await apiClient.get('/api/insights/current');
-      // setData(response.data);
-
-      setData(mockCurrentInsightResponse);
+      setData(response.data);
     } catch (err) {
       setError(err.message || 'データの取得に失敗しました');
     } finally {
