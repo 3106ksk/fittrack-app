@@ -87,7 +87,6 @@ FitStart はこれらを「健康効果の見える化」で解決します。
 ### スコアの即時更新
 
 <img src="./docs/demos/health-score-instant-update.gif" alt="運動記録後にスコアが即時更新されるデモ" width="840"><br>
-高解像度版（MP4）: <a href="./docs/demos/health-score-instant-update.mp4">再生</a>
 
 - **リアルタイム反映**：30 分ランで 72 → 75 に上昇
 - **モチベ維持**：行動 → 評価のサイクルが直感的
