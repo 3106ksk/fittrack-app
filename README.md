@@ -73,12 +73,24 @@ FitStart はこれらを「健康効果の見える化」で解決します。
 
 #### 🏥 健康スコア機能
 
-運動データを WHO 基準の健康指標に変換し、エビデンスベースのフィードバックを提供。単なる記録から「健康改善の見える化」へ。
+## デモ
 
-| 操作デモ                                                         | 説明                                                                                                                                      |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| ![健康スコア概要](./docs/demos/health-score-overview.gif)        | **総合健康スコアの可視化**<br>75/100 点の総合評価と有酸素・筋力の個別スコア表示。<br>WHO 推奨運動量の達成状況を一目で確認                 |
-| ![スコア即時更新](./docs/demos/health-score-instant-update.gif)  | **運動記録 → スコアの即時反映**<br>30 分のランニング記録で健康スコアが 72→75 点に上昇。<br>リアルタイムフィードバックでモチベーション維持 |
+### 健康スコア概要
+
+<img src="./docs/demos/health-score-overview.gif" alt="健康スコアの概要ダッシュボードのデモ" width="840"><br>
+
+- **総合健康スコアの可視化**：有酸素・筋力スコアを個別表示
+- **WHO 準拠**：推奨運動量の達成状況をひと目で確認
+
+---
+
+### スコアの即時更新
+
+<img src="./docs/demos/health-score-instant-update.gif" alt="運動記録後にスコアが即時更新されるデモ" width="840"><br>
+高解像度版（MP4）: <a href="./docs/demos/health-score-instant-update.mp4">再生</a>
+
+- **リアルタイム反映**：30 分ランで 72 → 75 に上昇
+- **モチベ維持**：行動 → 評価のサイクルが直感的
 
 **主な特徴:**
 
@@ -86,9 +98,9 @@ FitStart はこれらを「健康効果の見える化」で解決します。
 - 📊 **3 つのスコア体系**: 総合スコア（100 点満点）、有酸素スコア、筋力スコア
 
 **科学的根拠:**
-- [WHO身体活動・座位行動ガイドライン 2020](https://www.who.int/publications/i/item/9789240015128)
-- [Physical Activity Guidelines for Americans, 2nd edition](https://health.gov/our-work/nutrition-physical-activity/physical-activity-guidelines)
-- 📚 **[詳細な実装根拠とアルゴリズム解説](./docs/health-score-references.md)** - 健康効果の数値化手法、参照論文一覧
+
+- [WHO 身体活動・座位行動ガイドライン 2020](https://www.who.int/publications/i/item/9789240015128)
+- 📚 **[詳細な実装根拠とアルゴリズム解説](./docs/features/health-score/research/scientific-references.md)** - 健康効果の数値化手法、参照論文一覧
 
 <br>
 
@@ -224,25 +236,6 @@ PostgreSQL を選択した理由は、複雑なワークアウトデータ（配
 ![ER Diagram](docs/erd.svg)
 
 ````
-
-<br>
-
-### **🧪 テスト実行**
-
-```bash
-# フロントエンドテスト
-cd frontend
-npm run test              # 基本テスト実行
-npm run test:ui           # UI付きテスト実行
-npm run test:coverage     # カバレッジ付きテスト
-
-# バックエンドテスト
-cd backend
-npm run test              # 基本テスト実行
-npm run test:coverage     # カバレッジ付きテスト
-````
-
-<br>
 
 ---
 
@@ -397,3 +390,4 @@ curl -X POST http://localhost:8000/workouts \
 <br>
 
 ---
+````
