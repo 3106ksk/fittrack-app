@@ -14,7 +14,8 @@ import {
   Chip,
   CircularProgress,
   Divider,
-  Typography
+  Typography,
+  Paper
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import apiClient from '../../services/api';
@@ -141,8 +142,26 @@ const StravaConnect = ({ onStatusChange }) => {
       <CardContent>
         <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
           <StravaIcon sx={{ mr: 1, color: '#FC4C02' }} />
-          Strava連携
+          Strava連携（準備中）
         </Typography>
+
+        <Paper
+          sx={{
+            bgcolor: 'info.lighter',
+            p: 1.5,
+            mb: 2,
+            borderLeft: '4px solid',
+            borderColor: 'info.main',
+            backgroundColor: 'rgba(25, 118, 210, 0.08)'
+          }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: 500, mb: 0.5 }}>
+            現在は<strong>テスト枠（接続1名）</strong>で動作検証中です。
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            審査通過後に複数ユーザー向けに解放します。
+          </Typography>
+        </Paper>
 
         {connectionState.error && (
           <Alert severity="error" sx={{ mb: 2 }}>
