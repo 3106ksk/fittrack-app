@@ -63,16 +63,14 @@ const Navbar = () => {
             sx={{ mr: 1, color: 'primary.main', fontSize: 40 }}
           />
           <Typography
-            v
-            ariant="h6"
-            componet="div"
+            variant="h6"
+            component={Link}
+            to={user ? '/' : '/login'}
             sx={{
               fontWeight: 'bold',
               color: 'primary.main',
               textDecoration: 'none',
             }}
-            component={Link}
-            to={user ? '/' : '/login'}
           >
             FitStart
           </Typography>
