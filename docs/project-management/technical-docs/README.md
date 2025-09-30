@@ -7,6 +7,9 @@ FitTrackプロジェクトの技術文書を管理するディレクトリです
 ```
 technical-docs/
 ├── README.md              # このファイル
+├── infrastructure/       # インフラ・環境構築
+│   ├── DOCKER_ANALYSIS.md         # Docker環境分析
+│   └── DOCKER_IMPLEMENTATION_GUIDE.md # Docker実装ガイド
 ├── security/             # セキュリティ関連文書
 │   ├── FitTrack_Project_Analysis_Helmet_CORS.md
 │   └── JWT_CORS_Enhancement_Requirements.md
@@ -14,6 +17,20 @@ technical-docs/
     ├── active/          # 進行中のリファクタリング
     └── archived/        # 完了したリファクタリング
 ```
+
+## 🏗️ Infrastructure Documents
+
+### Docker環境構築
+| ドキュメント | 説明 | ステータス |
+|------------|------|----------|
+| [Docker環境分析](./infrastructure/DOCKER_ANALYSIS.md) | Docker化のための包括的分析 | ✅ 完了 |
+| [Docker実装ガイド](./infrastructure/DOCKER_IMPLEMENTATION_GUIDE.md) | 段階的実装手順 | 🔄 実装中 |
+
+### インフラチェックリスト
+- ✅ Docker Compose設定
+- 🔄 開発環境の最適化
+- 📋 本番環境デプロイ設定
+- 📋 CI/CDパイプライン統合
 
 ## 🔒 Security Documents
 
