@@ -28,6 +28,7 @@ const FormConfigDrawer = ({
   isCardioExercise,
   updateExercises,
   updateMaxSets,
+  onConfigSave,
 }) => {
 
   const [localConfig, setLocalConfig] = useState({
@@ -67,16 +68,48 @@ const FormConfigDrawer = ({
       alert('最低1つの種目を選択してください');
       return;
     }
-    updateExercises(localConfig.exercises);
-    updateMaxSets(localConfig.maxSets);
-    onClose();
+
+    // 設定が実際に変更されたか確認
+    const hasExerciseChanged =
+      JSON.stringify(localConfig.exercises) !==
+      JSON.stringify(workoutConfig.exercises);
+    const hasMaxSetsChanged = localConfig.maxSets !== workoutConfig.maxSets;
+
+    if (hasExerciseChanged || hasMaxSetsChanged) {
+      // 変更がある場合のみ確認ダイアログを表示
+      if (window.confirm('設定を変更すると、入力中のフォームがリセットされます。続行しますか？')) {
+        updateExercises(localConfig.exercises);
+        updateMaxSets(localConfig.maxSets);
+
+        // 親コンポーネントに設定変更を通知
+        if (onConfigSave) {
+          onConfigSave();
+        }
+
+        onClose();
+      }
+    } else {
+      // 変更がない場合はそのまま閉じる
+      onClose();
+    }
+  };
+
+  const handleMaxSetsChange = (event, value) => {
+    // 最大セット数を更新
+    setLocalConfig(prev => ({
+      ...prev,
+      maxSets: value,
+    }));
   };
 
   const handleCancel = () => {
+    // ローカル設定を元の設定にリセット
     setLocalConfig({
-      exercises:workoutConfig.exercises,
-      maxSets:workoutConfig.maxSets
-    })
+      exercises: workoutConfig.exercises,
+      maxSets: workoutConfig.maxSets,
+    });
+
+    // ドロワーを閉じる
     onClose();
   };
 
@@ -172,10 +205,7 @@ const FormConfigDrawer = ({
             </Typography>
             <Slider
               value={localConfig.maxSets}
-              onChange={(event, value) => setLocalConfig(prev => ({
-                ...prev,
-                maxSets: value
-              }))}
+              onChange={handleMaxSetsChange}
               min={1}
               max={5}
               step={1}

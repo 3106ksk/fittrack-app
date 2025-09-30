@@ -42,18 +42,27 @@ const WorkoutForm = () => {
     handleSubmit,
     reset,
     formState: { errors },
-    setValue,
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: generateDefaultValues(workoutConfig),
   });
 
+  // 設定変更時のリセット用state
+  const [shouldResetForm, setShouldResetForm] = useState(false);
+
+  // 設定変更時のコールバック
+  const handleConfigSave = () => {
+    setShouldResetForm(true);
+  };
+
+  // 設定変更時のリセット処理
   useEffect(() => {
-    const newDefaults = generateDefaultValues(workoutConfig);
-    Object.keys(newDefaults).forEach(key => {
-      setValue(key, newDefaults[key]);
-    });
-  }, [workoutConfig, setValue]);
+    if (shouldResetForm) {
+      const newDefaults = generateDefaultValues(workoutConfig);
+      reset(newDefaults);
+      setShouldResetForm(false);
+    }
+  }, [shouldResetForm, workoutConfig, reset]);
 
   const { handleSubmit: submitWorkout } = useWorkoutSubmit({
     workoutConfig,
@@ -177,6 +186,7 @@ const WorkoutForm = () => {
         isCardioExercise={isCardioExercise}
         updateExercises={updateExercises}
         updateMaxSets={updateMaxSets}
+        onConfigSave={handleConfigSave}
       />
     </>
   );
