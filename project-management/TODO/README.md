@@ -7,11 +7,15 @@ FitTrackプロジェクトの課題を優先度別に管理するディレクト
 ```
 TODO/
 ├── README.md                      # このファイル（インデックス）
+├── phase1-tasks.md                # 📌 Phase 1: コア機能改善タスク（NEW）
 ├── priority-high-bugs.md          # 🔴 高優先度のバグ
 ├── priority-medium-improvements.md # 🟡 中優先度の改善
 ├── priority-low-features.md       # 🟢 低優先度の新機能
 └── learning-research.md           # 📚 学習・調査項目
 ```
+
+**注**: Phase 1タスクは医療データ拡張ロードマップの一環として管理されます。
+詳細は [医療データ拡張ロードマップ](../ROADMAP_MEDICAL_EXPANSION.md) を参照。
 
 ## 📊 現在のステータス
 
@@ -25,11 +29,18 @@ TODO/
 | 📚 - | [学習項目](./learning-research.md) | 15 | 1 | 14 | 0 |
 | **合計** | - | **37** | **3** | **33** | **0** |
 
-### 今週のフォーカス
+### 今週のフォーカス（Phase 1 Week 1）
 
-1. 🔴 **新規登録後のナビゲーション問題** - 原因分析完了、実装待ち
-2. 🔴 **ワークアウトフォームリセット** - 部分修正済み、完全修正が必要
-3. 🟡 **ESLint警告の解消** - コード品質向上のため
+**📌 医療データ拡張ロードマップ Phase 1 開始**
+
+1. 📌 **ワークヒストリー統合** - Pattern C改良版の実装（[詳細](./phase1-tasks.md#week-1)）
+2. 🔴 **全バグ修正** - 4件のバグを順次解決
+3. 🔒 **セキュリティ基盤** - CSP, Rate Limiting, 監査ログ
+
+**今週の具体的タスク**:
+- [ ] `backend/routes/workouts.js:247` に `createdAt` 追加
+- [ ] `RecentWorkoutsList.jsx` コンポーネント作成
+- [ ] Dashboard統合 + 旧コンポーネント削除（800行削減）
 
 ## 🎯 優先度の定義
 
@@ -94,11 +105,15 @@ TODO/
 ## 🔗 関連ドキュメント
 
 ### プロジェクト管理
-- [開発ロードマップ](../ROADMAP.md) - 長期計画
+- [医療データ拡張ロードマップ](../ROADMAP_MEDICAL_EXPANSION.md) - **NEW: 4ヶ月計画**
+- [開発ロードマップ（旧）](../ROADMAP.md) - 長期計画（参考）
+- [Phase 1 タスク](./phase1-tasks.md) - **NEW: 詳細タスク一覧**
 - [バグ詳細](../bugs/) - 個別バグの詳細情報
 - [解決済みバグ](../resolved-bugs/) - 過去の問題と解決策
 
 ### 技術資料
+- [Phase 1 要件定義書](../features/phase1-core-improvements/requirements.md) - **NEW**
+- [Phase 1 設計書](../features/phase1-core-improvements/design.md) - **NEW**
 - [機能仕様](../features/) - 機能別の設計書
 - [技術文書](../technical-docs/) - セキュリティ、リファクタリング
 
@@ -130,10 +145,12 @@ TODO/
 
 ## 🔄 更新履歴
 
+- 2025-10-09: 医療データ拡張ロードマップ Phase 1 開始
+- 2025-10-09: phase1-tasks.md 追加、関連ドキュメント整備
 - 2025-01-30: TODO管理を優先度別ファイルに分割
 - 2025-01-30: 旧TODO.mdから移行完了
 
 ---
 
-**最終更新**: 2025-01-30
-**次回レビュー**: 2025-02-06
+**最終更新**: 2025-10-09
+**次回レビュー**: 2025-10-15（Phase 1 Week 2完了時）
