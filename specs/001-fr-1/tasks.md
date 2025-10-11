@@ -203,7 +203,7 @@ export const formatWorkoutDetails = (workout) => {
 ### T004: [US1] [P] RecentWorkoutsAccordion コンポーネント作成
 
 **Priority**: P0
-**File**: `frontend/src/components/RecentWorkoutsAccordion.jsx` (新規作成)
+**File**: `frontend/src/components/Dashboard/RecentWorkoutsAccordion.jsx` (新規作成)
 **Estimated Time**: 2時間
 
 **Description**:
@@ -280,16 +280,18 @@ export default RecentWorkoutsAccordion;
 ```
 
 **Acceptance Criteria**:
-- [ ] Accordion がデフォルトで閉じている
-- [ ] クリックで展開・折りたたみが切り替わる
-- [ ] 直近10件のワークアウトが表示される
-- [ ] 日付ごとにグループ化されている
-- [ ] 同日複数回トレーニング時に時刻 (HH:mm) が表示される
-- [ ] 0件の場合、「まだワークアウト記録がありません」と表示される
+- [X] Accordion がデフォルトで閉じている
+- [X] クリックで展開・折りたたみが切り替わる
+- [X] 直近10件のワークアウトが表示される
+- [X] 日付ごとにグループ化されている
+- [X] 同日複数回トレーニング時に時刻 (HH:mm) が表示される
+- [X] 0件の場合、「まだワークアウト記録がありません」と表示される
 
 **Dependencies**: T003
 
 **Parallel**: T003と並行可能（別ファイル）
+
+**Status**: ✅ COMPLETED (2025-01-11)
 
 ---
 
@@ -328,12 +330,14 @@ import RecentWorkoutsAccordion from '../components/RecentWorkoutsAccordion';
 ```
 
 **Acceptance Criteria**:
-- [ ] Dashboard に Accordion が表示される
-- [ ] Accordion は「今週のアクティビティ」の下に配置される
-- [ ] workouts データが正しく渡される
-- [ ] ビルドエラーなし
+- [X] Dashboard に Accordion が表示される
+- [X] Accordion は健康スコアカードの下に配置される
+- [X] workouts データが正しく渡される
+- [X] ビルドエラーなし
 
 **Dependencies**: T004
+
+**Status**: ✅ COMPLETED (2025-01-11)
 
 ---
 
