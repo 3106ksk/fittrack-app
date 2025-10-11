@@ -1,15 +1,11 @@
 import {
-  CalendarMonth as CalendarIcon,
   CloudSync as CloudSyncIcon,
   LightMode as DayIcon,
-  DirectionsRun as DirectionsRunIcon,
   FitnessCenter as FitnessCenterIcon,
   HelpOutline as HelpOutlineIcon,
   History as HistoryIcon,
   WbSunny as MorningIcon,
   NightsStay as NightIcon,
-  TrendingDown as TrendingDownIcon,
-  TrendingFlat as TrendingFlatIcon,
   TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 
@@ -114,36 +110,6 @@ const DashboardPage = () => {
   }, [workouts]);
 
 
-  // クイックスタットデータ（前週比較付き）
-  const quickStats = [
-    {
-      label: '今週のワークアウト',
-      value: weeklyStats.weeklyWorkouts,
-      unit: '回',
-      icon: <CalendarIcon sx={{ fontSize: 17 }} />,
-      color: '#4CAF50',
-      previousValue: weeklyStats.previousWeek.weeklyWorkouts,
-      changeRate: weeklyStats.changeRates.workouts,
-    },
-    {
-      label: '今週のレップス回数',
-      value: weeklyStats.weeklyReps,
-      unit: '回',
-      icon: <FitnessCenterIcon sx={{ fontSize: 17 }} />,
-      color: '#2196F3',
-      previousValue: weeklyStats.previousWeek.weeklyReps,
-      changeRate: weeklyStats.changeRates.reps,
-    },
-    {
-      label: '今週の距離',
-      value: weeklyStats.weeklyDistance.toFixed(1),
-      unit: 'km',
-      icon: <DirectionsRunIcon sx={{ fontSize: 17 }} />,
-      color: '#FF5722',
-      previousValue: weeklyStats.previousWeek.weeklyDistance.toFixed(1),
-      changeRate: weeklyStats.changeRates.distance,
-    },
-  ];
 
   // Strava接続状態更新用のコールバック
   const handleStravaStatusChange = newStatus => {
@@ -271,145 +237,6 @@ const DashboardPage = () => {
                 </Box>
               </Grid>
 
-              {/* クイックスタット */}
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  {quickStats.map((stat, index) => (
-                    <Grid item xs={4} key={stat.label}>
-                      <Fade in={true} timeout={1000 + index * 200}>
-                        <Box
-                          sx={{
-                            bgcolor: '#ffffff',
-                            borderRadius: 2,
-                            p: { xs: 0.75, sm: 1 },
-                            textAlign: 'center',
-                            border: '1px solid rgba(255,255,255,0.3)',
-                            transition: 'all 0.3s ease',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                            '&:hover': {
-                              bgcolor: '#ffffff',
-                              transform: 'translateY(-2px)',
-                              boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-                            },
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              justifyContent: 'center',
-                              mb: 1,
-                              color: stat.color,
-                            }}
-                          >
-                            {stat.icon}
-                          </Box>
-                          <Typography
-                            variant="h6"
-                            fontWeight="bold"
-                            sx={{
-                              fontSize: { xs: '1.08rem', sm: '1.32rem' },
-                              mb: 0.2,
-                              color: '#212121',
-                            }}
-                          >
-                            {stat.value}
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              sx={{
-                                ml: 0.5,
-                                fontSize: { xs: '0.72rem', sm: '0.84rem' },
-                                color: '#616161',
-                              }}
-                            >
-                              {stat.unit}
-                            </Typography>
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: '#757575',
-                              fontSize: { xs: '0.66rem', sm: '0.78rem' },
-                              mb: 0.5,
-                            }}
-                          >
-                            {stat.label}
-                          </Typography>
-
-                          {/* 前週比較 */}
-                          <Box sx={{ mt: 1 }}>
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: '#9e9e9e',
-                                fontSize: { xs: '0.6rem', sm: '0.7rem' },
-                                display: 'block',
-                              }}
-                            >
-                              先週: {stat.previousValue}
-                              {stat.unit}
-                            </Typography>
-
-                            {/* 変化率表示 */}
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                mt: 0.5,
-                              }}
-                            >
-                              {stat.changeRate > 0 && (
-                                <TrendingUpIcon
-                                  sx={{
-                                    fontSize: 14,
-                                    color: '#4CAF50',
-                                    mr: 0.5,
-                                  }}
-                                />
-                              )}
-                              {stat.changeRate < 0 && (
-                                <TrendingDownIcon
-                                  sx={{
-                                    fontSize: 14,
-                                    color: '#f44336',
-                                    mr: 0.5,
-                                  }}
-                                />
-                              )}
-                              {stat.changeRate === 0 && (
-                                <TrendingFlatIcon
-                                  sx={{
-                                    fontSize: 14,
-                                    color: '#bdbdbd',
-                                    mr: 0.5,
-                                  }}
-                                />
-                              )}
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  color:
-                                    stat.changeRate > 0
-                                      ? '#4CAF50'
-                                      : stat.changeRate < 0
-                                        ? '#f44336'
-                                        : '#9e9e9e',
-                                  fontSize: { xs: '0.65rem', sm: '0.75rem' },
-                                  fontWeight: 'bold',
-                                }}
-                              >
-                                {stat.changeRate > 0 ? '+' : ''}
-                                {stat.changeRate}%
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Box>
-                      </Fade>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Grid>
             </Grid>
           </CardContent>
         </Paper>
@@ -417,7 +244,7 @@ const DashboardPage = () => {
 
       {/* 健康スコアカード */}
       <Box sx={{ mb: 2 }}>
-        <HealthScoreCard />
+        <HealthScoreCard weeklyStats={weeklyStats} />
       </Box>
 
       {/* 直近のログを見る（新規追加） */}

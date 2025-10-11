@@ -22,7 +22,7 @@ import {
 } from '@mui/material';
 import useInsights from '../../hooks/useInsights';
 
-const HealthScoreCard = () => {
+const HealthScoreCard = ({ weeklyStats }) => {
   const { data, loading, error, refetch } = useInsights();
 
   // ローディング状態
@@ -275,6 +275,43 @@ const HealthScoreCard = () => {
                 variant="outlined"
               />
             </Box>
+
+            {/* 週間サマリー（新規追加） */}
+            {weeklyStats && (
+              <Box
+                sx={{
+                  borderTop: '1px solid',
+                  borderColor: 'divider',
+                  pt: 2,
+                  mt: 3,
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: 'block', mb: 1 }}
+                >
+                  今週の運動実績
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  <Chip
+                    label={`${weeklyStats.weeklyWorkouts}回`}
+                    size="small"
+                    sx={{ bgcolor: 'grey.100' }}
+                  />
+                  <Chip
+                    label={`${weeklyStats.weeklyReps}回レップス`}
+                    size="small"
+                    sx={{ bgcolor: 'grey.100' }}
+                  />
+                  <Chip
+                    label={`${weeklyStats.weeklyDistance.toFixed(1)}km`}
+                    size="small"
+                    sx={{ bgcolor: 'grey.100' }}
+                  />
+                </Box>
+              </Box>
+            )}
           </>
         ) : (
           <Typography variant="body2" color="text.secondary">
