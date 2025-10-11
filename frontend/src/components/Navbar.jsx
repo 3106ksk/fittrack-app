@@ -1,7 +1,6 @@
 import {
   Dashboard as DashboardIcon,
   FitnessCenter as FitnessCenterIcon,
-  History as HistoryIcon,
   Logout as LogoutIcon,
   MoreVert as MoreVertIcon,
   DirectionsRun as RunIcon,
@@ -116,22 +115,6 @@ const Navbar = () => {
                   }}
                 >
                   ワークアウトフォーム
-                </Button>
-
-                {/* ワークアウト履歴 */}
-                <Button
-                  component={Link}
-                  to="/workout-history"
-                  startIcon={<HistoryIcon />}
-                  color={isActive('/workout-history') ? 'primary' : 'inherit'}
-                  sx={{
-                    fontWeight: isActive('/workout-history') ? 700 : 300,
-                    backgroundColor: isActive('/workout-history')
-                      ? 'primary.50'
-                      : 'transparent',
-                  }}
-                >
-                  ワークアウト履歴
                 </Button>
               </Box>
 
@@ -248,16 +231,6 @@ const Navbar = () => {
               <FitnessCenterIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>ワークアウト入力</ListItemText>
-          </MenuItem>
-          <MenuItem
-            component={Link}
-            to="/workout-history"
-            onClick={handleMenuClose}
-          >
-            <ListItemIcon>
-              <HistoryIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>トレーニング履歴</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem component={Link} to="/logout" onClick={handleMenuClose}>

@@ -10,7 +10,6 @@ import SplashScreen from './components/SplashScreen';
 import DashboardPage from './pages/Dashboard';
 import Register from './pages/Register';
 import WorkoutFormPage from './pages/WorkoutForm';
-import WorkoutHistory from './pages/WorkoutHistory';
 import { theme } from './theme/theme';
 
 function App() {
@@ -32,10 +31,6 @@ function App() {
           <Route
             path="/workout-form"
             element={<PrivateRoute element={<WorkoutFormPage />} />}
-          />
-          <Route
-            path="/workout-history"
-            element={<PrivateRoute element={<WorkoutHistory />} />}
           />
           <Route
             path="/signup"

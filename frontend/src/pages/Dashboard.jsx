@@ -3,7 +3,6 @@ import {
   LightMode as DayIcon,
   FitnessCenter as FitnessCenterIcon,
   HelpOutline as HelpOutlineIcon,
-  History as HistoryIcon,
   WbSunny as MorningIcon,
   NightsStay as NightIcon,
   TrendingUp as TrendingUpIcon,
@@ -24,10 +23,10 @@ import {
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import RecentWorkoutsAccordion from '../components/Dashboard/RecentWorkoutsAccordion';
 import FeedbackButton from '../components/FeedbackButton';
 import { useAuth } from '../components/Hook';
 import HealthScoreCard from '../components/insights/HealthScoreCard';
-import RecentWorkoutsAccordion from '../components/Dashboard/RecentWorkoutsAccordion';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import StravaConnect from '../components/strava/StravaConnect';
 import StravaSync from '../components/strava/StravaSync';
@@ -108,8 +107,6 @@ const DashboardPage = () => {
   const weeklyStats = useMemo(() => {
     return calculateDashboardWeeklyStats(workouts);
   }, [workouts]);
-
-
 
   // Strava接続状態更新用のコールバック
   const handleStravaStatusChange = newStatus => {
@@ -236,7 +233,6 @@ const DashboardPage = () => {
                   </Box>
                 </Box>
               </Grid>
-
             </Grid>
           </CardContent>
         </Paper>
@@ -287,32 +283,6 @@ const DashboardPage = () => {
                 }}
               >
                 ワークアウトを記録する
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                component={Link}
-                to="/workout-history"
-                variant="outlined"
-                color="primary"
-                fullWidth
-                size="large"
-                startIcon={<HistoryIcon />}
-                sx={{
-                  py: 2,
-                  borderRadius: 2,
-                  fontSize: '1.1rem',
-                  fontWeight: 'bold',
-                  borderWidth: 2,
-                  '&:hover': {
-                    borderWidth: 2,
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 8px rgba(46, 125, 50, 0.2)',
-                  },
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                ワークアウト詳細を確認
               </Button>
             </Grid>
           </Grid>
