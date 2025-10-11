@@ -189,12 +189,14 @@ export const formatWorkoutDetails = (workout) => {
 ```
 
 **Acceptance Criteria**:
-- [ ] `groupByDate` 関数が正しく日付グループ化を行う
-- [ ] 直近10件のみを処理する
-- [ ] `hasMultipleWorkoutsOnSameDay` が正しく判定する
-- [ ] `formatWorkoutDetails` がcardioとstrengthの両方を適切にフォーマット
+- [X] `groupByDate` 関数が正しく日付グループ化を行う
+- [X] 直近10件のみを処理する
+- [X] `hasMultipleWorkoutsOnSameDay` が正しく判定する
+- [X] `formatWorkoutDetails` がcardioとstrengthの両方を適切にフォーマット
 
 **Dependencies**: T002 (バックエンドAPI完成後)
+
+**Status**: ✅ COMPLETED (2025-01-11)
 
 ---
 
