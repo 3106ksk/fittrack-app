@@ -31,6 +31,7 @@ import { Link } from 'react-router-dom';
 import FeedbackButton from '../components/FeedbackButton';
 import { useAuth } from '../components/Hook';
 import HealthScoreCard from '../components/insights/HealthScoreCard';
+import RecentWorkoutsAccordion from '../components/Dashboard/RecentWorkoutsAccordion';
 import WorkoutStatistics from '../components/statistics/WorkoutStatistics';
 import StravaConnect from '../components/strava/StravaConnect';
 import StravaSync from '../components/strava/StravaSync';
@@ -417,6 +418,11 @@ const DashboardPage = () => {
       {/* 健康スコアカード */}
       <Box sx={{ mb: 2 }}>
         <HealthScoreCard />
+      </Box>
+
+      {/* 直近のログを見る（新規追加） */}
+      <Box sx={{ mb: 3 }}>
+        <RecentWorkoutsAccordion workouts={workouts} />
       </Box>
 
       {/* アクションセクション */}
