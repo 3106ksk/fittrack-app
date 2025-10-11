@@ -11,12 +11,10 @@ describe('ワークアウト機能', () => {
     await Workout.destroy({ where: {} });
     await User.destroy({ where: {} });
     testUser = await createTestUser();
-    const loginResponse = await request(app)
-      .post('/authrouter/login')
-      .send({
-        email: 'test@example.com',
-        password: 'password123'
-      });
+    const loginResponse = await request(app).post('/authrouter/login').send({
+      email: 'test@example.com',
+      password: 'password123',
+    });
     authToken = loginResponse.body.token;
   });
 
@@ -27,11 +25,7 @@ describe('ワークアウト機能', () => {
         exerciseType: 'strength',
         intensity: '中',
         setNumber: 3,
-        repsNumber: [
-          { reps: 10 },
-          { reps: 8 },
-          { reps: 6 }
-        ]
+        repsNumber: [{ reps: 10 }, { reps: 8 }, { reps: 6 }],
       };
 
       const response = await request(app)
@@ -55,7 +49,7 @@ describe('ワークアウト機能', () => {
         exerciseType: 'cardio',
         intensity: '高',
         distance: 10,
-        duration: 30
+        duration: 30,
       };
 
       const response = await request(app)
@@ -71,8 +65,59 @@ describe('ワークアウト機能', () => {
 
   describe('GET /workouts', () => {
     test('認証済みユーザーがワークアウト一覧を取得できる', async () => {
-      
       await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          exercise: 'スクワット',
+          exerciseType: 'strength',
+          intensity: '中',
+          setNumber: 1,
+          repsNumber: [{ reps: 15 }],
+        });
+
+      const response = await request(app)
+        .get('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
+
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body[0]).toHaveProperty('exercise');
+      expect(response.body[0]).toHaveProperty('exerciseType');
+    });
+
+    test('レスポンスに createdAt フィールドが含まれる', async () => {
+      await request(app)
+        .post('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          exercise: 'スクワット',
+          exerciseType: 'strength',
+          intensity: '中',
+          setNumber: 1,
+          repsNumber: [{ reps: 15 }],
+        });
+
+      const response = await request(app)
+        .get('/workouts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
+
+      expect(response.body[0]).toHaveProperty('createdAt');
+
+      // ISO 8601形式の検証（例: "2025-01-30T07:30:00.000Z"）
+      const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+      expect(response.body[0].createdAt).toMatch(iso8601Regex);
+
+      // 有効な日付であることを確認
+      const createdAtDate = new Date(response.body[0].createdAt);
+      expect(createdAtDate).toBeInstanceOf(Date);
+      expect(isNaN(createdAtDate.getTime())).toBe(false);
+    });
+
+  test('複数のワークアウトがそれぞれ異なる createdAt を持つ', async () => {
+    await request(app)
       .post('/workouts')
       .set('Authorization', `Bearer ${authToken}`)
       .send({
@@ -80,7 +125,20 @@ describe('ワークアウト機能', () => {
         exerciseType: 'strength',
         intensity: '中',
         setNumber: 1,
-        repsNumber: [{ reps: 15 }]
+        repsNumber: [{ reps: 15 }],
+      });
+
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    await request(app)
+      .post('/workouts')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        exercise: 'ベンチプレス',
+        exerciseType: 'strength',
+        intensity: '高',
+        setNumber: 3,
+        repsNumber: [{ reps: 10 }, { reps: 8 }, { reps: 6 }],
       });
 
     const response = await request(app)
@@ -88,32 +146,29 @@ describe('ワークアウト機能', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .expect(200);
 
-    expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body.length).toBeGreaterThan(0);
-    expect(response.body[0]).toHaveProperty('exercise');
-    expect(response.body[0]).toHaveProperty('exerciseType');
-    expect(response.body[0]).toHaveProperty('intensity');
+    expect(response.body).toHaveLength(2);
+
+    const createdAt1 = new Date(response.body[0].createdAt);
+    const createdAt2 = new Date(response.body[1].createdAt);
+    expect(createdAt1.getTime()).not.toBe(createdAt2.getTime());
   });
- });
+  });
 
   describe('GET /workouts- データ分離テスト', () => {
     test('ログインユーザーは自分のワークアウトのみ取得できる', async () => {
-
       const user1 = await createTestUser({
         username: 'user1',
         email: 'user1@example.com',
-        password: 'password123'
+        password: 'password123',
       });
 
-      const loginResponse1 = await request(app)
-        .post('/authrouter/login')
-        .send({
-          email: 'user1@example.com',
-          password: 'password123'
-        });
+      const loginResponse1 = await request(app).post('/authrouter/login').send({
+        email: 'user1@example.com',
+        password: 'password123',
+      });
 
       const authToken1 = loginResponse1.body.token;
-      
+
       const response1 = await request(app)
         .post('/workouts')
         .set('Authorization', `Bearer ${authToken1}`)
@@ -122,22 +177,20 @@ describe('ワークアウト機能', () => {
           exerciseType: 'strength',
           intensity: '中',
           setNumber: 1,
-          repsNumber: [{ reps: 15 }]
+          repsNumber: [{ reps: 15 }],
         })
         .expect(201);
 
       const user2 = await createTestUser({
         username: 'user2',
         email: 'user2@example.com',
-        password: 'password456'
+        password: 'password456',
       });
 
-      const loginResponse2 = await request(app)
-        .post('/authrouter/login')
-        .send({
-          email: 'user2@example.com',
-          password: 'password456'
-        });
+      const loginResponse2 = await request(app).post('/authrouter/login').send({
+        email: 'user2@example.com',
+        password: 'password456',
+      });
 
       const authToken2 = loginResponse2.body.token;
 
@@ -149,7 +202,7 @@ describe('ワークアウト機能', () => {
           exerciseType: 'cardio',
           intensity: '高',
           distance: 10,
-          duration: 30
+          duration: 30,
         })
         .expect(201);
 
@@ -158,14 +211,12 @@ describe('ワークアウト機能', () => {
         .set('Authorization', `Bearer ${authToken1}`)
         .expect(200);
 
-        expect(getResponse.body.length).toBe(1);
-        expect(getResponse.body[0].exercise).toBe('スクワット');
-        expect(getResponse.body[0].exerciseType).toBe('strength');
-        expect(getResponse.body).not.toContainEqual(
-          expect.objectContaining({exercise: 'ランニング'})
-        );
-  });
+      expect(getResponse.body.length).toBe(1);
+      expect(getResponse.body[0].exercise).toBe('スクワット');
+      expect(getResponse.body[0].exerciseType).toBe('strength');
+      expect(getResponse.body).not.toContainEqual(
+        expect.objectContaining({ exercise: 'ランニング' })
+      );
+    });
   });
 });
-
-
