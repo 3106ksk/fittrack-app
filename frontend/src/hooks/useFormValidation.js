@@ -1,9 +1,15 @@
 import { useMemo } from 'react';
 import * as yup from 'yup';
-import useWorkoutConfig from './useWorkoutConfig';
+import { EXERCISE_DATABASE, WORKOUT_TYPES } from '../data/exercises';
 
 const useFormValidation = formConfig => {
-  const { isCardioExercise } = useWorkoutConfig();
+  // Helper function to check if an exercise is cardio
+  const isCardioExercise = exerciseName => {
+    const exercise = Object.values(EXERCISE_DATABASE).find(
+      ex => ex.name === exerciseName
+    );
+    return exercise?.type === WORKOUT_TYPES.CARDIO;
+  };
 
   return useMemo(() => {
     const schemaFields = {};
@@ -31,7 +37,7 @@ const useFormValidation = formConfig => {
     schemaFields.intensity = yup.string().required('強度を選択してください');
 
     return yup.object().shape(schemaFields);
-  }, [JSON.stringify(formConfig), isCardioExercise]);
+  }, [JSON.stringify(formConfig)]);
 };
 
 export default useFormValidation;
