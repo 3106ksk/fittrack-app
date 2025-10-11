@@ -1,10 +1,10 @@
 <!--
 Sync Impact Report:
-- Version change: [TEMPLATE] → 1.0.0
-- Project initialization: FitStart Constitution created
-- Principles added: 5 core principles established
-- Templates status: ✅ All templates compatible with initial constitution
-- Follow-up: None required for initial version
+- Version change: 1.0.0 → 1.1.0 (MINOR)
+- Modified principles: III. Type Safety (TypeScript → 将来的な拡張として位置づけ)
+- Reason: 就活用ポートフォリオとして「動くサービス」を優先、現状はJavaScript実装
+- Templates status: ✅ All templates compatible
+- Follow-up: TypeScript移行時に2.0.0へMajor bump
 -->
 
 # FitStart Constitution
@@ -39,19 +39,22 @@ Sync Impact Report:
 - 個人の健康データはセンシティブ情報であり、GDPR/個人情報保護法の対象
 - 将来的な医療機関連携を見据え、初期段階から高水準のセキュリティを確保
 
-### III. Type Safety & Runtime Error Prevention
+### III. Rapid Development & Portfolio Delivery
 
-**TypeScriptによる厳格な型チェック**
+**完璧よりも動くサービスを優先 (就活用ポートフォリオ開発)**
 
-- フロントエンド: React + TypeScript (strictモード有効)
-- バックエンド: 型定義をフロントエンドと共有し、API契約を保証
-- ワークアウトデータ: 複雑な型 (セット数配列、レップ数、時間、距離) は必ず型定義
-- バリデーション: Yupスキーマをクライアント・サーバー両側で再利用
-- any型の禁止: やむを得ない場合は型アサーションで明示的に安全性を保証
+- **現状**: JavaScript (React 18 + Node.js/Express) で実装
+- **入力検証**: express-validator + Yup スキーマによるランタイムバリデーション
+- **API契約**: 手動でのフロントエンド・バックエンド間の型整合性確認
+- **将来的な拡張**: TypeScript移行を視野に入れた設計
+  - 複雑なワークアウトデータ構造は明確に定義
+  - 関数の引数・戻り値はJSDocでドキュメント化推奨
+  - Yupスキーマをクライアント・サーバー両側で再利用
 
 **根拠**:
-- ランタイムエラーによるユーザー体験の低下を防ぐ
-- フロントエンド・バックエンド間のデータ不整合を型レベルで防止
+- 就活用ポートフォリオとして「動くもの」を早く見せることが優先
+- TypeScriptは学習コストと開発速度のトレードオフを考慮し、将来の拡張として位置づけ
+- express-validatorとYupによる二重のバリデーションで実用レベルの品質を確保
 
 ### IV. Mobile-First Responsive Design
 
@@ -96,8 +99,8 @@ Sync Impact Report:
 - **Pull Request**: すべての機能追加・修正はPRを経由
 - **レビュー観点**:
   1. Constitution遵守の確認 (特にI. Evidence-Based, II. Security-First)
-  2. TypeScriptの型安全性
-  3. テストカバレッジ
+  2. 入力検証の実装 (express-validator/Yup)
+  3. テストカバレッジ (理想は80%、最低限critical pathをカバー)
   4. パフォーマンスへの影響 (useMemoの適切な使用)
 
 ### Documentation Requirements
@@ -111,22 +114,24 @@ Sync Impact Report:
 
 ### Approved Technologies
 
-- **Frontend**: React 18 + TypeScript + Vite + Material-UI
-- **Backend**: Node.js + Express + TypeScript
+- **Frontend**: React 18 + JavaScript (Vite + Material-UI)
+- **Backend**: Node.js + Express + JavaScript
 - **Database**: PostgreSQL 17 + Sequelize ORM
 - **Authentication**: JWT + bcrypt
+- **Validation**: express-validator + Yup
 - **External APIs**: Strava API (OAuth 2.0), 将来的にApple HealthKit / Google Fit
 - **Deployment**: Vercel (Frontend + Backend)
 - **CI/CD**: GitHub Actions
+- **Future Migration**: TypeScript (Phase 1-4完了後に検討)
 
 ### Prohibited Practices
 
-- ❌ any型の無秩序な使用
 - ❌ 科学的根拠のない健康効果の表示
 - ❌ 平文パスワードの保存
 - ❌ CORSの全オリジン許可 (`*`)
 - ❌ SQLインジェクション脆弱性を持つクエリ
 - ❌ 本番環境でのconsole.logの残存
+- ❌ 入力検証なしのAPI実装
 
 ## Governance
 
@@ -150,4 +155,4 @@ Sync Impact Report:
 
 本Constitutionはプロジェクトの成長とともに進化する。Phase 1-4のロードマップに応じて、医療データ連携やAI機能追加時には適宜更新を行う。
 
-**Version**: 1.0.0 | **Ratified**: 2025-10-10 | **Last Amended**: 2025-10-10
+**Version**: 1.1.0 | **Ratified**: 2025-10-10 | **Last Amended**: 2025-10-10
