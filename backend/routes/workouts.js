@@ -248,7 +248,7 @@ const formatWorkoutData = (workout) => {
     date: workout.date,
     exercise: workout.exercise,
     exerciseType: workout.exerciseType,
-    intensity: workout.intensity
+    createdAt: workout.createdAt,
   };
   if (workout.exerciseType === 'strength') {
     return {
