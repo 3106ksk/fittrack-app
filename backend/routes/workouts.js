@@ -218,7 +218,10 @@ router.get('/', authMiddleware, async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'ユーザーが見つかりません' });
     }
-    const workouts = await user.getWorkouts();
+    const workouts = await user.getWorkouts({
+      order: [['createdAt', 'DESC']],
+      limit: 100,
+    });
     const formattedWorkouts = workouts.map((workout) => formatWorkoutData(workout));
     res.json(formattedWorkouts);
   } catch (error) {
