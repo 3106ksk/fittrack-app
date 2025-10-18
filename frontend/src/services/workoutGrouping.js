@@ -5,20 +5,19 @@ import dayjs from 'dayjs';
  * @param {Array} workouts - ワークアウトの配列
  * @returns {Object} - { 'YYYY-MM-DD': [workout1, workout2, ...] }
  */
-export const groupByDate = (workouts) => {
-
+export const groupByDate = workouts => {
   const grouped = {};
 
-  workouts.slice(0, 10).forEach(workout => {
-    const dateKey = dayjs(workout.date).format('YYYY-MM-DD');
-
-    if (!grouped[dateKey]) {
-      grouped[dateKey] = [];
-    }
-
-    grouped[dateKey].push(workout);
-  });
-
+  [...workouts]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 10)
+    .forEach(workout => {
+      const dateKey = dayjs(workout.date).format('YYYY-MM-DD');
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey].push(workout);
+    });
   return grouped;
 };
 
@@ -26,7 +25,7 @@ export const groupByDate = (workouts) => {
  * @param {Array} dateWorkouts - 同じ日のワークアウト配列
  * @returns {boolean} - 複数回トレーニングした場合 true
  */
-export const hasMultipleWorkoutsOnSameDay = (dateWorkouts) => {
+export const hasMultipleWorkoutsOnSameDay = dateWorkouts => {
   return dateWorkouts.length > 1;
 };
 
@@ -34,7 +33,7 @@ export const hasMultipleWorkoutsOnSameDay = (dateWorkouts) => {
  * @param {Object} workout - ワークアウトオブジェクト
  * @returns {string} - 例: "5km 30分" or "20×3セット"
  */
-export const formatWorkoutDetails = (workout) => {
+export const formatWorkoutDetails = workout => {
   if (workout.exerciseType === 'cardio') {
     return `${workout.distance}km ${workout.duration}分`;
   } else if (workout.exerciseType === 'strength') {
@@ -43,4 +42,3 @@ export const formatWorkoutDetails = (workout) => {
   }
   return '';
 };
-
