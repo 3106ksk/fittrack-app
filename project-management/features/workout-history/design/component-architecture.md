@@ -590,6 +590,6 @@ const updateSomething = useCallback(value => {
 
 ## 11. 参考資料
 
-- [React状態管理でのクロージャー問題解決記録](/learning/daily/2025-09-16/acquire_react_state_management.md)
+- [React状態管理でのクロージャー問題解決記録](/learning/daily/2025/9/2025-09-16/acquire_react_state_management.md)
 - [FormConfigDrawer実装](/frontend/src/components/FormConfigDrawer.jsx)
 - [useFormConfig実装](/frontend/src/hooks/useFormConfig.js)
