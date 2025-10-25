@@ -1,44 +1,39 @@
-import { render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import WorkoutForm from '../index';
 
-export const testData = {
-  workouts: {
-    strengthWorkout: {
-      date: '2024-01-15',
-      exercises: {
-        ベンチプレス: { set1: '10', set2: '8', set3: '10' },
-        スクワット: { set1: '12', set2: '10', set3: '12' },
-      },
-    },
-
-    cardioWorkout: {
-      date: '2024-01-10',
-      exercises: {
-        ランニング: { distance: 3.2, duration: 20 },
-      },
-    },
-
-    mixedWorkout: {
-      date: '2024-01-10',
-      exercises: {
-        ランニング: { distance: 3.2, duration: 20 },
-        ベンチプレス: { set1: '10', set2: '8', set3: '10' },
-        スクワット: { set1: '12', set2: '10', set3: '12' },
-      },
-    },
-  },
-};
-
-const 
 describe('WorkoutForm', () => {
   beforeEach(() => {
-  vi.clearAllMocks();
-
+    vi.clearAllMocks();
   });
 
-  it('筋トレフォームクリア', () => {
+  it('筋トレフォーム送信後、全フィールドがリセットされる', async () => {
+    const user = userEvent.setup();
+
     render(<WorkoutForm />);
-    expect(screen.getByText('WorkoutForm')).toBeInTheDocument();
+
+    const pushUpCard = screen.getByText('腕立て伏せ').closest('.MuiCard-root');
+
+    const selectField = within(pushUpCard).getAllByLabelText(/セット目/)[0];
+    await user.click(selectField);
+
+    const option = screen.getByRole('option', { name: '10 回' });
+    await user.click(option);
+
+    const intensity = screen.getByLabelText('全体的な強度');
+    await user.click(intensity);
+    const intensityOption = screen.getByRole('option', { name: /高/ });
+    await user.click(intensityOption);
+
+    const submitButton = screen.getByRole('button', {
+      name: 'ワークアウトを保存',
+    });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      const resetField = within(pushUpCard).getAllByLabelText(/セット目/)[0];
+      expect(resetField).toHaveValue('');
+    });
   });
 });
