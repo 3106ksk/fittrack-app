@@ -11,11 +11,11 @@ export const generateDefaultValues = formConfig => {
     ].includes(exercise);
 
     if (isCardio) {
-      defaults[`${exercise}_distance`] = null;
-      defaults[`${exercise}_duration`] = null;
+      defaults[`${exercise}_distance`] = '';
+      defaults[`${exercise}_duration`] = '';
     } else {
       for (let i = 1; i <= formConfig.maxSets; i++) {
-        defaults[`${exercise}_set${i}`] = null;
+        defaults[`${exercise}_set${i}`] = '';
       }
     }
   });

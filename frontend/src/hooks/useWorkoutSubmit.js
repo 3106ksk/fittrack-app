@@ -10,7 +10,7 @@ import apiClient from '../services/api';
  * @param {Function} dependencies.isCardioExercise - カーディオ判定関数
  * @param {Function} dependencies.showFeedback - フィードバック表示関数
  * @param {Function} dependencies.reset - フォームリセット関数
- * @param {Function} dependencies.generateDefaultValues - デフォルト値生成関数
+ * @param {Function} dependencies. - デフォルト値生成関数
  * @returns {Object} handleSubmit - 送信処理関数
  */
 const useWorkoutSubmit = ({
@@ -20,9 +20,6 @@ const useWorkoutSubmit = ({
   reset,
   generateDefaultValues,
 }) => {
-  /**
-   * カーディオ運動データを送信用に変換
-   */
   const transformCardioData = (exercise, data) => {
     const distance = data[`${exercise}_distance`];
     const duration = data[`${exercise}_duration`];
