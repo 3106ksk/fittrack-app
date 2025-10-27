@@ -9,19 +9,9 @@ import {
 } from '@mui/material';
 import { memo } from 'react';
 import { Controller } from 'react-hook-form';
-import {
-  DISTANCE_OPTIONS,
-  DURATION_OPTIONS,
-  REPS_OPTIONS
-} from './constants';
+import { DISTANCE_OPTIONS, DURATION_OPTIONS, REPS_OPTIONS } from './constants';
 
-const ExerciseCard = ({
-  exercise,
-  isCardio,
-  control,
-  errors,
-  maxSets
-}) => {
+const ExerciseCard = ({ exercise, isCardio, control, errors, maxSets }) => {
   return (
     <Card variant="outlined">
       <CardContent>
@@ -44,6 +34,7 @@ const ExerciseCard = ({
                 render={({ field }) => (
                   <TextField
                     {...field}
+                    value={field.value ?? ''}
                     label="距離 (km)"
                     select
                     fullWidth
@@ -66,6 +57,7 @@ const ExerciseCard = ({
                 render={({ field }) => (
                   <TextField
                     {...field}
+                    value={field.value ?? ''}
                     label="時間 (分)"
                     select
                     fullWidth
@@ -92,6 +84,7 @@ const ExerciseCard = ({
                   render={({ field }) => (
                     <TextField
                       {...field}
+                      value={field.value ?? ''}
                       label={`${i + 1}セット目`}
                       select
                       fullWidth
