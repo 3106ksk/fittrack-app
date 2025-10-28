@@ -414,3 +414,48 @@ describe('WorkoutForm reset behavior', () => {
 - [research.md](./research.md) - 詳細な技術調査結果
 - [spec.md](./spec.md) - 機能仕様書
 - [React Hook Form 公式ドキュメント](https://react-hook-form.com/)
+
+---
+
+## 📊 セッション進捗（2025-10-27更新）
+
+### ✅ 完了したタスク
+
+- **T001** ✅ `formDefaults.js`のdefaultValuesを`null`→`''`に変更
+- **T002** ✅ `ExerciseCard.jsx`に`value={field.value ?? ''}`を追加
+- **学習ログ作成** ✅ `/learning/daily/2025/10/2025-10-27-controlled-component-form-fix.md`
+
+### 🚨 発見した問題
+
+**Yupバリデーションエラー**:
+```
+スクワット_set2 must be a `number` type, but the final value was: `NaN`
+```
+
+**原因**: T001で`null`→`''`に変更したことで、Yupの`.number()`が空文字列を`NaN`に変換しようとしてエラー
+
+**解決策**: T003で`useFormValidation.js`に`.transform()`を追加
+
+### 🎯 次のタスク
+
+**T003**: `frontend/src/hooks/useFormValidation.js`の修正
+
+3箇所に以下を追加:
+```javascript
+.transform((value, originalValue) => {
+  return originalValue === '' ? null : value;
+})
+```
+
+**対象箇所**:
+1. カーディオ距離（行19-22）
+2. カーディオ時間（行23-26）
+3. 筋トレセット（行29-32）
+
+### 📝 次回セッション開始方法
+
+```bash
+/learn_pair '/Users/310tea/Documents/fittrack-app/specs/003-reset-ui-react'
+```
+
+**重要**: 次回開始時は`session-notes.md`を読み込んで、T003から再開してください。

@@ -36,17 +36,29 @@
 
 ### 基盤コード修正
 
-- [ ] **T001** [P] [Foundation] `frontend/src/utils/formDefaults.js`のdefaultValuesを`null`から`''`（空文字列）に変更
+- [x] **T001** [P] [Foundation] `frontend/src/utils/formDefaults.js`のdefaultValuesを`null`から`''`（空文字列）に変更 ✅ **完了 (2025-10-27)**
   - すべての`defaults[key] = null`を`defaults[key] = ''`に変更
   - 影響: 距離、時間、セット数のすべてのデフォルト値
+  - 結果: Uncontrolled警告を解消、Controlled Componentとして正しく動作
 
-- [ ] **T002** [P] [Foundation] `frontend/src/components/WorkoutForm/ExerciseCard.jsx`の全Controllerに`value={field.value ?? ''}`を追加
-  - 距離入力（カーディオ）のController
-  - 時間入力（カーディオ）のController
-  - セット入力（筋トレ）のController
+- [x] **T002** [P] [Foundation] `frontend/src/components/WorkoutForm/ExerciseCard.jsx`の全Controllerに`value={field.value ?? ''}`を追加 ✅ **完了 (2025-10-27)**
+  - 距離入力（カーディオ）のController（行37）
+  - 時間入力（カーディオ）のController（行60）
+  - セット入力（筋トレ）のController（行87）
   - undefined対策として必須
+  - 結果: "component is changing uncontrolled to controlled"警告を解消
 
-**Checkpoint**: 基盤完了 - ユーザーストーリー実装を開始可能
+- [x] **T003** [Foundation] `frontend/src/hooks/useFormValidation.js`にYupの`.transform()`を追加 ✅ **完了 (2025-10-28)**
+  - T001の変更により顕在化したバリデーション問題を修正
+  - カーディオ距離・時間の3箇所に`.transform(emptyToNull)`を追加
+  - 筋トレセット入力に同様の`.transform(emptyToNull)`を追加
+  - 理由: 空文字列(`''`)がYupの`.number()`で`NaN`に変換され、バリデーションエラーになる
+  - 解決策: `.transform()`で空文字列を`null`に変換してから`.nullable()`で許容
+  - 追加成果: MSWモックハンドラー (`POST /workouts`) を作成し、テストインフラを改善
+
+**Checkpoint**: 基盤完了 - T003完了後、ユーザーストーリー実装を開始可能
+
+**⚠️ 重要**: T001の変更により、Yupバリデーションで`NaN`エラーが発生することが判明。T003でこれを解決する必要がある。詳細は`session-notes.md`を参照。
 
 ---
 
