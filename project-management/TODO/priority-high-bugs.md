@@ -20,7 +20,7 @@
 - **詳細**: [`../bugs/registration-navigation-redirect.md`](../bugs/registration-navigation-redirect.md)
 
 ### 2. ワークアウトフォームのリセット問題
-- **詳細**: [`../bugs/workout-form-submit-reset-not-working.md`](../bugs/workout-form-submit-reset-not-working.md)
+- **詳細**: [`../bugs/workout-form-submit-reset-not-working.md`](../resolved-bugs/workout-form-submit-reset-not-working.md)
 - **ステータス**: 部分的に解決済み
 
 ### 3. 複数ワークアウトの重複問題

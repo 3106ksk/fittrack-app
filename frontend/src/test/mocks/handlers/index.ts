@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { stravaHandlers, stravaHandlersDisconnected } from './strava';
+import { workoutsHandlers } from './workouts';
 
 export const handlers = [
   http.get('https://jsonplaceholder.typicode.com/posts', () => {
@@ -7,4 +8,5 @@ export const handlers = [
   }),
   ...stravaHandlers,
   ...stravaHandlersDisconnected,
+  ...workoutsHandlers,
 ];
