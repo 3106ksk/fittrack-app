@@ -35,7 +35,9 @@ export const hasMultipleWorkoutsOnSameDay = dateWorkouts => {
  */
 export const formatWorkoutDetails = workout => {
   if (workout.exerciseType === 'cardio') {
-    return `${workout.distance}km ${workout.duration}分`;
+    const durationInMinutes = Math.floor(workout.duration / 60);
+    const formattedDistance = workout.distance.toFixed(1);
+    return `${formattedDistance}km ${durationInMinutes}分`;
   } else if (workout.exerciseType === 'strength') {
     const reps = workout.repsDetail.map(d => d.reps).join(',');
     return `${reps} (${workout.sets}セット)`;
