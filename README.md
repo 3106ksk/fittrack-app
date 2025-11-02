@@ -1,6 +1,6 @@
 # <img src="./frontend/public/fitstart-runner-favicon-192.png" alt="FitStart" width="32" height="32" style="vertical-align: middle;"> **FitStart** - その日の運動を「健康効果」として見える化するフィットネスアプリ
 
-![FitStart](./frontend/public/og-image-fitstart.png)
+<img src="./frontend/public/og-image-fitstart.png" alt="FitStart" width="600">
 
 <br>
 
