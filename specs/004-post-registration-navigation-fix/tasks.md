@@ -7,6 +7,34 @@
 
 **組織**: タスクはユーザーストーリー別にグループ化され、各ストーリーの独立した実装とテストを可能にします。
 
+---
+
+## 🚀 進捗状況（最終更新: 2025-11-06）
+
+### 現在のステータス: 🟢 **MVP実装完了（手動テスト待ち）**
+
+| フェーズ | 完了タスク数 | 総タスク数 | 進捗率 | ステータス |
+|---------|------------|-----------|--------|-----------|
+| Phase 3: User Story 1 (P1) | 1/4 | 4 | 25% | 🟡 コア実装完了 |
+| Phase 4: User Story 2 (P2) | 1/5 | 5 | 20% | 🟡 コア実装完了 |
+| Phase 5: User Story 3 (P3) | 0/4 | 4 | 0% | ⏸️ 未着手 |
+| Phase 6: Polish | 0/7 | 7 | 0% | ⏸️ 未着手 |
+
+**全体進捗**: 2/20 タスク完了（10%） - ただし、**コア機能は完了**（MVP達成）
+
+### ✅ 完了したタスク
+- [x] **T009** [US1] Register.jsx のナビゲーション先を変更（2025-11-06）
+- [x] **T013** [US2] Login.jsx に成功メッセージ表示機能を追加（2025-11-06）
+
+### 🎯 次のステップ
+- [ ] **T011** [US1] 手動テストの実行 ← **今ここ！**
+- [ ] **T016** [US2] 手動テストの実行
+
+### 📝 詳細な実装ログ
+詳しくは `implementation-log.md` を参照してください。
+
+---
+
 ## フォーマット: `[ID] [P?] [Story] 説明`
 - **[P]**: 並列実行可能（異なるファイル、依存関係なし）
 - **[Story]**: このタスクが属するユーザーストーリー（例：US1、US2、US3）
@@ -61,10 +89,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Register.jsx のナビゲーション先を変更: `frontend/src/components/Register.jsx` の Line 46付近を修正:
+- [x] T009 [US1] Register.jsx のナビゲーション先を変更: `frontend/src/components/Register.jsx` の Line 46付近を修正: ✅ **完了 (2025-11-06)**
   - 変更前: `navigate('/dashboard', { state: { message: ... } })`
   - 変更後: `navigate('/login', { state: { message: 'アカウント作成が完了しました。ログインしてください。', type: 'success' } })`
   - 既存のエラー処理は変更しない（Line 51-88）
+  - **実装詳細**: Line 58で`navigate('/login', { state: { message: '...' } })`に変更完了
 
 - [ ] T010 [US1] テストの実行と検証: `npm run test Register.test` を実行し、T008 で作成したテストが**合格**することを確認
 
@@ -95,18 +124,19 @@
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Login.jsx に成功メッセージ表示機能を追加: `frontend/src/components/Login.jsx` を修正:
-  - `useLocation` hook をインポート: `import { useLocation } from 'react-router-dom';`
-  - コンポーネント内で location を取得: `const location = useLocation();`
-  - `location.state?.message` から成功メッセージを読み取る: `const successMessage = location.state?.message;`
-  - エラーメッセージの上に成功メッセージ用の Alert を追加（Line 113付近）:
+- [x] T013 [US2] Login.jsx に成功メッセージ表示機能を追加: `frontend/src/components/Login.jsx` を修正: ✅ **完了 (2025-11-06)**
+  - `useLocation` hook をインポート: `import { useLocation } from 'react-router-dom';` ✅
+  - コンポーネント内で location を取得: `const location = useLocation();` ✅
+  - `location.state?.message` から成功メッセージを読み取る: `const successMessage = location.state?.message;` ✅
+  - エラーメッセージの上に成功メッセージ用の Alert を追加（Line 138-143）: ✅
     ```jsx
     {successMessage && (
-      <Alert severity="success" sx={{ mb: 2 }}>
+      <Alert severity="success" sx={{ mb: 6 }}>
         {successMessage}
       </Alert>
     )}
     ```
+  - **実装詳細**: Line 24で useLocation インポート、Line 33で location 取得、Line 34で successMessage 定義、Line 138-143で Alert 追加
 
 - [ ] T014 [US2] Login.jsx でログイン送信時に location.state をクリア: `onSubmit` 関数内（Line 33-70）を修正:
   - ログイン試行前に location.state をクリア:
