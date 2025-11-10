@@ -33,11 +33,6 @@ const Login = () => {
   const location = useLocation();
   const successMessage = location.state?.message;
 
-  // 🔍 デバッグ用: location と successMessage の値を確認
-  console.log('🔍 [Login.jsx] location:', location);
-  console.log('🔍 [Login.jsx] location.state:', location.state);
-  console.log('🔍 [Login.jsx] successMessage:', successMessage);
-
   const {
     register,
     handleSubmit,
