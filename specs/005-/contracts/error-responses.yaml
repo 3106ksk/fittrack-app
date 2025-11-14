@@ -1,0 +1,124 @@
+openapi: 3.0.3
+info:
+  title: FitStart API - エラーレスポンス仕様
+  description: |
+    FitStart APIのすべてのエンドポイントで使用される統一エラーレスポンス形式の定義。
+    この仕様は、Feature 005（バックエンドエラーハンドリング実装）で導入されます。
+  version: 1.0.0
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - code
+        - message
+        - requestId
+        - timestamp
+      properties:
+        status:
+          type: integer
+          description: HTTPステータスコード
+          example: 400
+        code:
+          type: string
+          description: エラーの種類を示すコード
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          description: ユーザーに表示するエラーメッセージ（日本語）
+          example: 入力データが無効です
+        details:
+          description: エラーの詳細情報（オプション）
+          oneOf:
+            - type: object
+            - type: array
+        requestId:
+          type: string
+          format: uuid
+          description: リクエストID
+          example: 550e8400-e29b-41d4-a716-446655440000
+        timestamp:
+          type: string
+          format: date-time
+          description: エラー発生時刻（ISO 8601、UTC）
+          example: '2025-11-13T10:30:45.123Z'
+
+  responses:
+    BadRequest:
+      description: リクエストが不正です（バリデーションエラー）
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 400
+            code: VALIDATION_ERROR
+            message: 入力データが無効です
+            details:
+              - field: email
+                message: メールアドレスの形式が正しくありません
+            requestId: 550e8400-e29b-41d4-a716-446655440000
+            timestamp: '2025-11-13T10:30:45.123Z'
+
+    Unauthorized:
+      description: 認証が必要です
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 401
+            code: UNAUTHORIZED
+            message: 認証が必要です。ログインしてください
+            requestId: 550e8400-e29b-41d4-a716-446655440000
+            timestamp: '2025-11-13T10:30:45.123Z'
+
+    Forbidden:
+      description: アクセス権限がありません
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: リソースが見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: リソースの競合
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    RateLimitExceeded:
+      description: レート制限を超過しました
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: 制限解除までの秒数
+          example: 900
+
+    InternalServerError:
+      description: サーバー内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ServiceUnavailable:
+      description: サービスが一時的に利用できません
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
